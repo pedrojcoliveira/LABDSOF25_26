@@ -6,7 +6,7 @@ namespace MindCarePlus.Domain.Interfaces.Repositories
     {
         // Métodos específicos do Paciente
         //Task<Paciente?> GetByEmailAsync(string email);
-        //Task<Paciente?> GetWithRegistosAsync(Guid id);
+        Task<Paciente?> GetWithRegistosAsync(Guid id);
         //Task<Paciente?> GetWithRelatoriosAsync(Guid id);
         //Task<Paciente?> GetWithDesafiosAsync(Guid id);
         //Task<Paciente?> GetWithBadgesAsync(Guid id);
