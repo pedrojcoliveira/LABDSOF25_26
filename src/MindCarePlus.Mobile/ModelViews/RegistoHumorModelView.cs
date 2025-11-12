@@ -1,0 +1,143 @@
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MindCarePlus.Mobile.Services;
+using MindCarePlus.Shared.DTOs;
+
+namespace MindCarePlus.Mobile.ViewModels
+{
+    public partial class RegistoHumorModelView : ObservableObject
+    {
+        private readonly ApiService _apiService;
+
+        [ObservableProperty]
+        private int selectedMood;
+
+        [ObservableProperty]
+        private int stressLevel = 3;
+
+        [ObservableProperty]
+        private int energyLevel = 3;
+
+        [ObservableProperty]
+        private string notes = string.Empty;
+
+        [ObservableProperty]
+        private bool isBusy;
+
+        public bool CanSave => SelectedMood > 0 && !IsBusy;
+
+        public RegistoHumorModelView(ApiService apiService)
+        {
+            _apiService = apiService;
+        }
+
+        [RelayCommand]
+        private void SelectMood(string moodStr)
+        {
+            // 2. Converte a string para int
+            if (int.TryParse(moodStr, out int moodId))
+            {
+                // 3. Só depois atribui o valor
+                SelectedMood = moodId;
+                OnPropertyChanged(nameof(CanSave));
+            }
+        }
+
+        partial void OnStressLevelChanged(int value)
+        {
+            OnPropertyChanged(nameof(StressLevelText));
+            OnPropertyChanged(nameof(StressColor));
+        }
+
+        partial void OnEnergyLevelChanged(int value)
+        {
+            OnPropertyChanged(nameof(EnergyLevelText));
+            OnPropertyChanged(nameof(EnergyColor));
+        }
+
+        public string StressLevelText => StressLevel switch
+        {
+            <= 2 => "😌 Baixo",
+            3 => "😐 Moderado",
+            _ => "😰 Elevado"
+        };
+
+        public Color StressColor => StressLevel switch
+        {
+            <= 2 => Color.FromArgb("#22c55e"),
+            3 => Color.FromArgb("#eab308"),
+            _ => Color.FromArgb("#ef4444")
+        };
+
+        public string EnergyLevelText => EnergyLevel switch
+        {
+            <= 2 => "😴 Baixa",
+            3 => "😊 Moderada",
+            _ => "⚡ Alta"
+        };
+
+        public Color EnergyColor => EnergyLevel switch
+        {
+            <= 2 => Color.FromArgb("#ef4444"),
+            3 => Color.FromArgb("#eab308"),
+            _ => Color.FromArgb("#22c55e")
+        };
+
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        private async Task SaveMoodAsync()
+        {
+            if (!CanSave) return;
+
+            IsBusy = true;
+
+            try
+            {
+                var registo = new CriarRegistoDiarioDto
+                {
+                    // TODO: Substituir por ID do utilizador autenticado
+                    PacienteId = Guid.Parse("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d"),
+                    NivelHumor = SelectedMood,
+                    NivelStress = StressLevel,
+                    NivelEnergia = EnergyLevel,
+                    Notas = Notes
+                };
+
+                var resultado = await _apiService.CriarRegistoAsync(registo);
+
+                if (resultado != null)
+                {
+                    await Shell.Current.DisplayAlert("Sucesso ✅",
+                        "Registo guardado com sucesso!", "OK");
+
+                    // Reset form
+                    SelectedMood = 0;
+                    StressLevel = 3;
+                    EnergyLevel = 3;
+                    Notes = string.Empty;
+                    OnPropertyChanged(nameof(CanSave));
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert("Erro ❌",
+                        "Não foi possível guardar o registo. Verifica se a API está a correr.", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Erro ❌",
+                    $"Erro: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task ViewHistoryAsync()
+        {
+            await Shell.Current.DisplayAlert("Info",
+                "Funcionalidade de histórico será implementada em breve!", "OK");
+        }
+    }
+}

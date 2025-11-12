@@ -33,7 +33,21 @@ builder.Services.AddSwaggerGen();
 //        });
 //});
 
+// ===== CONFIGURAR CORS ===== Vindo do Claude
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMobile", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -50,6 +64,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ===== USAR CORS ===== Vindo do Claude
+app.UseCors("AllowMobile");
 
 app.UseAuthorization();
 
