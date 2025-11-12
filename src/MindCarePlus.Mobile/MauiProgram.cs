@@ -78,9 +78,12 @@ public static class MauiProgram
         });
 
 
+        builder.Services.AddSingleton<IDialogService, MauiDialogService>();
+
         // ===== VIEWMODELS =====
         builder.Services.AddTransient<RegistoHumorModelView>();
         builder.Services.AddTransient<MainPageModelView>();
+        
 
         // ===== PAGES =====
         builder.Services.AddTransient<MainPage>();

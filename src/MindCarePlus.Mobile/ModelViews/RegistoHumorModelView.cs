@@ -8,6 +8,7 @@ namespace MindCarePlus.Mobile.ViewModels
     public partial class RegistoHumorModelView : ObservableObject
     {
         private readonly ApiService _apiService;
+        private readonly IDialogService _dialogService;
 
         [ObservableProperty]
         private int selectedMood;
@@ -26,9 +27,10 @@ namespace MindCarePlus.Mobile.ViewModels
 
         public bool CanSave => SelectedMood > 0 && !IsBusy;
 
-        public RegistoHumorModelView(ApiService apiService)
+        public RegistoHumorModelView(ApiService apiService, IDialogService dialogService)
         {
             _apiService = apiService;
+            _dialogService = dialogService;
         }
 
         [RelayCommand]
@@ -106,7 +108,7 @@ namespace MindCarePlus.Mobile.ViewModels
 
                 if (resultado != null)
                 {
-                    await Shell.Current.DisplayAlert("Sucesso ✅",
+                    await _dialogService.ShowAlertAsync("Sucesso ✅",
                         "Registo guardado com sucesso!", "OK");
 
                     // Reset form
@@ -118,13 +120,13 @@ namespace MindCarePlus.Mobile.ViewModels
                 }
                 else
                 {
-                    await Shell.Current.DisplayAlert("Erro ❌",
+                    await _dialogService.ShowAlertAsync("Erro ❌",
                         "Não foi possível guardar o registo. Verifica se a API está a correr.", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Erro ❌",
+                await _dialogService.ShowAlertAsync("Erro ❌",
                     $"Erro: {ex.Message}", "OK");
             }
             finally
@@ -136,7 +138,7 @@ namespace MindCarePlus.Mobile.ViewModels
         [RelayCommand]
         private async Task ViewHistoryAsync()
         {
-            await Shell.Current.DisplayAlert("Info",
+            await _dialogService.ShowAlertAsync("Info",
                 "Funcionalidade de histórico será implementada em breve!", "OK");
         }
     }
