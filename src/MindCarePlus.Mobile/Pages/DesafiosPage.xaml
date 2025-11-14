@@ -112,6 +112,9 @@
                                                FontAttributes="Bold"
                                                TextColor="#1F2937"
                                                FontSize="16"/>
+                                        <Label Text="{Binding Desafio.Descricao}"
+                                               FontSize="14"
+                                               TextColor="#6B7280"/>
                                         <HorizontalStackLayout Spacing="8">
                                             <Border BackgroundColor="#F3E8FF" Padding="6,3" StrokeShape="RoundRectangle 12" StrokeThickness="0">
                                                 <Label Text="{Binding Desafio.Tipo}" TextColor="#7C3AED" FontSize="10"/>
