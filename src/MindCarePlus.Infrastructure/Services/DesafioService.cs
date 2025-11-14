@@ -83,7 +83,6 @@ namespace MindCarePlus.Infrastructure.Services
             if (desafio == null || desafio.Estado == "Concluido")
                 return null;
 
-            // Carregar o desafio com a badge
             var desafioCompleto = await _unitOfWork.Desafios
                 .FirstOrDefaultAsync(d => d.Id == desafio.DesafioId);
 

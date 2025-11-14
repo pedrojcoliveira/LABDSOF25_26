@@ -1,17 +1,19 @@
-﻿using System.Globalization;
+﻿// Em MindCarePlus.Mobile/Converters/EstadoToCheckColorConverter.cs
+using System.Globalization;
 
 namespace MindCarePlus.Mobile.Converters
 {
-    public class IntToBorderColorConverter : IValueConverter
+    public class EstadoToCheckColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is int selectedValue && parameter is string paramValue)
+            // Se "Concluido", borda verde
+            if (value as string == "Concluido")
             {
-                return selectedValue.ToString() == paramValue
-                    ? Color.FromArgb("#7C3AED")  // Roxo quando selecionado
-                    : Color.FromArgb("#E5E7EB"); // Cinza quando não selecionado
+                return Color.FromArgb("#10B981"); // Verde
             }
+
+            // Senão ("Pendente"), borda cinzenta clara
             return Color.FromArgb("#E5E7EB");
         }
 

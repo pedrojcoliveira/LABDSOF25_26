@@ -66,7 +66,7 @@ namespace MindCarePlus.Mobile.ViewModels
                 return;
             }
 
-            IsBusy = true; 
+            IsBusy = true;
 
             string? mensagemErro = null;
             string mensagemSucesso = null;
@@ -77,10 +77,14 @@ namespace MindCarePlus.Mobile.ViewModels
 
                 if (response != null && response.Sucesso)
                 {
+                    // ***** AQUI ESTÁ A CORREÇÃO *****
+                    // Chama o método INTERNO para recarregar os dados,
+                    // ignorando a verificação do IsBusy.
                     await InternalCarregarDadosAsync();
 
+                    // Prepara a mensagem de sucesso
                     mensagemSucesso = response.Mensagem;
-                    if (response.BadgeGanha != null)
+                    if (response.BadgeGanha != null && response.BadgeGanha.Badge != null)
                     {
                         mensagemSucesso += $"\n\n🏆 Badge Conquistada:\n{response.BadgeGanha.Badge.ImagemUrl} {response.BadgeGanha.Badge.Nome} - Nível {response.BadgeGanha.Nivel}";
                     }
@@ -97,10 +101,11 @@ namespace MindCarePlus.Mobile.ViewModels
             }
             finally
             {
-                
+                // A UI atualiza ANTES do popup
                 IsBusy = false;
             }
 
+            // O popup é mostrado DEPOIS da UI estar atualizada
             if (mensagemSucesso != null)
             {
                 await Shell.Current.DisplayAlert("Parabéns! 🎉", mensagemSucesso, "OK");

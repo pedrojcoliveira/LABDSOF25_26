@@ -1,20 +1,17 @@
-﻿// Muda a cor de fundo do botão.
+﻿// Em MindCarePlus.Mobile/Converters/PercentToProgressConverter.cs
 using System.Globalization;
 
 namespace MindCarePlus.Mobile.Converters
 {
-    public class EstadoToButtonColorConverter : IValueConverter
+    public class PercentToProgressConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Se "Concluido", fica Cinzento
-            if (value as string == "Concluido")
+            if (value is double progress)
             {
-                return Colors.Gray;
+                return progress / 100.0;
             }
-
-            // Senão ("Pendente"), fica Roxo (cor primária do teu Card)
-            return Color.FromArgb("#7C3AED");
+            return 0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

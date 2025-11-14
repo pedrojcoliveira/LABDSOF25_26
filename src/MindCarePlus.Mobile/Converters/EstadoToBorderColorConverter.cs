@@ -1,4 +1,4 @@
-﻿//Muda a cor da borda do desafio com base no estado.
+﻿// Em MindCarePlus.Mobile/Converters/EstadoToBorderColorConverter.cs
 using System.Globalization;
 
 namespace MindCarePlus.Mobile.Converters
@@ -7,14 +7,14 @@ namespace MindCarePlus.Mobile.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Se o estado for "Concluido", a borda fica Verde (podes mudar a cor)
+            // Se "Concluido", borda verde
             if (value as string == "Concluido")
             {
-                return Colors.Green;
+                return Color.FromArgb("#10B981"); // Verde
             }
 
-            // Senão, fica cinzenta
-            return Colors.LightGray;
+            // Senão ("Pendente"), borda cinzenta clara
+            return Color.FromArgb("#E5E7EB");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
