@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MindCarePlus.Mobile.Services
+namespace MindCarePlus.Mobile.Services.Interfaces
 {
     // O "Contrato" do que queremos fazer, para utilizar quando formos mostrar alertas
     public interface IDialogService

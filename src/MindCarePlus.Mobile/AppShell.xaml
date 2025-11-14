@@ -17,6 +17,10 @@
             Title="Humor"
             ContentTemplate="{DataTemplate pages:RegistoHumorPage}"
             Route="RegistoHumor" />
+        <ShellContent
+            Title="Desafios"
+            ContentTemplate="{DataTemplate pages:DesafiosPage}"
+            Route="Desafios" />
     </TabBar>
 
 </Shell>

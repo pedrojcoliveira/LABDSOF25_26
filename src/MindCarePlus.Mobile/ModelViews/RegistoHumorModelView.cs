@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MindCarePlus.Mobile.Services;
+using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Shared.DTOs;
 
 namespace MindCarePlus.Mobile.ViewModels

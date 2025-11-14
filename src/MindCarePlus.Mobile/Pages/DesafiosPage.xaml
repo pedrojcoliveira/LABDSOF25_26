@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="MindCarePlus.Mobile.Pages.DesafiosPage"
+             x:Name="page"
+             Title="Desafios Semanais"
+             BackgroundColor="#F9FAFB">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding CarregarDesafiosCommand}" />
+    </ContentPage.Behaviors>
+
+    <Grid>
+
+        <ScrollView IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <Border StrokeThickness="0"
+                        BackgroundColor="#7C3AED"
+                        StrokeShape="RoundRectangle 16"
+                        Padding="20">
+                    <Grid>
+                        <BoxView>
+                            <BoxView.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#7C3AED" Offset="0.0" />
+                                    <GradientStop Color="#3B82F6" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </BoxView.Background>
+                        </BoxView>
+
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="*,*">
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="Progresso da Semana" TextColor="White" FontSize="12" Opacity="0.9"/>
+                                    <Label Text="{Binding DesafiosConcluidos, StringFormat='{0}/7'}" TextColor="White" FontSize="32" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
+                                    <Label Text="Pontos" TextColor="White" FontSize="12" Opacity="0.9"/>
+                                    <Label Text="{Binding PontosTotais}" TextColor="White" FontSize="32" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <ProgressBar Progress="{Binding ProgressoPercentagem}"
+                                         ProgressColor="White"
+                                         HeightRequest="8"/>
+
+                            <Label Text="🏆 Completa os 7 desafios para ganhar a badge 'Guerreiro da Semana'!"
+                                   TextColor="White" FontSize="12" Opacity="0.9"
+                                   HorizontalOptions="Center" HorizontalTextAlignment="Center"
+                                   IsVisible="{Binding CompletouSemana, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                            <Label Text="🎉 SEMANA COMPLETA! Parabéns!"
+                                   TextColor="White" FontSize="14" FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   IsVisible="{Binding CompletouSemana}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <Label Text="Tarefas Disponíveis"
+                       TextColor="#1F2937"
+                       FontAttributes="Bold"
+                       FontSize="18"/>
+
+                <CollectionView ItemsSource="{Binding Desafios}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:DesafioAtribuidoDto">
+
+                            <Border StrokeThickness="2"
+                                    Stroke="{Binding Estado, Converter={StaticResource EstadoToBorderColorConverter}}"
+                                    StrokeShape="RoundRectangle 12"
+                                    BackgroundColor="White"
+                                    Margin="0,0,0,10">
+                                <Grid Padding="15" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="10" ColumnSpacing="10">
+
+                                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
+                                        <Label Text="{Binding Desafio.Titulo}"
+                                               FontAttributes="Bold"
+                                               FontSize="16"
+                                               TextColor="#111827"/>
+                                        <Label Text="{Binding Desafio.Descricao}"
+                                               FontSize="14"
+                                               TextColor="#6B7280"/>
+                                    </VerticalStackLayout>
+
+                                    <Button Grid.Row="0" Grid.Column="1"
+                                            Text="{Binding Estado, Converter={StaticResource EstadoToButtonTextConverter}}"
+                                            BackgroundColor="{Binding Estado, Converter={StaticResource EstadoToButtonColorConverter}}"
+                                            TextColor="White"
+                                            CornerRadius="8"
+                                            Padding="10,5"
+                                            IsEnabled="{Binding Estado, Converter={StaticResource EstadoToButtonEnabledConverter}}"
+                                            
+                                            Command="{Binding BindingContext.ConcluirDesafioCommand, Source={x:Reference page}}"
+                                            CommandParameter="{Binding .}"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Text="{Binding Desafio.PontosRecompensa, StringFormat='Pontos: {0}'}"
+                                           FontSize="12"
+                                           TextColor="#9CA3AF"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Color="{StaticResource Primary}" />
+    </Grid>
+</ContentPage>

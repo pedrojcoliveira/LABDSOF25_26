@@ -72,5 +72,47 @@ namespace MindCarePlus.Mobile.Services
                 return null;
             }
         }
+
+        public async Task<ProgressoSemanalDto?> GetDesafiosSemanaisAsync(Guid pacienteId)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<ProgressoSemanalDto>($"Desafio/paciente/{pacienteId}/semanal");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<ConcluirDesafioResponseDto?> ConcluirDesafioAsync(Guid desafioAtribuidoId)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync($"Desafio/{desafioAtribuidoId}/concluir", null);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<ConcluirDesafioResponseDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro: {ex.Message}");
+                return null;
+            }
+        }
+
+        // ===== BADGES =====
+        public async Task<ColecaoBadgesDto?> GetBadgesAsync(Guid pacienteId)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<ColecaoBadgesDto>($"Badge/paciente/{pacienteId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

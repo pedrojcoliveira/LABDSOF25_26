@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using MindCarePlus.Mobile.ModelViews;
 using MindCarePlus.Mobile.Pages;
 using MindCarePlus.Mobile.Services;
+using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
@@ -80,14 +81,16 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
-        // ===== VIEWMODELS =====
+        // ===== MODELVIEWS=====
         builder.Services.AddTransient<RegistoHumorModelView>();
         builder.Services.AddTransient<MainPageModelView>();
-        
+        builder.Services.AddTransient<DesafiosModelView>();
+
 
         // ===== PAGES =====
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<RegistoHumorPage>();
+        builder.Services.AddTransient<DesafiosPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

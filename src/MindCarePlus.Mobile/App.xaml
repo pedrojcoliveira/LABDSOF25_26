@@ -13,6 +13,11 @@
 
             <!-- Converters -->
             <converters:IntToBorderColorConverter x:Key="IntToBorderColorConverter" />
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:EstadoToBorderColorConverter x:Key="EstadoToBorderColorConverter" />
+            <converters:EstadoToButtonTextConverter x:Key="EstadoToButtonTextConverter" />
+            <converters:EstadoToButtonColorConverter x:Key="EstadoToButtonColorConverter" />
+            <converters:EstadoToButtonEnabledConverter x:Key="EstadoToButtonEnabledConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
