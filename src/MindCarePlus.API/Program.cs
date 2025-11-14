@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using MindCarePlus.Application.Interfaces;
+using MindCarePlus.Application.Services;
 using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Infrastructure.Data;
 
@@ -14,6 +16,7 @@ builder.Services.AddDbContext<MindCareDbContext>(options =>
 
 // ===== CONFIGURAR UNIT OF WORK =====
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
