@@ -4,7 +4,8 @@
              xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
              x:DataType="viewmodel:DashboardViewModel"
              x:Class="MindCarePlus.Mobile.Pages.DashboardPage"
-             Title="Dashboard">
+             Title="Dashboard"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#6C63FF">
@@ -96,36 +97,27 @@
             </Frame>
 
             <Frame BackgroundColor="White" 
-                   CornerRadius="15" 
-                   Padding="20" 
-                   HasShadow="True">
+       CornerRadius="15" 
+       Padding="20" 
+       HasShadow="True">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="📊 Evolução de Humor - Última Semana" 
-                           FontSize="16" 
-                           FontAttributes="Bold"/>
+               FontSize="16" 
+               FontAttributes="Bold"/>
 
-                    <CollectionView ItemsSource="{Binding EvolucaoHumor}">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <VerticalStackLayout Spacing="5" WidthRequest="50">
-                                    <BoxView Color="#6C63FF" 
-                                             HeightRequest="{Binding NivelHumor}" 
-                                             WidthRequest="40" 
-                                             CornerRadius="5" 
-                                             VerticalOptions="End"
-                                             MinimumHeightRequest="20"/>
-                                    <Label Text="{Binding DiaSemana}" 
-                                           FontSize="10" 
-                                           TextColor="Gray" 
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    <microcharts:ChartView Chart="{Binding GraficoHumorDashboard}" 
+                               HeightRequest="180"/>
+
+                    <Label Text="Toca no gráfico para análise detalhada →" 
+               FontSize="11" 
+               TextColor="Gray" 
+               HorizontalOptions="Center"
+               Opacity="0.7"/>
                 </VerticalStackLayout>
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding VerGraficoEvolucaoCommand}"/>
+                </Frame.GestureRecognizers>
             </Frame>
 
             <Frame BackgroundColor="White" 
@@ -241,9 +233,6 @@
                        CornerRadius="15" 
                        Padding="20" 
                        HasShadow="True">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding VerGraficoEvolucaoCommand}"/>
-                    </Frame.GestureRecognizers>
                     <VerticalStackLayout Spacing="10">
                         <Frame BackgroundColor="#2196F3" 
                                CornerRadius="30" 
@@ -254,19 +243,18 @@
                             <Label Text="📝" 
                                    FontSize="30" 
                                    HorizontalOptions="Center" 
-                                   VerticalOptions="Center"/>
+                                   VerticalOptions="Center"/>       
                         </Frame>
                         <Label Text="Ver Relatórios" 
                                FontSize="14" 
                                FontAttributes="Bold" 
                                HorizontalOptions="Center"/>
-                        <Label Text="Análise detalhada" 
+                        <Label Text="Em breve..." 
                                FontSize="10" 
                                TextColor="Gray" 
-                               HorizontalOptions="Center"/>
+                               HorizontalOptions="Center"/> 
                     </VerticalStackLayout>
                 </Frame>
-
                 <Frame Grid.Row="1" Grid.Column="1" 
                        BackgroundColor="White" 
                        CornerRadius="15" 
