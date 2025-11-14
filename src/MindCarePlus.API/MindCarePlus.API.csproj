@@ -7,17 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MindCarePlus.Application\MindCarePlus.Application.csproj" />
     <ProjectReference Include="..\MindCarePlus.Domain\MindCarePlus.Domain.csproj" />
     <ProjectReference Include="..\MindCarePlus.Infrastructure\MindCarePlus.Infrastructure.csproj" />
-    <ProjectReference Include="..\MindCarePlus.Shared\MindCarePlus.Shared.csproj" />
   </ItemGroup>
 
 </Project>
