@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MindCarePlus.Application.DTOs.Auth;
 using MindCarePlus.Application.Interfaces;
+using MindCarePlus.Shared.DTOs.Auth;
 
 namespace MindCarePlus.API.Controllers
 {
@@ -13,6 +13,28 @@ namespace MindCarePlus.API.Controllers
         public AuthController(IAuthService authService)
         {
             _authService = authService;
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Dados inválidos"
+                });
+            }
+
+            var result = await _authService.LoginAsync(dto);
+
+            if (!result.Success)
+            {
+                return Unauthorized(result);
+            }
+
+            return Ok(result);
         }
 
         [HttpPost("register/paciente")]

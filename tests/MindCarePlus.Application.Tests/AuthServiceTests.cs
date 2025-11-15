@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using MindCarePlus.Application.DTOs.Auth;
 using MindCarePlus.Application.Services;
 using MindCarePlus.Domain.Entities;
 using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Domain.Interfaces.Repositories;
+using MindCarePlus.Shared.DTOs.Auth;
 using Moq;
 using Xunit;
 

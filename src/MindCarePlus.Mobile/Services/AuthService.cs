@@ -13,8 +13,81 @@ public class AuthService
     {
         _httpClient = httpClient;
         _baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-            ? "http://10.0.2.2:5000/api" // Android emulator
-            : "http://localhost:5000/api"; // iOS simulator ou Windows
+            ? "https://62h5zfnx-7291.uks1.devtunnels.ms/api" // Android emulator
+            : "http://localhost:7291/api"; // iOS simulator ou Windows
+    }
+
+    public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync(
+                $"{_baseUrl}/auth/login",
+                dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+
+                // Se login bem-sucedido, guardar o token
+                if (result?.Success == true && !string.IsNullOrEmpty(result.Token))
+                {
+                    await SecureStorage.SetAsync("auth_token", result.Token);
+                }
+
+                return result ?? new AuthResponseDto
+                {
+                    Success = false,
+                    Message = "Erro ao processar resposta"
+                };
+            }
+
+            var errorContent = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+            return errorContent ?? new AuthResponseDto
+            {
+                Success = false,
+                Message = "Credenciais inválidas"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new AuthResponseDto
+            {
+                Success = false,
+                Message = $"Erro de conexão: {ex.Message}"
+            };
+        }
+    }
+
+    public async Task<string?> GetTokenAsync()
+    {
+        try
+        {
+            return await SecureStorage.GetAsync("auth_token");
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public async Task<bool> IsAuthenticatedAsync()
+    {
+        var token = await GetTokenAsync();
+        return !string.IsNullOrEmpty(token);
+    }
+
+    public async Task LogoutAsync()
+    {
+        try
+        {
+            SecureStorage.Remove("auth_token");
+            await Task.CompletedTask;
+        }
+        catch
+        {
+            // Ignorar erros no logout
+        }
     }
 
     public async Task<AuthResponseDto> RegisterPacienteAsync(RegisterPacienteDto dto)

@@ -1,9 +1,10 @@
-﻿using MindCarePlus.Application.DTOs.Auth;
+﻿using MindCarePlus.Shared.DTOs.Auth;
 
 namespace MindCarePlus.Application.Interfaces;
 
 public interface IAuthService
 {
+    Task<AuthResponseDto> LoginAsync(LoginDto dto);
 
     Task<AuthResponseDto> RegisterPacienteAsync(RegisterPacienteDto dto);
 
