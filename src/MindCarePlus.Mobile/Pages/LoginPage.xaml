@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:Class="MindCarePlus.Mobile.Pages.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F5F5">
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
+
+            <!-- Logo ou Título -->
+            <Label Text="MindCare+"
+                   FontSize="40"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#6200EE"
+                   Margin="0,40,0,20"/>
+
+            <Label Text="Bem-vindo de volta!"
+                   FontSize="18"
+                   HorizontalOptions="Center"
+                   TextColor="#555"
+                   Margin="0,0,0,30"/>
+
+            <!-- Campo Email -->
+            <Frame BorderColor="#E0E0E0"
+                   BackgroundColor="White"
+                   CornerRadius="10"
+                   Padding="0"
+                   HasShadow="False">
+                <Entry Placeholder="Email"
+                       Text="{Binding Email}"
+                       Keyboard="Email"
+                       TextColor="#333"
+                       PlaceholderColor="#999"
+                       Margin="15,10"/>
+            </Frame>
+
+            <!-- Campo Password -->
+            <Frame BorderColor="#E0E0E0"
+                   BackgroundColor="White"
+                   CornerRadius="10"
+                   Padding="0"
+                   HasShadow="False">
+                <Grid Margin="15,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Entry Grid.Column="0"
+                           Placeholder="Password"
+                           Text="{Binding Password}"
+                           IsPassword="{Binding ShowPassword, Converter={StaticResource InvertedBoolConverter}}"
+                           TextColor="#333"
+                           PlaceholderColor="#999"/>
+
+                    <Button Grid.Column="1"
+                            Text="{Binding ShowPassword, Converter={StaticResource ShowPasswordTextConverter}}"
+                            Command="{Binding ToggleShowPasswordCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="#6200EE"
+                            FontSize="12"
+                            VerticalOptions="Center"
+                            Padding="0"/>
+                </Grid>
+            </Frame>
+
+            <!-- Lembrar-me -->
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox IsChecked="{Binding RememberMe}"
+                          Color="#6200EE"/>
+                <Label Text="Lembrar-me"
+                       VerticalOptions="Center"
+                       TextColor="#555"/>
+            </HorizontalStackLayout>
+
+            <!-- Mensagem de Erro -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   FontSize="14"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   HorizontalOptions="Center"/>
+
+            <!-- Botão Login -->
+            <Button Text="Entrar"
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="#6200EE"
+                    TextColor="White"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    CornerRadius="25"
+                    HeightRequest="50"
+                    Margin="0,10,0,0"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                <Button.Shadow>
+                    <Shadow Brush="#6200EE"
+                            Offset="0,4"
+                            Radius="10"
+                            Opacity="0.3"/>
+                </Button.Shadow>
+            </Button>
+
+            <!-- Indicator de Loading -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="#6200EE"
+                              HeightRequest="50"/>
+
+            <!-- Esqueci a Password -->
+            <Button Text="Esqueci a password"
+                    Command="{Binding ForgotPasswordCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="#6200EE"
+                    FontSize="14"
+                    Margin="0,10,0,0"/>
+
+            <!-- Separador -->
+            <BoxView Color="#E0E0E0"
+                     HeightRequest="1"
+                     Margin="0,20,0,20"/>
+
+            <!-- Botão Registar -->
+            <HorizontalStackLayout HorizontalOptions="Center"
+                                  Spacing="5">
+                <Label Text="Não tem conta?"
+                       TextColor="#555"
+                       VerticalOptions="Center"/>
+                <Label Text="Registar"
+                       TextColor="#6200EE"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToRegisterCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

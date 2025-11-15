@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MindCarePlus.Mobile.ModelViews;
 using MindCarePlus.Mobile.Pages;
+using MindCarePlus.Mobile.Services;
 
 namespace MindCarePlus.Mobile;
 
@@ -19,6 +20,24 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        builder.Services.AddSingleton(sp =>
+        {
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://mtnfgs8z-7291.uks1.devtunnels.ms/");
+            return httpClient;
+        });
+
+        builder.Services.AddSingleton<HttpClient>();
+
+        // Registar Services
+        builder.Services.AddSingleton<AuthService>();
+
+        // Registar ViewModels
+        builder.Services.AddTransient<SelectUserTypeViewModel>();
+        builder.Services.AddTransient<RegisterPacienteViewModel>();
+        builder.Services.AddTransient<RegisterPsicologoViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<MainPageModelView>();
         builder.Services.AddSingleton(sp =>
         {
             var handler = new HttpClientHandler
@@ -44,6 +63,13 @@ public static class MauiProgram
         // Pages
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<DashboardPage>();
+
+        // Registar Pages
+        builder.Services.AddTransient<SelectUserTypePage>();
+        builder.Services.AddTransient<RegisterPacientePage>();
+        builder.Services.AddTransient<RegisterPsicologoPage>();
+        builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<MainPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

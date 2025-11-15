@@ -3,9 +3,37 @@
     x:Class="MindCarePlus.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MindCarePlus.Mobile.Pages"
+    xmlns:mobile="clr-namespace:MindCarePlus.Mobile"
     xmlns:pages="clr-namespace:MindCarePlus.Mobile.Pages"
-    Title="MindCarePlus.Mobile">
+    Shell.FlyoutBehavior="Disabled">
 
+
+    <!-- LoginPage como página inicial -->
+    <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate local:LoginPage}"
+        Route="LoginPage" />
+
+    <!-- SelectUserTypePage -->
+    <ShellContent
+        Title="Tipo de Utilizador"
+        ContentTemplate="{DataTemplate local:SelectUserTypePage}"
+        Route="SelectUserTypePage" />
+
+    <!-- RegisterPacientePage -->
+    <ShellContent
+        Title="Registar Paciente"
+        ContentTemplate="{DataTemplate local:RegisterPacientePage}"
+        Route="RegisterPacientePage" />
+
+    <!-- RegisterPsicologoPage -->
+    <ShellContent
+        Title="Registar Psicólogo"
+        ContentTemplate="{DataTemplate local:RegisterPsicologoPage}"
+        Route="RegisterPsicologoPage" />
+
+    <!-- MainPage (após login) -->
     <ShellContent
         Title="Dashboard"
         ContentTemplate="{DataTemplate pages:DashboardPage}"
