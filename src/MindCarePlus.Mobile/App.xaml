@@ -12,6 +12,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Converters -->
+            <converters:IntToBorderColorConverter x:Key="IntToBorderColorConverter" />
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <converters:EstadoToBorderColorConverter x:Key="EstadoToBorderColorConverter" />
             <converters:EstadoToButtonEnabledConverter x:Key="EstadoToButtonEnabledConverter" />
