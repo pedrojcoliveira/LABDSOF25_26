@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MindCarePlus.Mobile.Services;
 using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Shared.DTOs;
+using MindCarePlus.Shared.DTOs.RegistoDiario;
 
 namespace MindCarePlus.Mobile.ViewModels
 {
@@ -97,8 +98,6 @@ namespace MindCarePlus.Mobile.ViewModels
             {
                 var registo = new CriarRegistoDiarioDto
                 {
-                    // TODO: Substituir por ID do utilizador autenticado
-                    PacienteId = Guid.Parse("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d"),
                     NivelHumor = SelectedMood,
                     NivelStress = StressLevel,
                     NivelEnergia = EnergyLevel,

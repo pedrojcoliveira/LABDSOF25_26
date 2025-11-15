@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:modelViews="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:Class="MindCarePlus.Mobile.Pages.RegisterPsicologoPage"
+             x:DataType="modelViews:RegisterPsicologoViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F5F5">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="30" Spacing="20">
+
+                <!-- Header -->
+                <HorizontalStackLayout Spacing="15" Margin="0,10,0,20">
+                    <ImageButton Source="back_icon.png"
+                                 WidthRequest="24"
+                                 HeightRequest="24"
+                                 BackgroundColor="Transparent"
+                                 Command="{Binding NavigateBackCommand}"/>
+                    <Label Text="Criar Conta - Psicólogo"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#333333"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <!-- Emoji -->
+                <Label Text="👨‍⚕️"
+                       FontSize="60"
+                       HorizontalOptions="Center"
+                       Margin="0,0,0,10"/>
+
+                <!-- Mensagem de Erro -->
+                <Border StrokeThickness="2"
+                        Stroke="#FF3B30"
+                        BackgroundColor="#FFEBEE"
+                        Padding="15"
+                        IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                        Margin="0,0,0,10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="#D32F2F"
+                           FontSize="14"/>
+                </Border>
+
+                <!-- Formulário -->
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Nome -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Nome Completo *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333333"/>
+                        <Border StrokeThickness="1"
+                                Stroke="#CCCCCC"
+                                BackgroundColor="White"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Entry Placeholder="Digite o seu nome"
+                                   Text="{Binding Nome}"
+                                   MaxLength="100"
+                                   Keyboard="Text"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Email -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Email *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333333"/>
+                        <Border StrokeThickness="1"
+                                Stroke="#CCCCCC"
+                                BackgroundColor="White"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Entry Placeholder="exemplo@email.com"
+                                   Text="{Binding Email}"
+                                   Keyboard="Email"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Idade -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Idade *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333333"/>
+                        <Border StrokeThickness="1"
+                                Stroke="#CCCCCC"
+                                BackgroundColor="White"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Entry Placeholder="Digite a sua idade"
+                                   Text="{Binding Idade}"
+                                   Keyboard="Numeric"
+                                   MaxLength="3"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Número Cédula Profissional -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Número da Cédula Profissional *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333333"/>
+                        <Border StrokeThickness="1"
+                                Stroke="#CCCCCC"
+                                BackgroundColor="White"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Entry Placeholder="Ex: CP-12345"
+                                   Text="{Binding NumeroCedulaProfissional}"
+                                   MaxLength="50"
+                                   Keyboard="Text"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Especialidade -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Especialidade *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333333"/>
+                        <Border StrokeThickness="1"
+                                Stroke="#CCCCCC"
+                                BackgroundColor="White"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Entry Placeholder="Ex: Psicologia Clínica"
+                                   Text="{Binding Especialidade}"
+                                   MaxLength="100"
+                                   Keyboard="Text"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Password -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Palavra-passe *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333333"/>
+                        <Border StrokeThickness="1"
+                                Stroke="#CCCCCC"
+                                BackgroundColor="White"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,Auto" Padding="0">
+                                <Entry Grid.Column="0"
+                                       Placeholder="Mínimo 6 caracteres"
+                                       Text="{Binding Password}"
+                                       IsPassword="{Binding ShowPassword, Converter={StaticResource InvertedBoolConverter}}"
+                                       MaxLength="100"/>
+                                <ImageButton Grid.Column="1"
+                                             Source="{Binding ShowPassword, Converter={StaticResource BoolToEyeIconConverter}}"
+                                             BackgroundColor="Transparent"
+                                             WidthRequest="40"
+                                             HeightRequest="40"
+                                             Padding="10"
+                                             Command="{Binding ToggleShowPasswordCommand}"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Confirm Password -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Confirmar Palavra-passe *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="#333333"/>
+                        <Border StrokeThickness="1"
+                                Stroke="#CCCCCC"
+                                BackgroundColor="White"
+                                Padding="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,Auto" Padding="0">
+                                <Entry Grid.Column="0"
+                                       Placeholder="Digite novamente a palavra-passe"
+                                       Text="{Binding ConfirmPassword}"
+                                       IsPassword="{Binding ShowConfirmPassword, Converter={StaticResource InvertedBoolConverter}}"
+                                       MaxLength="100"/>
+                                <ImageButton Grid.Column="1"
+                                             Source="{Binding ShowConfirmPassword, Converter={StaticResource BoolToEyeIconConverter}}"
+                                             BackgroundColor="Transparent"
+                                             WidthRequest="40"
+                                             HeightRequest="40"
+                                             Padding="10"
+                                             Command="{Binding ToggleShowConfirmPasswordCommand}"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+                <!-- Botão Registar -->
+                <Button Text="Criar Conta"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        Padding="15"
+                        CornerRadius="10"
+                        Command="{Binding RegisterCommand}"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                        Margin="0,20,0,0"/>
+
+                <!-- Link para Login -->
+                <HorizontalStackLayout HorizontalOptions="Center" 
+                                       Spacing="5"
+                                       Margin="0,10,0,20">
+                    <Label Text="Já tens uma conta?"
+                           TextColor="#666666"
+                           FontSize="14"/>
+                    <Label Text="Entrar"
+                           TextColor="#4CAF50"
+                           FontSize="14"
+                           FontAttributes="Bold">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateBackCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Loading Overlay -->
+        <Grid IsVisible="{Binding IsLoading}"
+              BackgroundColor="#80000000">
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               Color="#4CAF50"
+                               WidthRequest="50"
+                               HeightRequest="50"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"/>
+        </Grid>
+    </Grid>
+</ContentPage>

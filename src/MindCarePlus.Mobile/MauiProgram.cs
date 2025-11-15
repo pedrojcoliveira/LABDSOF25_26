@@ -78,16 +78,28 @@ public static class MauiProgram
 #endif
         });
 
-
+        builder.Services.AddSingleton<HttpClient>();
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
-        // ===== MODELVIEWS=====
-        builder.Services.AddTransient<RegistoHumorModelView>();
+
+        
+        // Registar Services
+        builder.Services.AddSingleton<AuthService>();
+
+        // Registar ViewModels
+        builder.Services.AddTransient<SelectUserTypeViewModel>();
+        builder.Services.AddTransient<RegisterPacienteViewModel>();
+        builder.Services.AddTransient<RegisterPsicologoViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<MainPageModelView>();
+        builder.Services.AddTransient<RegistoHumorModelView>();
         builder.Services.AddTransient<DesafiosModelView>();
 
-
-        // ===== PAGES =====
+        // Registar Pages
+        builder.Services.AddTransient<SelectUserTypePage>();
+        builder.Services.AddTransient<RegisterPacientePage>();
+        builder.Services.AddTransient<RegisterPsicologoPage>();
+        builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<RegistoHumorPage>();
         builder.Services.AddTransient<DesafiosPage>();

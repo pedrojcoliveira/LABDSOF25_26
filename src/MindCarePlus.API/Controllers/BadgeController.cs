@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Shared.DTOs;
+using System.Security.Claims;
 
 namespace MindCarePlus.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BadgeController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -15,9 +18,31 @@ namespace MindCarePlus.API.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        // GET: api/Badge/me
+        [HttpGet("me")]
+        [Authorize(Roles = "Paciente")]
+        public async Task<ActionResult<ColecaoBadgesDto>> GetMinhasBadges()
+        {
+            // 🔑 Obter pacienteId do token
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid pacienteId))
+                return Unauthorized("Token inválido");
+
+            return await GetBadgesInternal(pacienteId);
+        }
+
+        // Para psicologos verem as badges de clientes 
         // GET: api/Badge/paciente/{pacienteId}
         [HttpGet("paciente/{pacienteId}")]
+        [Authorize(Roles = "Psicologo")]
         public async Task<ActionResult<ColecaoBadgesDto>> GetBadgesPorPaciente(Guid pacienteId)
+        {
+            return await GetBadgesInternal(pacienteId);
+        }
+
+
+        // Método interno para evitar duplicação
+        private async Task<ActionResult<ColecaoBadgesDto>> GetBadgesInternal(Guid pacienteId)
         {
             // Todas as badges atribuídas ao paciente
             var badgesAtribuidas = await _unitOfWork.BadgesAtribuidas
@@ -29,7 +54,7 @@ namespace MindCarePlus.API.Controllers
             var todasBadges = await _unitOfWork.Badges.GetAllAsync();
             var todasBadgesLista = todasBadges.ToList();
 
-            // ===== AGRUPAR POR BADGE E CALCULAR NÍVEIS =====
+            // Agrupar por badge e calcular níveis
             var badgesResumo = new List<BadgeResumoDto>();
             var badgesConquistadasIds = new HashSet<Guid>();
 
@@ -84,9 +109,27 @@ namespace MindCarePlus.API.Controllers
             return Ok(colecao);
         }
 
-        // GET: api/Badge/paciente/{pacienteId}/historico
+        // ✅ NOVO: GET: api/Badge/me/historico
+        [HttpGet("me/historico")]
+        [Authorize(Roles = "Paciente")]
+        public async Task<ActionResult<List<BadgeAtribuidaDto>>> GetMeuHistoricoBadges()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid pacienteId))
+                return Unauthorized("Token inválido");
+
+            return await GetHistoricoInternal(pacienteId);
+        }
+
+        // 👨‍⚕️ GET: api/Badge/paciente/{pacienteId}/historico
         [HttpGet("paciente/{pacienteId}/historico")]
+        [Authorize(Roles = "Psicologo")]
         public async Task<ActionResult<List<BadgeAtribuidaDto>>> GetHistoricoBadges(Guid pacienteId)
+        {
+            return await GetHistoricoInternal(pacienteId);
+        }
+
+        private async Task<ActionResult<List<BadgeAtribuidaDto>>> GetHistoricoInternal(Guid pacienteId)
         {
             var badgesAtribuidas = await _unitOfWork.BadgesAtribuidas
                 .FindAsync(ba => ba.UtilizadorId == pacienteId);
@@ -117,9 +160,27 @@ namespace MindCarePlus.API.Controllers
             return Ok(badges.OrderByDescending(b => b.DataAtribuicao));
         }
 
-        // GET: api/Badge/paciente/{pacienteId}/estatisticas
+        // ✅ NOVO: GET: api/Badge/me/estatisticas
+        [HttpGet("me/estatisticas")]
+        [Authorize(Roles = "Paciente")]
+        public async Task<ActionResult> GetMinhasEstatisticasBadges()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid pacienteId))
+                return Unauthorized("Token inválido");
+
+            return await GetEstatisticasInternal(pacienteId);
+        }
+
+        // 👨‍⚕️ GET: api/Badge/paciente/{pacienteId}/estatisticas
         [HttpGet("paciente/{pacienteId}/estatisticas")]
+        [Authorize(Roles = "Psicologo")]
         public async Task<ActionResult> GetEstatisticasBadges(Guid pacienteId)
+        {
+            return await GetEstatisticasInternal(pacienteId);
+        }
+
+        private async Task<ActionResult> GetEstatisticasInternal(Guid pacienteId)
         {
             var badgesAtribuidas = await _unitOfWork.BadgesAtribuidas
                 .FindAsync(ba => ba.UtilizadorId == pacienteId);

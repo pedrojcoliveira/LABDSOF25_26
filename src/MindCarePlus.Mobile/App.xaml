@@ -1,9 +1,9 @@
 ﻿<?xml version = "1.0" encoding = "UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:MindCarePlus.Mobile"
              xmlns:converters="clr-namespace:MindCarePlus.Mobile.Converters"
-             x:Class="MindCarePlus.Mobile.App">
+             x:Class="MindCarePlus.Mobile.App"
+             >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,6 +20,8 @@
             <converters:EstadoToCheckBgConverter x:Key="EstadoToCheckBgConverter" />
             <converters:EstadoIsConcluidoConverter x:Key="EstadoIsConcluido"/>
             <converters:EstadoToCheckColorConverter x:Key="EstadoToCheckColorConverter" />
+            <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <converters:ShowPasswordTextConverter x:Key="ShowPasswordTextConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

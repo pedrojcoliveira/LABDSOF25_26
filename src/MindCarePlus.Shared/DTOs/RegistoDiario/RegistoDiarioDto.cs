@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MindCarePlus.Shared.DTOs
+namespace MindCarePlus.Shared.DTOs.RegistoDiario
 {
 
         public class RegistoDiarioDto

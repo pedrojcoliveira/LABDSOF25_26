@@ -3,24 +3,57 @@
     x:Class="MindCarePlus.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:MindCarePlus.Mobile"
-    xmlns:pages="clr-namespace:MindCarePlus.Mobile.Pages"
-    Title="MindCarePlus">
+    xmlns:local="clr-namespace:MindCarePlus.Mobile.Pages"
+    xmlns:mobile="clr-namespace:MindCarePlus.Mobile"
+    Shell.FlyoutBehavior="Disabled">
 
-    <TabBar>
+    <!-- LoginPage como página inicial -->
+    <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate local:LoginPage}"
+        Route="LoginPage" />
+
+    <!-- SelectUserTypePage -->
+    <ShellContent
+        Title="Tipo de Utilizador"
+        ContentTemplate="{DataTemplate local:SelectUserTypePage}"
+        Route="SelectUserTypePage" />
+
+    <!-- RegisterPacientePage -->
+    <ShellContent
+        Title="Registar Paciente"
+        ContentTemplate="{DataTemplate local:RegisterPacientePage}"
+        Route="RegisterPacientePage" />
+
+    <!-- RegisterPsicologoPage -->
+    <ShellContent
+        Title="Registar Psicólogo"
+        ContentTemplate="{DataTemplate local:RegisterPsicologoPage}"
+        Route="RegisterPsicologoPage" />
+
+    <!-- MainPage (após login) -->
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate mobile:MainPage}"
+        Route="MainPage" />
+
+    <TabBar Route="MainTabs">
+        <!-- Tab 2: Main Pager com o Counter -->
         <ShellContent
             Title="Início"
-            ContentTemplate="{DataTemplate local:MainPage}"
+            ContentTemplate="{DataTemplate mobile:MainPage}"
             Route="MainPage" />
 
+        <!-- Tab 2: Registar Humor -->
         <ShellContent
             Title="Humor"
-            ContentTemplate="{DataTemplate pages:RegistoHumorPage}"
+            ContentTemplate="{DataTemplate local:RegistoHumorPage}"
             Route="RegistoHumor" />
+
+        <!-- Tab 3: Desafios do Paciente -->
         <ShellContent
             Title="Desafios"
-            ContentTemplate="{DataTemplate pages:DesafiosPage}"
-            Route="Desafios" />
+            ContentTemplate="{DataTemplate local:DesafiosPage}"
+            Route="DesafiosPage" />
     </TabBar>
-
 </Shell>

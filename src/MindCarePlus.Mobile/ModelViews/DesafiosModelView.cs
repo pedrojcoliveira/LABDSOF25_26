@@ -118,10 +118,9 @@ namespace MindCarePlus.Mobile.ViewModels
 
         private async Task InternalCarregarDadosAsync()
         {
-            // TODO: Pegar ID do utilizador autenticado
-            var pacienteId = Guid.Parse("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d");
 
-            var progresso = await _apiService.GetDesafiosSemanaisAsync(pacienteId);
+
+            var progresso = await _apiService.GetMyDesafiosSemanaisAsync();
 
             if (progresso != null)
             {

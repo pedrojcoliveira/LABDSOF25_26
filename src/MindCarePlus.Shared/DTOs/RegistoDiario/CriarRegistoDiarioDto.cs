@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MindCarePlus.Shared.DTOs
+namespace MindCarePlus.Shared.DTOs.RegistoDiario
 {
     public class CriarRegistoDiarioDto
     {
-        public Guid PacienteId { get; set; }
+        // public Guid PacienteId { get; set; } Passou a vir do token
         public int NivelHumor { get; set; }       // 1-5
         public int NivelStress { get; set; }      // 1-5
         public int NivelEnergia { get; set; }     // 1-5
