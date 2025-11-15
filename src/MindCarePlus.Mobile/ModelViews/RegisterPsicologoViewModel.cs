@@ -1,8 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
 using MindCarePlus.Mobile.Services;
-using RegisterPsicologoDto = MindCarePlus.Shared.DTOs.Auth.RegisterPsicologoDto;
+using MindCarePlus.Shared.DTOs.Auth;
 
 namespace MindCarePlus.Mobile.ModelViews;
 public partial class RegisterPsicologoViewModel : ObservableObject

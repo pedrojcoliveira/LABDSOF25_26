@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Net.Http.Json;
+
 using System.Text.RegularExpressions;
+
 using MindCarePlus.Mobile.Services;
-using RegisterPacienteDto = MindCarePlus.Shared.DTOs.Auth.RegisterPacienteDto;
+using MindCarePlus.Shared.DTOs.Auth;
+
 
 namespace MindCarePlus.Mobile.ModelViews;
 public partial class RegisterPacienteViewModel : ObservableObject

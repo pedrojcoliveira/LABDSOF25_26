@@ -1,4 +1,3 @@
-using AndroidX.Lifecycle;
 using MindCarePlus.Mobile.ModelViews;
 
 namespace MindCarePlus.Mobile.Pages;
