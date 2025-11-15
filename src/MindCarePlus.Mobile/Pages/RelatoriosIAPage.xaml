@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             x:Class="MindCarePlus.Mobile.Views.RelatoriosIAPage"
+             x:DataType="viewmodels:RelatorioIAModelView"
+             Title="Relatórios de IA">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="16">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+            <Label Text="Relatórios Semanais"
+                   FontSize="24"
+                   FontAttributes="Bold"/>
+            <Label Text="Análises automáticas do seu progresso"
+                   FontSize="14"
+                   TextColor="Gray"/>
+        </VerticalStackLayout>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.Row="1"
+                          IsRunning="{Binding IsLoading}"
+                          IsVisible="{Binding IsLoading}"
+                          Color="{StaticResource Primary}"
+                          VerticalOptions="Center"/>
+
+        <!-- Lista de Relatórios -->
+        <CollectionView Grid.Row="1"
+                       ItemsSource="{Binding Relatorios}"
+                       IsVisible="{Binding TemRelatorios}"
+                       SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:RelatorioListaDto">
+                    <Frame Margin="0,0,0,12"
+                           Padding="16"
+                           CornerRadius="12"
+                           HasShadow="True"
+                           BorderColor="LightGray">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:RelatorioIAModelView}}, Path=VerDetalhesCommand}"
+                                                 CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+
+                        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+
+                            <!-- Data e Período -->
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding DataGeracao, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                                <Label Text="{Binding Periodo}"
+                                       FontSize="16"
+                                       FontAttributes="Bold"/>
+                            </VerticalStackLayout>
+
+                            <!-- Badge Lido/Não Lido -->
+                            <Border Grid.Row="0" Grid.Column="1"
+                                    BackgroundColor="{Binding Lido, Converter={StaticResource BoolToColorConverter}}"
+                                    StrokeThickness="0"
+                                    Padding="8,4"
+                                    VerticalOptions="Start">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12"/>
+                                </Border.StrokeShape>
+                                <Label Text="{Binding Lido, Converter={StaticResource BoolToLidoConverter}}"
+                                       TextColor="White"
+                                       FontSize="11"
+                                       FontAttributes="Bold"/>
+                            </Border>
+
+                            <!-- Médias -->
+                            <Grid Grid.Row="1" Grid.ColumnSpan="2" 
+                                  ColumnDefinitions="*,*,*" 
+                                  Margin="0,12,0,0"
+                                  ColumnSpacing="8">
+
+                                <!-- Humor -->
+                                <Frame Grid.Column="0" 
+                                       BackgroundColor="#E3F2FD"
+                                       Padding="12,8"
+                                       CornerRadius="8"
+                                       HasShadow="False"
+                                       BorderColor="Transparent">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="Humor" 
+                                               FontSize="11" 
+                                               TextColor="#1976D2"
+                                               HorizontalOptions="Center"/>
+                                        <Label Text="{Binding MediaHumor, StringFormat='{0:F1}'}"
+                                               FontSize="18"
+                                               FontAttributes="Bold"
+                                               TextColor="#1976D2"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Energia -->
+                                <Frame Grid.Column="1" 
+                                       BackgroundColor="#FFF3E0"
+                                       Padding="12,8"
+                                       CornerRadius="8"
+                                       HasShadow="False"
+                                       BorderColor="Transparent">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="Energia" 
+                                               FontSize="11" 
+                                               TextColor="#F57C00"
+                                               HorizontalOptions="Center"/>
+                                        <Label Text="{Binding MediaEnergia, StringFormat='{0:F1}'}"
+                                               FontSize="18"
+                                               FontAttributes="Bold"
+                                               TextColor="#F57C00"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Stress -->
+                                <Frame Grid.Column="2" 
+                                       BackgroundColor="#FCE4EC"
+                                       Padding="12,8"
+                                       CornerRadius="8"
+                                       HasShadow="False"
+                                       BorderColor="Transparent">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="Stress" 
+                                               FontSize="11" 
+                                               TextColor="#C2185B"
+                                               HorizontalOptions="Center"/>
+                                        <Label Text="{Binding MediaStress, StringFormat='{0:F1}'}"
+                                               FontSize="18"
+                                               FontAttributes="Bold"
+                                               TextColor="#C2185B"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </Grid>
+
+                            <!-- Ver Detalhes -->
+                            <HorizontalStackLayout Grid.Row="2" Grid.ColumnSpan="2" 
+                                                  Margin="0,12,0,0"
+                                                  HorizontalOptions="End"
+                                                  Spacing="4">
+                                <Label Text="Ver detalhes"
+                                       FontSize="13"
+                                       TextColor="{StaticResource Primary}"
+                                       VerticalOptions="Center"/>
+                                <Label Text="›"
+                                       FontSize="18"
+                                       TextColor="{StaticResource Primary}"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Mensagem sem relatórios -->
+        <VerticalStackLayout Grid.Row="1"
+                            IsVisible="{Binding TemRelatorios, Converter={StaticResource InvertedBoolConverter}}"
+                            VerticalOptions="Center"
+                            Spacing="16">
+            <Label Text="📊"
+                   FontSize="64"
+                   HorizontalOptions="Center"/>
+            <Label Text="Ainda não há relatórios"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+            <Label Text="{Binding MensagemErro}"
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"/>
+        </VerticalStackLayout>
+
+        <!-- Botão Gerar Novo Relatório -->
+        <Button Grid.Row="2"
+                Text="Gerar Novo Relatório"
+                Command="{Binding GerarNovoRelatorioCommand}"
+                BackgroundColor="{StaticResource Primary}"
+                TextColor="White"
+                CornerRadius="12"
+                HeightRequest="50"
+                Margin="0,16,0,0"/>
+    </Grid>
+</ContentPage>

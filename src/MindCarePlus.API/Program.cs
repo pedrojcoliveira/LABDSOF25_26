@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MindCarePlus.API.Services;
 using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Infrastructure.Data;
 
@@ -11,6 +12,10 @@ builder.Services.AddControllers();
 // ===== CONFIGURAR DbContext =====
 builder.Services.AddDbContext<MindCareDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ===== SERVIÇOS =====
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IRelatorioIAService, RelatorioIAService>();
 
 // ===== CONFIGURAR UNIT OF WORK =====
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
