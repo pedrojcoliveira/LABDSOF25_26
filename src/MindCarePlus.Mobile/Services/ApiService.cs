@@ -190,7 +190,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                // A tua API espera o prefixo "api/"
+                
                 var response = await _httpClient.GetFromJsonAsync<DashboardResponse>($"api/dashboard/{pacienteId}");
                 return response;
             }

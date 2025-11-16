@@ -38,7 +38,8 @@ namespace MindCarePlus.API.Controllers
                         Nome = badge.Nome,
                         Descricao = badge.Descricao,
                         ImagemUrl = badge.ImagemUrl, 
-                        Conquistada = true
+                        Conquistada = true,
+                        Nivel = badgeAtribuida.Nivel
                     });
                 }
             }

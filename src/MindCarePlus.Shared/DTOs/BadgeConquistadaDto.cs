@@ -12,5 +12,6 @@ namespace MindCarePlus.Shared.DTOs
         public string Descricao { get; set; } = string.Empty;
         public bool Conquistada { get; set; }
         public string ImagemUrl { get; set; }
+        public int Nivel { get; set; }
     }
 }

@@ -88,7 +88,6 @@ namespace MindCarePlus.Mobile.ModelViews
                     return;
                 }
 
-                Console.WriteLine($"PacienteId obtido do token: {pacienteId}");
 
                 // 4. Busca os dados da dashboard
                 var response = await _apiService.GetDashboardDataAsync(pacienteId.Value);
@@ -109,9 +108,10 @@ namespace MindCarePlus.Mobile.ModelViews
                 TotalRegistos = response.TotalRegistos;
                 TotalBadges = response.TotalBadges;
 
+
                 BadgesConquistadas.Clear();
                 foreach (var badge in response.BadgesConquistadas)
-                {
+                {                    
                     BadgesConquistadas.Add(badge);
                 }
 
@@ -162,6 +162,18 @@ namespace MindCarePlus.Mobile.ModelViews
         {
             await _authService.LogoutAsync();
             await Shell.Current.GoToAsync("//login");
+        }
+
+        [RelayCommand]
+        private async Task ShowBadgeDetails(BadgeConquistadaDto badge)
+        {
+            if (badge == null) return;
+
+            await Shell.Current.DisplayAlert(
+                $"{badge.ImagemUrl} {badge.Nome}",
+                $"{badge.Descricao}\n\n✨ Conquistada com sucesso!",
+                "Fechar"
+            );
         }
     }
 }
