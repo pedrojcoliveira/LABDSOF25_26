@@ -5,7 +5,7 @@ namespace MindCarePlus.Application.Interfaces;
 public interface IAuthService
 {
     Task<AuthResponseDto> LoginAsync(LoginDto dto);
-
+    Task<bool> LogoutAsync();
     Task<AuthResponseDto> RegisterPacienteAsync(RegisterPacienteDto dto);
 
     Task<AuthResponseDto> RegisterPsicologoAsync(RegisterPsicologoDto dto);
