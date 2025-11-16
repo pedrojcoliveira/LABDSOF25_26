@@ -27,9 +27,11 @@ public static class MauiProgram
             });
 
         // ===== 1. CARREGAR O APPCONFIG.JSON =====
-        // (Certifica-te que o appconfig.json está como "Embedded resource")
         var assembly = Assembly.GetExecutingAssembly();
         using var stream = assembly.GetManifestResourceStream("MindCarePlus.Mobile.appconfig.json");
+
+        // **Variável 'baseUrl' é declarada AQUI**
+        string baseUrl;
 
         if (stream != null)
         {
@@ -37,13 +39,13 @@ public static class MauiProgram
             var json = reader.ReadToEnd();
             var jObj = JObject.Parse(json);
 
-            var baseUrl = jObj["ApiBaseUrl"]?.ToString();
+            baseUrl = jObj["ApiBaseUrl"]?.ToString(); // Atribuída aqui
             if (string.IsNullOrEmpty(baseUrl))
             {
                 throw new InvalidOperationException("ApiBaseUrl não encontrado no appconfig.json");
             }
 
-            builder.Configuration.AddInMemoryCollection(new[]{ new KeyValuePair<string,string>("ApiBaseUrl", baseUrl) });
+            builder.Configuration.AddInMemoryCollection(new[] { new KeyValuePair<string, string>("ApiBaseUrl", baseUrl) });
         }
         else
         {
@@ -51,23 +53,11 @@ public static class MauiProgram
         }
 
         // ===== 2. SERVICES  =====
+        // Registar o nosso handler de HTTP (para Android) num só sítio
 
-        
-        builder.Services.AddHttpClient<ApiService>(client =>
+        // **CORREÇÃO 1: Adicionado "sp =>"**
+        builder.Services.AddSingleton<HttpClientHandler>(sp =>
         {
-            // Lê o URL do appconfig.json
-            string baseUrl = builder.Configuration["ApiBaseUrl"];
-            if (string.IsNullOrEmpty(baseUrl))
-            {
-                throw new InvalidOperationException("ApiBaseUrl não encontrado no appconfig.json");
-            }
-
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
-        })
-        .ConfigurePrimaryHttpMessageHandler(() =>
-        {
-            // Movemos a lógica do Android para aqui
 #if ANDROID
             return new HttpClientHandler
             {
@@ -78,13 +68,31 @@ public static class MauiProgram
 #endif
         });
 
-        builder.Services.AddSingleton<HttpClient>();
+        // **CORREÇÃO 2: Apagámos a segunda declaração de 'baseUrl'**
+        // A variável 'baseUrl' da linha 36 já está disponível aqui.
+
+        // Registar o ApiService
+        builder.Services.AddHttpClient<ApiService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl); // Usa a baseUrl da linha 36
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>(); // Usa o handler registado
+
+        // Registar o AuthService (IGUAL AO APISERVICE)
+        builder.Services.AddHttpClient<AuthService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl); // Usa a baseUrl da linha 36
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>(); // Usa o handler registado
+
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
 
-        
+
         // Registar Services
-        builder.Services.AddSingleton<AuthService>();
+        // **CORREÇÃO 3: Apagámos o "AddSingleton<AuthService>()" duplicado**
 
         // Registar ViewModels
         builder.Services.AddTransient<SelectUserTypeViewModel>();
@@ -94,6 +102,7 @@ public static class MauiProgram
         builder.Services.AddTransient<MainPageModelView>();
         builder.Services.AddTransient<RegistoHumorModelView>();
         builder.Services.AddTransient<DesafiosModelView>();
+        builder.Services.AddTransient<DashboardViewModel>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -103,6 +112,7 @@ public static class MauiProgram
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<RegistoHumorPage>();
         builder.Services.AddTransient<DesafiosPage>();
+        builder.Services.AddTransient<DashboardPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

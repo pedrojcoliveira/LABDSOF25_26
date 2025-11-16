@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:DataType="viewmodel:DashboardViewModel"
+             x:Class="MindCarePlus.Mobile.Pages.DashboardPage"
+             Title="Dashboard">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#6C63FF">
+
+            <Label Text="{Binding NomeUtilizador, StringFormat='Olá, {0}! 👋'}" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   TextColor="White"/>
+
+            <Label Text="Bem-vindo ao teu painel de progresso" 
+                   FontSize="14" 
+                   TextColor="White" 
+                   Opacity="0.9"/>
+
+            <Border BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 15"
+                    Padding="20" 
+                    Shadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{Binding NivelAtual, StringFormat='Nível {0} - Descobridor'}" 
+                               FontSize="18" 
+                               FontAttributes="Bold"/>
+                        <Border Grid.Column="1" 
+                                BackgroundColor="#6C63FF" 
+                                StrokeShape="RoundRectangle 25"
+                                Padding="15,10" 
+                                Shadow="False">
+                            <Label Text="{Binding NivelAtual}" 
+                                   TextColor="White" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold"/>
+                        </Border>
+                    </Grid>
+
+                    <Label Text="{Binding PontosParaProximoNivel, StringFormat='{0} pontos de 600 para o próximo nível'}" 
+                           FontSize="12" 
+                           TextColor="Gray"/>
+
+                    <ProgressBar Progress="{Binding ProgressoPercentagem}" 
+                                 ProgressColor="#6C63FF" 
+                                 HeightRequest="8"/>
+
+                    <Label Text="{Binding ProgressoPercentagem, StringFormat='{0:P0} completo'}" 
+                           FontSize="12" 
+                           TextColor="Gray" 
+                           HorizontalOptions="End"/>
+
+                    <Grid ColumnDefinitions="*,*,*" 
+                          ColumnSpacing="20" 
+                          Margin="0,10,0,0">
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="{Binding SequenciaDias}" 
+                                   FontSize="24" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#6C63FF" 
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Sequência" 
+                                   FontSize="12" 
+                                   TextColor="Gray" 
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label Text="{Binding TotalRegistos}" 
+                                   FontSize="24" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#6C63FF" 
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Registos" 
+                                   FontSize="12" 
+                                   TextColor="Gray" 
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="2" Spacing="5">
+                            <Label Text="{Binding TotalBadges}" 
+                                   FontSize="24" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#6C63FF" 
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Badges" 
+                                   FontSize="12" 
+                                   TextColor="Gray" 
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 15"
+                    Padding="20" 
+                    Shadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📊 Evolução de Humor - Última Semana" 
+                           FontSize="16" 
+                           FontAttributes="Bold"/>
+
+                    <CollectionView ItemsSource="{Binding EvolucaoHumor}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <VerticalStackLayout Spacing="5" WidthRequest="50">
+                                    <BoxView Color="#6C63FF" 
+                                             HeightRequest="{Binding NivelHumor}" 
+                                             WidthRequest="40" 
+                                             CornerRadius="5" 
+                                             VerticalOptions="End"
+                                             MinimumHeightRequest="20"/>
+                                    <Label Text="{Binding DiaSemana}" 
+                                           FontSize="10" 
+                                           TextColor="Gray" 
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 15"
+                    Padding="20" 
+                    Shadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="🏆 Badges Conquistadas" 
+                           FontSize="16" 
+                           FontAttributes="Bold"/>
+
+                    <CollectionView ItemsSource="{Binding BadgesConquistadas}" 
+                                    HeightRequest="100">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="15"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <VerticalStackLayout Spacing="5" WidthRequest="80">
+                                    <Border BackgroundColor="#FFD700" 
+                                            StrokeShape="RoundRectangle 40"
+                                            WidthRequest="60" 
+                                            HeightRequest="60" 
+                                            Padding="0" 
+                                            Shadow="True">
+                                        <Label Text="{Binding ImagemUrl}"
+                                               FontSize="30"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"/>
+                                    </Border>
+                                    <Label Text="{Binding Nome}" 
+                                           FontSize="10" 
+                                           TextColor="Gray" 
+                                           HorizontalOptions="Center" 
+                                           LineBreakMode="WordWrap" 
+                                           MaxLines="2"/>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*" 
+                  RowDefinitions="Auto,Auto" 
+                  ColumnSpacing="15" 
+                  RowSpacing="15">
+
+                <Border Grid.Row="0" Grid.Column="0" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding RegistarHumorCommand}"/>
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="10">
+                        <Border BackgroundColor="#6C63FF" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
+                            <Label Text="😊" 
+                                   FontSize="30" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Registar Humor" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="Como te sentes hoje?" 
+                               FontSize="10" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Row="0" Grid.Column="1" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding VerDesafiosCommand}"/>
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="10">
+                        <Border BackgroundColor="#4CAF50" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
+                            <Label Text="✅" 
+                                   FontSize="30" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Desafios Diários" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="2 novos disponíveis" 
+                               FontSize="10" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="0" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding VerGraficoEvolucaoCommand}"/>
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="10">
+                        <Border BackgroundColor="#2196F3" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
+                            <Label Text="📝" 
+                                   FontSize="30" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Ver Relatórios" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="Análise detalhada" 
+                               FontSize="10" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="1" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ContactarPsicologoCommand}"/>
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="10">
+                        <Border BackgroundColor="#9C27B0" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
+                            <Label Text="💬" 
+                                   FontSize="30" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Contactar" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="Falar com psicólogo" 
+                               FontSize="10" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

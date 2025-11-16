@@ -1,38 +1,56 @@
-﻿using System.Net.Http.Json;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Json;
+using System.Security.Claims;
 using MindCarePlus.Shared.DTOs.Auth;
-
 
 namespace MindCarePlus.Mobile.Services;
 
 public class AuthService
 {
     private readonly HttpClient _httpClient;
-    private readonly string _baseUrl;
 
     public AuthService(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _baseUrl = DeviceInfo.Platform == DevicePlatform.Android
-            ? "https://x9fr59vg-7291.uks1.devtunnels.ms/api" // Android emulator
-            : "http://localhost:7291/api"; // iOS simulator ou Windows
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync(
-                $"{_baseUrl}/auth/login",
-                dto);
+            Console.WriteLine($"Tentando login para: {dto.Email}");
+            Console.WriteLine($"BaseAddress: {_httpClient.BaseAddress}");
+
+         
+            var response = await _httpClient.PostAsJsonAsync("api/auth/login", dto);
+
+            Console.WriteLine($"Status Code: {response.StatusCode}");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Response Content: {responseContent}");
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+                if (string.IsNullOrWhiteSpace(responseContent))
+                {
+                    return new AuthResponseDto
+                    {
+                        Success = false,
+                        Message = "Resposta vazia da API"
+                    };
+                }
 
-                // Se login bem-sucedido, guardar o token
+                var result = System.Text.Json.JsonSerializer.Deserialize<AuthResponseDto>(
+                    responseContent,
+                    new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
                 if (result?.Success == true && !string.IsNullOrEmpty(result.Token))
                 {
                     await SecureStorage.SetAsync("auth_token", result.Token);
+                    Console.WriteLine("Token guardado com sucesso!");
                 }
 
                 return result ?? new AuthResponseDto
@@ -42,11 +60,150 @@ public class AuthService
                 };
             }
 
+            if (!string.IsNullOrWhiteSpace(responseContent))
+            {
+                try
+                {
+                    var errorResult = System.Text.Json.JsonSerializer.Deserialize<AuthResponseDto>(
+                        responseContent,
+                        new System.Text.Json.JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                    return errorResult ?? new AuthResponseDto
+                    {
+                        Success = false,
+                        Message = "Credenciais inválidas"
+                    };
+                }
+                catch
+                {
+                    return new AuthResponseDto
+                    {
+                        Success = false,
+                        Message = $"Erro: {responseContent}"
+                    };
+                }
+            }
+
+            return new AuthResponseDto
+            {
+                Success = false,
+                Message = "Credenciais inválidas"
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro no login: {ex.Message}");
+            Console.WriteLine($"Stack: {ex.StackTrace}");
+            return new AuthResponseDto
+            {
+                Success = false,
+                Message = $"Erro de conexão: {ex.Message}"
+            };
+        }
+    }
+
+    // ... (GetTokenAsync, IsAuthenticatedAsync, LogoutAsync permanecem iguais)
+
+    public async Task<Guid?> GetCurrentUserIdAsync()
+    {
+        var token = await GetTokenAsync();
+        if (string.IsNullOrEmpty(token))
+            return null;
+
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c =>
+                c.Type == ClaimTypes.NameIdentifier ||
+                c.Type == "sub" ||
+                c.Type == "nameid" ||
+                c.Type == "userId");
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return userId;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao extrair userId do token: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<string?> GetUserRoleAsync()
+    {
+        var token = await GetTokenAsync();
+        if (string.IsNullOrEmpty(token))
+            return null;
+
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var roleClaim = jwtToken.Claims.FirstOrDefault(c =>
+                c.Type == ClaimTypes.Role ||
+                c.Type == "role");
+
+            return roleClaim?.Value;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao extrair role do token: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<string?> GetUserEmailAsync()
+    {
+        var token = await GetTokenAsync();
+        if (string.IsNullOrEmpty(token))
+            return null;
+
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var emailClaim = jwtToken.Claims.FirstOrDefault(c =>
+                c.Type == ClaimTypes.Email ||
+                c.Type == "email");
+
+            return emailClaim?.Value;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao extrair email do token: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<AuthResponseDto> RegisterPacienteAsync(RegisterPacienteDto dto)
+    {
+        try
+        {
+            
+            var response = await _httpClient.PostAsJsonAsync("api/auth/register/paciente", dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<AuthResponseDto>()
+                    ?? new AuthResponseDto { Success = false, Message = "Erro ao processar resposta" };
+            }
+
             var errorContent = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
             return errorContent ?? new AuthResponseDto
             {
                 Success = false,
-                Message = "Credenciais inválidas"
+                Message = "Erro ao registar paciente"
             };
         }
         catch (Exception ex)
@@ -56,6 +213,56 @@ public class AuthService
                 Success = false,
                 Message = $"Erro de conexão: {ex.Message}"
             };
+        }
+    }
+
+    public async Task<AuthResponseDto> RegisterPsicologoAsync(RegisterPsicologoDto dto)
+    {
+        try
+        {
+            
+            var response = await _httpClient.PostAsJsonAsync("api/auth/register/psicologo", dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<AuthResponseDto>()
+                    ?? new AuthResponseDto { Success = false, Message = "Erro ao processar resposta" };
+            }
+
+            var errorContent = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+            return errorContent ?? new AuthResponseDto
+            {
+                Success = false,
+                Message = "Erro ao registar psicólogo"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new AuthResponseDto
+            {
+                Success = false,
+                Message = $"Erro de conexão: {ex.Message}"
+            };
+        }
+    }
+
+    public async Task<bool> CheckEmailExistsAsync(string email)
+    {
+        try
+        {
+            
+            var response = await _httpClient.GetAsync($"api/auth/check-email/{Uri.EscapeDataString(email)}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<bool>();
+            }
+
+            return false;
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -89,88 +296,4 @@ public class AuthService
             // Ignorar erros no logout
         }
     }
-
-    public async Task<AuthResponseDto> RegisterPacienteAsync(RegisterPacienteDto dto)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(
-                $"{_baseUrl}/auth/register/paciente",
-                dto);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<AuthResponseDto>()
-                    ?? new AuthResponseDto { Success = false, Message = "Erro ao processar resposta" };
-            }
-
-            var errorContent = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
-            return errorContent ?? new AuthResponseDto
-            {
-                Success = false,
-                Message = "Erro ao registar paciente"
-            };
-        }
-        catch (Exception ex)
-        {
-            return new AuthResponseDto
-            {
-                Success = false,
-                Message = $"Erro de conexão: {ex.Message}"
-            };
-        }
-    }
-
-    public async Task<AuthResponseDto> RegisterPsicologoAsync(RegisterPsicologoDto dto)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(
-                $"{_baseUrl}/auth/register/psicologo",
-                dto);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<AuthResponseDto>()
-                    ?? new AuthResponseDto { Success = false, Message = "Erro ao processar resposta" };
-            }
-
-            var errorContent = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
-            return errorContent ?? new AuthResponseDto
-            {
-                Success = false,
-                Message = "Erro ao registar psicólogo"
-            };
-        }
-        catch (Exception ex)
-        {
-            return new AuthResponseDto
-            {
-                Success = false,
-                Message = $"Erro de conexão: {ex.Message}"
-            };
-        }
-    }
-
-    public async Task<bool> CheckEmailExistsAsync(string email)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync(
-                $"{_baseUrl}/auth/check-email/{Uri.EscapeDataString(email)}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<bool>();
-            }
-
-            return false;
-        }
-        catch
-        {
-            return false;
-        }
-    }
 }
-
-

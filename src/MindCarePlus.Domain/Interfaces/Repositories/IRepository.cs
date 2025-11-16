@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 
+
 namespace MindCarePlus.Domain.Interfaces.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class

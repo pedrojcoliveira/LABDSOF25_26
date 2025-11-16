@@ -33,7 +33,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                var registos = await _httpClient.GetFromJsonAsync<List<RegistoDiarioDto>>("RegistoDiario/me");
+                var registos = await _httpClient.GetFromJsonAsync<List<RegistoDiarioDto>>("api/RegistoDiario/me");
                 return registos ?? new List<RegistoDiarioDto>();
             }
             catch (HttpRequestException ex)
@@ -51,7 +51,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("RegistoDiario", registo);
+                var response = await _httpClient.PostAsJsonAsync("api/RegistoDiario", registo);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
@@ -76,7 +76,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                var response = await _httpClient.DeleteAsync($"RegistoDiario/{id}");
+                var response = await _httpClient.DeleteAsync($"api/RegistoDiario/{id}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
@@ -98,7 +98,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                return await _httpClient.GetFromJsonAsync<EstatisticasHumorDto>($"RegistoDiario/me/estatisticas?dias={dias}");
+                return await _httpClient.GetFromJsonAsync<EstatisticasHumorDto>($"api/RegistoDiario/me/estatisticas?dias={dias}");
             }
             catch (HttpRequestException ex)
             {
@@ -125,7 +125,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                return await _httpClient.GetFromJsonAsync<ProgressoSemanalDto>("Desafio/me/semanal");
+                return await _httpClient.GetFromJsonAsync<ProgressoSemanalDto>("api/Desafio/me/semanal");
             }
             catch (HttpRequestException ex)
             {
@@ -145,7 +145,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                var response = await _httpClient.PostAsync($"Desafio/{desafioAtribuidoId}/concluir", null);
+                var response = await _httpClient.PostAsync($"api/Desafio/{desafioAtribuidoId}/concluir", null);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
@@ -170,7 +170,7 @@ namespace MindCarePlus.Mobile.Services
 
             try
             {
-                return await _httpClient.GetFromJsonAsync<ColecaoBadgesDto>("Badge/me");
+                return await _httpClient.GetFromJsonAsync<ColecaoBadgesDto>("api/Badge/me");
             }
             catch (HttpRequestException ex)
             {
@@ -182,5 +182,35 @@ namespace MindCarePlus.Mobile.Services
                 return null;
             }
         }
+
+        public async Task<DashboardResponse?> GetDashboardDataAsync(Guid pacienteId)
+        {
+            // Este método JÁ sabe como adicionar o token de autenticação
+            await ConfigureAuthHeaderAsync();
+
+            try
+            {
+                // A tua API espera o prefixo "api/"
+                var response = await _httpClient.GetFromJsonAsync<DashboardResponse>($"api/dashboard/{pacienteId}");
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Erro ao buscar dashboard: {ex.Message}");
+                if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await HandleUnauthorizedAsync();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro inesperado na dashboard: {ex.Message}");
+                return null;
+            }
+        }
+
     }
+
+
 }
