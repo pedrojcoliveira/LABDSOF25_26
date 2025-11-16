@@ -1,8 +1,14 @@
 ﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MindCarePlus.Mobile.ModelViews;
 using MindCarePlus.Mobile.Pages;
 using MindCarePlus.Mobile.Services;
+using MindCarePlus.Mobile.Services.Interfaces;
+using MindCarePlus.Mobile.ViewModels;
+using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace MindCarePlus.Mobile;
 
@@ -20,17 +26,73 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSingleton(sp =>
+        // ===== 1. CARREGAR O APPCONFIG.JSON =====
+        var assembly = Assembly.GetExecutingAssembly();
+        using var stream = assembly.GetManifestResourceStream("MindCarePlus.Mobile.appconfig.json");
+
+        // **Variável 'baseUrl' é declarada AQUI**
+        string baseUrl;
+
+        if (stream != null)
         {
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("https://mtnfgs8z-7291.uks1.devtunnels.ms/");
-            return httpClient;
+            using var reader = new StreamReader(stream);
+            var json = reader.ReadToEnd();
+            var jObj = JObject.Parse(json);
+
+            baseUrl = jObj["ApiBaseUrl"]?.ToString(); // Atribuída aqui
+            if (string.IsNullOrEmpty(baseUrl))
+            {
+                throw new InvalidOperationException("ApiBaseUrl não encontrado no appconfig.json");
+            }
+
+            builder.Configuration.AddInMemoryCollection(new[] { new KeyValuePair<string, string>("ApiBaseUrl", baseUrl) });
+        }
+        else
+        {
+            throw new FileNotFoundException("appconfig.json não encontrado. Definir como 'Embedded resource");
+        }
+
+        // ===== 2. SERVICES  =====
+        // Registar o nosso handler de HTTP (para Android) num só sítio
+
+        // **CORREÇÃO 1: Adicionado "sp =>"**
+        builder.Services.AddSingleton<HttpClientHandler>(sp =>
+        {
+#if ANDROID
+            return new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            };
+#else
+            return new HttpClientHandler();
+#endif
         });
 
-        builder.Services.AddSingleton<HttpClient>();
+        // **CORREÇÃO 2: Apagámos a segunda declaração de 'baseUrl'**
+        // A variável 'baseUrl' da linha 36 já está disponível aqui.
+
+        // Registar o ApiService
+        builder.Services.AddHttpClient<ApiService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl); // Usa a baseUrl da linha 36
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>(); // Usa o handler registado
+
+        // Registar o AuthService (IGUAL AO APISERVICE)
+        builder.Services.AddHttpClient<AuthService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl); // Usa a baseUrl da linha 36
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>(); // Usa o handler registado
+
+        builder.Services.AddSingleton<IDialogService, MauiDialogService>();
+
+
 
         // Registar Services
-        builder.Services.AddSingleton<AuthService>();
+        // **CORREÇÃO 3: Apagámos o "AddSingleton<AuthService>()" duplicado**
 
         // Registar ViewModels
         builder.Services.AddTransient<SelectUserTypeViewModel>();
@@ -38,31 +100,9 @@ public static class MauiProgram
         builder.Services.AddTransient<RegisterPsicologoViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<MainPageModelView>();
-        builder.Services.AddSingleton(sp =>
-        {
-            var handler = new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-            };
-
-            var httpClient = new HttpClient(handler);
-
-#if ANDROID
-            httpClient.BaseAddress = new Uri("https://10.0.2.2:7291/");
-#else
-            httpClient.BaseAddress = new Uri("https://localhost:7291/");
-#endif
-
-            return httpClient;
-        });
-
-        // ViewModels
-        builder.Services.AddTransient<MainPageModelView>();
+        builder.Services.AddTransient<RegistoHumorModelView>();
+        builder.Services.AddTransient<DesafiosModelView>();
         builder.Services.AddTransient<DashboardViewModel>();
-
-        // Pages
-        builder.Services.AddTransient<MainPage>();
-        builder.Services.AddTransient<DashboardPage>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -70,6 +110,9 @@ public static class MauiProgram
         builder.Services.AddTransient<RegisterPsicologoPage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<RegistoHumorPage>();
+        builder.Services.AddTransient<DesafiosPage>();
+        builder.Services.AddTransient<DashboardPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

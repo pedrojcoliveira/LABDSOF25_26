@@ -11,9 +11,15 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-
             <!-- Converters -->
+            <converters:IntToBorderColorConverter x:Key="IntToBorderColorConverter" />
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:EstadoToBorderColorConverter x:Key="EstadoToBorderColorConverter" />
+            <converters:EstadoToButtonEnabledConverter x:Key="EstadoToButtonEnabledConverter" />
+            <converters:PercentToProgressConverter x:Key="PercentToProgressConverter" />
+            <converters:EstadoToCheckBgConverter x:Key="EstadoToCheckBgConverter" />
+            <converters:EstadoIsConcluidoConverter x:Key="EstadoIsConcluido"/>
+            <converters:EstadoToCheckColorConverter x:Key="EstadoToCheckColorConverter" />
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <converters:ShowPasswordTextConverter x:Key="ShowPasswordTextConverter" />
         </ResourceDictionary>

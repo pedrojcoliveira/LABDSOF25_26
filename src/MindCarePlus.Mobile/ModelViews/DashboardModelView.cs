@@ -3,18 +3,19 @@ using CommunityToolkit.Mvvm.Input;
 using MindCarePlus.Mobile.Services;
 using MindCarePlus.Shared.DTOs;
 using System.Collections.ObjectModel;
-using System.Net.Http.Json;
 namespace MindCarePlus.Mobile.ModelViews
 {
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;
         private readonly AuthService _authService;
 
-        public DashboardViewModel(HttpClient httpClient, AuthService authService)
+        public DashboardViewModel(ApiService apiService, AuthService authService)
         {
-            _httpClient = httpClient;
+            _apiService = apiService;
             _authService = authService;
+            BadgesConquistadas = new ObservableCollection<BadgeConquistadaDto>();
+            EvolucaoHumor = new ObservableCollection<DiaHumorDto>();
         }
 
         [ObservableProperty]
@@ -42,10 +43,10 @@ namespace MindCarePlus.Mobile.ModelViews
         private int totalBadges;
 
         [ObservableProperty]
-        private ObservableCollection<BadgeConquistadaDto> badgesConquistadas = new();
+        private ObservableCollection<BadgeConquistadaDto> badgesConquistadas; 
 
         [ObservableProperty]
-        private ObservableCollection<DiaHumorDto> evolucaoHumor = new();
+        private ObservableCollection<DiaHumorDto> evolucaoHumor;
 
         [ObservableProperty]
         private bool isLoading;
@@ -90,8 +91,7 @@ namespace MindCarePlus.Mobile.ModelViews
                 Console.WriteLine($"PacienteId obtido do token: {pacienteId}");
 
                 // 4. Busca os dados da dashboard
-                var response = await _httpClient.GetFromJsonAsync<DashboardResponse>(
-                    $"api/dashboard/{pacienteId}");
+                var response = await _apiService.GetDashboardDataAsync(pacienteId.Value);
 
                 if (response == null)
                 {
@@ -121,16 +121,12 @@ namespace MindCarePlus.Mobile.ModelViews
                     EvolucaoHumor.Add(dia);
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"Erro HTTP: {ex.Message}");
-                MensagemErro = $"Erro de conexão: {ex.Message}";
-            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro: {ex.Message}");
-                MensagemErro = $"Erro: {ex.Message}";
+                Console.WriteLine($"Erro : {ex.Message}");
+                MensagemErro = $"Erro : {ex.Message}";
             }
+ 
             finally
             {
                 IsLoading = false;
@@ -140,7 +136,7 @@ namespace MindCarePlus.Mobile.ModelViews
         [RelayCommand]
         private async Task RegistarHumor()
         {
-            await Shell.Current.GoToAsync("registarhumor");
+            await Shell.Current.GoToAsync("RegistoHumor");
         }
 
         [RelayCommand]
@@ -152,7 +148,7 @@ namespace MindCarePlus.Mobile.ModelViews
         [RelayCommand]
         private async Task VerDesafios()
         {
-            await Shell.Current.GoToAsync("desafios");
+            await Shell.Current.GoToAsync("DesafiosPage");
         }
 
         [RelayCommand]

@@ -8,5 +8,7 @@
         public Guid UtilizadorId { get; set; }
         public Utilizador Utilizador { get; set; } = null!;
         public DateTime DataAtribuicao { get; set; }
+
+        public int Nivel { get; set; } = 1;
     }
 }

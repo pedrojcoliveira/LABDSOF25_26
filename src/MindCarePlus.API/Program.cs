@@ -6,7 +6,9 @@ using MindCarePlus.Application.Configuration;
 using MindCarePlus.Application.Interfaces;
 using MindCarePlus.Application.Services;
 using MindCarePlus.Domain.Interfaces;
+using MindCarePlus.Domain.Services;
 using MindCarePlus.Infrastructure.Data;
+using MindCarePlus.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// ===== CONFIGURAR SERVICES =====
+builder.Services.AddScoped<IDesafioService, DesafioService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -71,8 +76,21 @@ builder.Services.AddSwaggerGen();
 //        });
 //});
 
+// ===== CONFIGURAR CORS ===== Vindo do Claude
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMobile", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -90,9 +108,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseCors("AllowMobile");
+// ===== USAR CORS ===== Vindo do Claude
+app.UseCors("AllowMobile");
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

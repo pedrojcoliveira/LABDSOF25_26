@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MindCarePlus.Domain.Interfaces;
+using MindCarePlus.Shared.DTOs;
 
 namespace MindCarePlus.API.Controllers
 {
@@ -24,22 +25,25 @@ namespace MindCarePlus.API.Controllers
             var registos = await _unitOfWork.RegistosDiarios.FindAsync(r => r.PacienteId == pacienteId);
             var badgesAtribuidas = await _unitOfWork.BadgesAtribuidas.FindAsync(ba => ba.UtilizadorId == pacienteId);
 
-            var badges = new List<object>();
+
+            var badges = new List<BadgeConquistadaDto>();
+
             foreach (var badgeAtribuida in badgesAtribuidas)
             {
                 var badge = await _unitOfWork.Badges.GetByIdAsync(badgeAtribuida.BadgeId);
                 if (badge != null)
                 {
-                    badges.Add(new
+                    badges.Add(new BadgeConquistadaDto 
                     {
-                        nome = badge.Nome,
-                        descricao = badge.Descricao,
-                        conquistada = true
+                        Nome = badge.Nome,
+                        Descricao = badge.Descricao,
+                        ImagemUrl = badge.ImagemUrl, 
+                        Conquistada = true
                     });
                 }
             }
 
-            var evolucaoHumor = registos
+                var evolucaoHumor = registos
                 .OrderByDescending(r => r.DataRegisto)
                 .Take(7)
                 .OrderBy(r => r.DataRegisto)

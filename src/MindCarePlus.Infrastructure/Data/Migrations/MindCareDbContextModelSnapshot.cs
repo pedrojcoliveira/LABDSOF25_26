@@ -84,6 +84,9 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                     b.Property<DateTime>("DataAtribuicao")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Nivel")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("UtilizadorId")
                         .HasColumnType("uuid");
 
