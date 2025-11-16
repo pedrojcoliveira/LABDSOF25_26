@@ -74,7 +74,7 @@ public partial class LoginViewModel: ObservableObject
                 }
 
                 // Navegar para a página principal
-                await Shell.Current.GoToAsync("///MainPage");
+                await Shell.Current.GoToAsync("///dashboard");
 
                 // Opcional: Mostrar mensagem de sucesso
                 await Shell.Current.DisplayAlert(

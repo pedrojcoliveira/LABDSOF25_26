@@ -5,7 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:MindCarePlus.Mobile.Pages"
     xmlns:mobile="clr-namespace:MindCarePlus.Mobile"
+    xmlns:pages="clr-namespace:MindCarePlus.Mobile.Pages"
     Shell.FlyoutBehavior="Disabled">
+
 
     <!-- LoginPage como página inicial -->
     <ShellContent
@@ -33,7 +35,8 @@
 
     <!-- MainPage (após login) -->
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate mobile:MainPage}"
-        Route="MainPage" />
+        Title="Dashboard"
+        ContentTemplate="{DataTemplate pages:DashboardPage}"
+        Route="dashboard" />
+
 </Shell>
