@@ -128,6 +128,15 @@ public class AuthService: IAuthService
         return tokenHandler.WriteToken(token);
     }
 
+    public async Task<bool> LogoutAsync()
+    {
+        // Como estamos usando JWT stateless, não há invalidação no servidor
+        // O logout é feito no cliente (remover token do storage)
+        // Este método pode ser expandido se implementares blacklist de tokens no futuro
+
+        return await Task.FromResult(true);
+    }
+
     public async Task<AuthResponseDto> RegisterPacienteAsync(RegisterPacienteDto dto)
     {
         try
