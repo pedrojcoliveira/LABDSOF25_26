@@ -2,6 +2,8 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using MindCarePlus.Shared.DTOs.Auth;
+using System.Buffers.Text;
+using System.Net.Http.Json;
 
 namespace MindCarePlus.Mobile.Services;
 
@@ -284,16 +286,40 @@ public class AuthService
         return !string.IsNullOrEmpty(token);
     }
 
-    public async Task LogoutAsync()
+    public async Task<bool> LogoutAsync()
     {
         try
         {
+            // 1. Obter o token atual
+            var token = await SecureStorage.GetAsync("auth_token");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                // Já não está logado
+                return true;
+            }
+
+            // 2. Chamar a API (opcional, se quiseres registar o logout no servidor)
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.PostAsync($"/auth/logout", null);
+
+            // 3. Limpar o token do SecureStorage (SEMPRE, mesmo se a API falhar)
             SecureStorage.Remove("auth_token");
-            await Task.CompletedTask;
+
+            // 4. Limpar o header de autorização
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignorar erros no logout
+            // Mesmo com erro, remove o token localmente
+            SecureStorage.Remove("auth_token");
+
+            System.Diagnostics.Debug.WriteLine($"Erro no logout: {ex.Message}");
+            return true; // Retorna true porque o token foi removido localmente
         }
     }
 }

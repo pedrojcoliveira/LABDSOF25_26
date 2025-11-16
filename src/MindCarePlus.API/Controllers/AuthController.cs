@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MindCarePlus.Application.Interfaces;
 using MindCarePlus.Shared.DTOs.Auth;
 
@@ -35,6 +36,27 @@ namespace MindCarePlus.API.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpPost("logout")]
+        [Authorize] // Requer autenticação
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                var result = await _authService.LogoutAsync();
+
+                if (result)
+                {
+                    return Ok(new { message = "Logout realizado com sucesso" });
+                }
+
+                return BadRequest(new { message = "Erro ao realizar logout" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno ao processar logout", error = ex.Message });
+            }
         }
 
         [HttpPost("register/paciente")]
