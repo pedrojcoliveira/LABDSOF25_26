@@ -19,5 +19,11 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MindCarePlus.API\MindCarePlus.API.csproj" />
+    <ProjectReference Include="..\..\src\MindCarePlus.Domain\MindCarePlus.Domain.csproj" />
+    <ProjectReference Include="..\..\src\MindCarePlus.Shared\MindCarePlus.Shared.csproj" />
+  </ItemGroup>
 
 </Project>

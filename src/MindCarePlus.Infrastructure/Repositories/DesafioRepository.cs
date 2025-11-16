@@ -1,34 +1,29 @@
-﻿using MindCarePlus.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MindCarePlus.Domain.Entities;
 using MindCarePlus.Domain.Interfaces.Repositories;
 using MindCarePlus.Infrastructure.Data;
-using global::MindCarePlus.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 
-
-    namespace MindCarePlus.Infrastructure.Repositories
+namespace MindCarePlus.Infrastructure.Repositories
+{
+    public class DesafioRepository : Repository<Desafio>, IDesafioRepository
     {
-        internal class DesafioRepository : Repository<Desafio>, IDesafioRepository
+        public DesafioRepository(MindCareDbContext context) : base(context)
         {
-            public DesafioRepository(MindCareDbContext context) : base(context)
-            {
-            }
+        }
 
-            public async Task<List<Desafio>> GetDesafiosPorTipoAsync(string tipo)
-            {
-                return await _dbSet
-                    .Where(d => d.Tipo == tipo)
-                    .Include(d => d.BadgeRecompensa)
-                    .ToListAsync();
-            }
+        public async Task<Desafio?> GetDesafioAleatorioAsync(string tipo)
+        {
+            var desafios = await _dbSet
+                .Where(d => d.Tipo == tipo)
+                .ToListAsync();
 
-            public async Task<Desafio?> GetDesafioAleatorioAsync(string tipo)
-            {
-                var desafios = await GetDesafiosPorTipoAsync(tipo);
-                if (!desafios.Any()) return null;
+            if (!desafios.Any())
+                return null;
 
-                var random = new Random();
-                return desafios[random.Next(desafios.Count)];
-            }
+            // Selecionar um aleatório
+            var random = new Random();
+            var index = random.Next(desafios.Count);
+            return desafios[index];
         }
     }
-
+}

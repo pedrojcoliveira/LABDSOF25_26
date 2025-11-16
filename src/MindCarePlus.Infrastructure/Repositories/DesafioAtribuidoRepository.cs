@@ -7,69 +7,43 @@ namespace MindCarePlus.Infrastructure.Repositories
 {
     public class DesafioAtribuidoRepository : Repository<DesafioAtribuido>, IDesafioAtribuidoRepository
     {
-            public DesafioAtribuidoRepository(MindCareDbContext context) : base(context)
-            {
-            }
-
+        public DesafioAtribuidoRepository(MindCareDbContext context) : base(context)
+        {
+        }
 
         public async Task<List<DesafioAtribuido>> GetDesafiosSemanaAtualAsync(Guid utilizadorId)
         {
-            var inicioSemana = GetInicioSemana(); //
+            // Calcular início da semana (segunda-feira às 00:00:00)
+            var hoje = DateTime.UtcNow;
+            var diff = (7 + (hoje.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var inicioSemana = hoje.AddDays(-diff).Date;
             var fimSemana = inicioSemana.AddDays(7);
 
-            return await _context.DesafiosAtribuidos
-                .Include(d => d.Desafio)
-                .ThenInclude(d => d.BadgeRecompensa) // Inclui o Badge
-                .Where(d => d.UtilizadorId == utilizadorId &&
-                            d.DataAtribuicao >= inicioSemana &&
-                            d.DataAtribuicao < fimSemana)
-                .OrderBy(d => d.DataAtribuicao)
+            return await _dbSet
+                .Include(da => da.Desafio)
+                .Where(da => da.UtilizadorId == utilizadorId &&
+                            da.DataAtribuicao >= inicioSemana &&
+                            da.DataAtribuicao < fimSemana)
+                .OrderBy(da => da.DataAtribuicao)
                 .ToListAsync();
         }
 
-        private DateTime GetInicioSemana()
+        public async Task<bool> VerificarSemanaCompletaAsync(Guid utilizadorId)
         {
+            // Calcular início da semana
             var hoje = DateTime.UtcNow;
             var diff = (7 + (hoje.DayOfWeek - DayOfWeek.Monday)) % 7;
-            var inicioSemana = hoje.AddDays(-diff);
+            var inicioSemana = hoje.AddDays(-diff).Date;
+            var fimSemana = inicioSemana.AddDays(7);
 
-            // Retorna o início do dia (00:00:00) dessa data, em UTC
-            return new DateTime(inicioSemana.Year, inicioSemana.Month, inicioSemana.Day,
-                                0, 0, 0,
-                                DateTimeKind.Utc);
-        }
+            // Contar desafios concluídos desta semana
+            var desafiosConcluidos = await _dbSet
+                .CountAsync(da => da.UtilizadorId == utilizadorId &&
+                                 da.Estado == "Concluido" &&
+                                 da.DataAtribuicao >= inicioSemana &&
+                                 da.DataAtribuicao < fimSemana);
 
-        public async Task<DesafioAtribuido?> GetDesafioAtribuidoPorTipoAsync(Guid utilizadorId, string tipo)
-            {
-                var inicioSemana = GetInicioSemana();
-                var fimSemana = inicioSemana.AddDays(7);
-
-                return await _dbSet
-                    .Include(da => da.Desafio)
-                        .ThenInclude(d => d.BadgeRecompensa)
-                    .FirstOrDefaultAsync(da => da.UtilizadorId == utilizadorId &&
-                                              da.Desafio.Tipo == tipo &&
-                                              da.DataAtribuicao >= inicioSemana &&
-                                              da.DataAtribuicao < fimSemana);
-            }
-
-            public async Task<int> GetTotalConcluidosSemanaAsync(Guid utilizadorId)
-            {
-                var inicioSemana = GetInicioSemana();
-                var fimSemana = inicioSemana.AddDays(7);
-
-                return await _dbSet
-                    .CountAsync(da => da.UtilizadorId == utilizadorId &&
-                                     da.Estado == "Concluido" &&
-                                     da.DataAtribuicao >= inicioSemana &&
-                                     da.DataAtribuicao < fimSemana);
-            }
-
-            public async Task<bool> VerificarSemanaCompletaAsync(Guid utilizadorId)
-            {
-                var total = await GetTotalConcluidosSemanaAsync(utilizadorId);
-                return total >= 7;
-            }
+            return desafiosConcluidos == 7;
         }
     }
-
+}
