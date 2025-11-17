@@ -24,7 +24,7 @@ namespace MindCarePlus.API.Controllers
 
             var registos = await _unitOfWork.RegistosDiarios.FindAsync(r => r.PacienteId == pacienteId);
             var badgesAtribuidas = await _unitOfWork.BadgesAtribuidas.FindAsync(ba => ba.UtilizadorId == pacienteId);
-
+            var todasBadges = new List<BadgeConquistadaDto>();
 
             var badges = new List<BadgeConquistadaDto>();
 
@@ -33,7 +33,7 @@ namespace MindCarePlus.API.Controllers
                 var badge = await _unitOfWork.Badges.GetByIdAsync(badgeAtribuida.BadgeId);
                 if (badge != null)
                 {
-                    badges.Add(new BadgeConquistadaDto 
+                    todasBadges.Add(new BadgeConquistadaDto 
                     {
                         Nome = badge.Nome,
                         Descricao = badge.Descricao,
@@ -44,14 +44,20 @@ namespace MindCarePlus.API.Controllers
                 }
             }
 
-                var evolucaoHumor = registos
+            var badgesUnicas = todasBadges
+                .GroupBy(b => b.Nome)
+                .Select(g => g.OrderByDescending(b => b.Nivel).First())
+                .OrderByDescending(b => b.Nivel)
+                .ToList();
+
+            var evolucaoHumor = registos
                 .OrderByDescending(r => r.DataRegisto)
                 .Take(7)
                 .OrderBy(r => r.DataRegisto)
                 .Select(r => new
                 {
                     diaSemana = GetDiaSemanaAbreviado(r.DataRegisto.DayOfWeek),
-                    nivelHumor = r.NivelEnergia
+                    nivelHumor = r.NivelHumor
                 })
                 .ToList();
 
@@ -66,8 +72,8 @@ namespace MindCarePlus.API.Controllers
                 progressoPercentagem = (double)paciente.Pontos / 600,
                 sequenciaDias = sequencia,
                 totalRegistos = registos.Count(),
-                totalBadges = badges.Count,
-                badgesConquistadas = badges,
+                totalBadges = todasBadges.Count,
+                badgesConquistadas = badgesUnicas,
                 evolucaoHumor = evolucaoHumor
             });
         }
