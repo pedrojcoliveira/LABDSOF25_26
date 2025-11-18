@@ -44,12 +44,6 @@ namespace MindCarePlus.Mobile.ModelViews
         private int pontosAtuais;
 
         [ObservableProperty]
-        private int pontosParaProximoNivel;
-
-        [ObservableProperty]
-        private double progressoPercentagem;
-
-        [ObservableProperty]
         private int sequenciaDias;
 
         [ObservableProperty]
@@ -77,6 +71,45 @@ namespace MindCarePlus.Mobile.ModelViews
         private bool temDados = true;
 
         private Guid _pacienteId;
+
+        public int PontosParaProximoNivel
+        {
+            get
+            {
+                // Cada nível precisa de 600 pontos
+                int pontosNecessarios = NivelAtual * 600;
+                int pontosFaltam = pontosNecessarios - PontosAtuais;
+                return Math.Max(0, pontosFaltam); // Nunca retorna negativo
+            }
+        }
+
+        // ← RECALCULA PROGRESSO TAMBÉM
+        public double ProgressoPercentagem
+        {
+            get
+            {
+                int pontosNecessarios = NivelAtual * 600;
+                if (pontosNecessarios == 0) return 0;
+
+                double progresso = (double)PontosAtuais / pontosNecessarios;
+                return Math.Min(1.0, progresso); // Máximo 100%
+            }
+        }
+
+        // ← NOTIFICA QUANDO PONTOS MUDAM
+        partial void OnPontosAtuaisChanged(int value)
+        {
+            OnPropertyChanged(nameof(PontosParaProximoNivel));
+            OnPropertyChanged(nameof(ProgressoPercentagem));
+        }
+
+        partial void OnNivelAtualChanged(int value)
+        {
+            OnPropertyChanged(nameof(PontosParaProximoNivel));
+            OnPropertyChanged(nameof(ProgressoPercentagem));
+        }
+
+
 
         public async Task LoadDashboardAsync()
         {
@@ -147,8 +180,6 @@ namespace MindCarePlus.Mobile.ModelViews
                 NomeUtilizador = response.NomeUtilizador;
                 NivelAtual = response.NivelAtual;
                 PontosAtuais = response.PontosAtuais;
-                PontosParaProximoNivel = response.PontosParaProximoNivel;
-                ProgressoPercentagem = response.ProgressoPercentagem;
                 SequenciaDias = response.SequenciaDias;
                 TotalRegistos = response.TotalRegistos;
                 TotalBadges = response.TotalBadges;
