@@ -1,28 +1,11 @@
-using MindCarePlus.Mobile.ModelViews;
+﻿using MindCarePlus.Mobile.ModelViews;
+using MindCarePlus.Shared.DTOs;
 
 namespace MindCarePlus.Mobile.Pages
 {
-    [QueryProperty(nameof(PacienteId), "pacienteId")]
     public partial class DashboardPage : ContentPage
     {
         private readonly DashboardViewModel _viewModel;
-        private string _pacienteId;
-
-        public string PacienteId
-        {
-            get => _pacienteId;
-            set
-            {
-                _pacienteId = value;
-                if (!string.IsNullOrEmpty(value) && _viewModel != null)
-                {
-                    MainThread.BeginInvokeOnMainThread(async () =>
-                    {
-                        await _viewModel.LoadDashboardAsync(Guid.Parse(value));
-                    });
-                }
-            }
-        }
 
         public DashboardPage(DashboardViewModel viewModel)
         {
@@ -34,12 +17,35 @@ namespace MindCarePlus.Mobile.Pages
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            Console.WriteLine("========================================");
+            Console.WriteLine("🔍 DashboardPage.OnAppearing()");
+            Console.WriteLine("========================================");
 
-            // TODO: Remover quando login estiver implementado
-            // Fallback para testes - usa ID do Paciente de Teste da BD
-            if (string.IsNullOrEmpty(_pacienteId))
+            // SEMPRE carrega os dados quando a página aparece
+            await _viewModel.LoadDashboardAsync();
+        }
+
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            base.OnNavigatedTo(args);
+            Console.WriteLine("========================================");
+            Console.WriteLine("🔍 DashboardPage.OnNavigatedTo()");
+            Console.WriteLine("🔄 Forçando refresh...");
+            Console.WriteLine("========================================");
+        }
+
+        private async void OnBadgeTapped(object sender, EventArgs e)
+        {
+            if (sender is Border border && border.BindingContext is BadgeConquistadaDto badge)
             {
-                await _viewModel.LoadDashboardAsync(Guid.Parse("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d"));
+                await border.ScaleTo(0.9, 50);
+                await border.ScaleTo(1.0, 50);
+
+                await DisplayAlert(
+                    $"{badge.ImagemUrl} {badge.Nome}",
+                    $"{badge.Descricao}\n\nNível: {badge.Nivel}\n✨ Conquistada!",
+                    "Fechar"
+                );
             }
         }
     }

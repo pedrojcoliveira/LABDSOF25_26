@@ -1,124 +1,10 @@
-﻿/* using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MindCarePlus.Mobile.Services;
 using MindCarePlus.Shared.DTOs;
 using System.Collections.ObjectModel;
-using System.Net.Http.Json;
-
-namespace MindCarePlus.Mobile.ModelViews
-{
-    public partial class DashboardViewModel : ObservableObject
-    {
-        private readonly HttpClient _httpClient;
-
-        public DashboardViewModel(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
-
-        [ObservableProperty]
-        private string nomeUtilizador = string.Empty;
-
-        [ObservableProperty]
-        private int nivelAtual;
-
-        [ObservableProperty]
-        private int pontosAtuais;
-
-        [ObservableProperty]
-        private int pontosParaProximoNivel;
-
-        [ObservableProperty]
-        private double progressoPercentagem;
-
-        [ObservableProperty]
-        private int sequenciaDias;
-
-        [ObservableProperty]
-        private int totalRegistos;
-
-        [ObservableProperty]
-        private int totalBadges;
-
-        [ObservableProperty]
-        private ObservableCollection<BadgeConquistadaDto> badgesConquistadas = new();
-
-        [ObservableProperty]
-        private ObservableCollection<DiaHumorDto> evolucaoHumor = new();
-
-        private Guid _pacienteId;
-
-        public async Task LoadDashboardAsync(Guid pacienteId)
-        {
-            _pacienteId = pacienteId;
-
-            var response = await _httpClient.GetFromJsonAsync<DashboardResponse>($"api/dashboard/{pacienteId}");
-            if (response == null) return;
-
-            NomeUtilizador = response.NomeUtilizador;
-            NivelAtual = response.NivelAtual;
-            PontosAtuais = response.PontosAtuais;
-            PontosParaProximoNivel = response.PontosParaProximoNivel;
-            ProgressoPercentagem = response.ProgressoPercentagem;
-            SequenciaDias = response.SequenciaDias;
-            TotalRegistos = response.TotalRegistos;
-            TotalBadges = response.TotalBadges;
-
-            BadgesConquistadas.Clear();
-            foreach (var badge in response.BadgesConquistadas)
-            {
-                BadgesConquistadas.Add(badge);
-            }
-
-            EvolucaoHumor.Clear();
-            foreach (var dia in response.EvolucaoHumor)
-            {
-                EvolucaoHumor.Add(dia);
-            }
-        }
-
-        [RelayCommand]
-        private async Task RegistarHumor()
-        {
-            await Shell.Current.GoToAsync("registarhumor");
-        }
-
-        [RelayCommand]
-        private async Task VerGraficoEvolucao()
-        {
-            System.Diagnostics.Debug.WriteLine("Comando executado!");
-            try
-            {
-                await Shell.Current.GoToAsync("evolucao"); 
-                System.Diagnostics.Debug.WriteLine("Navegação OK!");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erro: {ex.Message}");
-                await Application.Current.MainPage.DisplayAlert("Erro", ex.Message, "OK");
-            }
-        }
-
-        [RelayCommand]
-        private async Task VerDesafios()
-        {
-            await Shell.Current.GoToAsync("desafios");
-        }
-
-        [RelayCommand]
-        private async Task ContactarPsicologo()
-        {
-            await Shell.Current.GoToAsync("contactar");
-        }
-    }
-}
-
-*/
-
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using MindCarePlus.Shared.DTOs;
-using System.Collections.ObjectModel;
-using System.Net.Http.Json;
+using CommunityToolkit.Mvvm.Messaging;
+using MindCarePlus.Mobile.Messages;
 using Microcharts;
 using SkiaSharp;
 
@@ -126,11 +12,26 @@ namespace MindCarePlus.Mobile.ModelViews
 {
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;  // ← USA ApiService!
+        private readonly AuthService _authService;
 
-        public DashboardViewModel(HttpClient httpClient)
+        public DashboardViewModel(ApiService apiService, AuthService authService)
         {
-            _httpClient = httpClient;
+            _apiService = apiService;
+            _authService = authService;
+
+            BadgesConquistadas = new ObservableCollection<BadgeConquistadaDto>();
+            EvolucaoHumor = new ObservableCollection<DiaHumorDto>();
+
+            WeakReferenceMessenger.Default.Register<RegistoCriadoMessage>(this, async (r, m) =>
+            {
+                Console.WriteLine("========================================");
+                Console.WriteLine("🔔 Mensagem recebida: Registo criado!");
+                Console.WriteLine("🔄 Atualizando dashboard...");
+                Console.WriteLine("========================================");
+
+                await LoadDashboardAsync();
+            });
         }
 
         [ObservableProperty]
@@ -158,25 +59,91 @@ namespace MindCarePlus.Mobile.ModelViews
         private int totalBadges;
 
         [ObservableProperty]
-        private ObservableCollection<BadgeConquistadaDto> badgesConquistadas = new();
+        private ObservableCollection<BadgeConquistadaDto> badgesConquistadas;
 
         [ObservableProperty]
-        private ObservableCollection<DiaHumorDto> evolucaoHumor = new();
+        private ObservableCollection<DiaHumorDto> evolucaoHumor;
 
         [ObservableProperty]
         private Chart graficoHumorDashboard;
 
+        [ObservableProperty]
+        private bool isLoading;
+
+        [ObservableProperty]
+        private string mensagemErro = string.Empty;
+
+        [ObservableProperty]
+        private bool temDados = true;
+
         private Guid _pacienteId;
 
-        public async Task LoadDashboardAsync(Guid pacienteId)
+        public async Task LoadDashboardAsync()
         {
-            _pacienteId = pacienteId;
+            IsLoading = true;
+            MensagemErro = string.Empty;
+            TemDados = true;
 
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<DashboardResponse>($"api/dashboard/{pacienteId}");
-                if (response == null) throw new Exception("Resposta vazia");
+                Console.WriteLine("========================================");
+                Console.WriteLine("🔍 Iniciando carregamento da Dashboard");
 
+                // 1. Verifica autenticação
+                if (!await _authService.IsAuthenticatedAsync())
+                {
+                    Console.WriteLine("❌ Não autenticado!");
+                    await Shell.Current.GoToAsync("//login");
+                    return;
+                }
+
+                // 2. Verifica se é Paciente
+                var role = await _authService.GetUserRoleAsync();
+                Console.WriteLine($"🔍 Role: {role}");
+
+                if (role != "Paciente")
+                {
+                    MensagemErro = "Acesso negado. Apenas pacientes podem aceder à dashboard.";
+                    await _authService.LogoutAsync();
+                    await Shell.Current.GoToAsync("//login");
+                    return;
+                }
+
+                // 3. Obtém ID do paciente do token
+                var pacienteId = await _authService.GetCurrentUserIdAsync();
+                if (pacienteId == null)
+                {
+                    Console.WriteLine("❌ PacienteId é null!");
+                    MensagemErro = "Erro ao obter dados do utilizador.";
+                    await _authService.LogoutAsync();
+                    await Shell.Current.GoToAsync("//login");
+                    return;
+                }
+
+                _pacienteId = pacienteId.Value;
+                Console.WriteLine($"✅ PacienteId: {_pacienteId}");
+
+                // 4. Busca dados da dashboard usando ApiService (com token!)
+                var response = await _apiService.GetDashboardDataAsync(_pacienteId);
+
+                if (response == null)
+                {
+                    Console.WriteLine("❌ Response é null!");
+                    MensagemErro = "Erro ao carregar dados.";
+                    TemDados = false;
+                    return;
+                }
+
+                Console.WriteLine($"✅ Dashboard recebida:");
+                Console.WriteLine($"   Nome: {response.NomeUtilizador}");
+                Console.WriteLine($"   Nível: {response.NivelAtual}");
+                Console.WriteLine($"   Pontos: {response.PontosAtuais}/{response.PontosParaProximoNivel}");
+                Console.WriteLine($"   Sequência: {response.SequenciaDias} dias");
+                Console.WriteLine($"   Registos: {response.TotalRegistos}");
+                Console.WriteLine($"   Badges: {response.TotalBadges}");
+                Console.WriteLine($"   Evolução: {response.EvolucaoHumor?.Count ?? 0} dias");
+
+                // 5. Preenche dados
                 NomeUtilizador = response.NomeUtilizador;
                 NivelAtual = response.NivelAtual;
                 PontosAtuais = response.PontosAtuais;
@@ -186,107 +153,141 @@ namespace MindCarePlus.Mobile.ModelViews
                 TotalRegistos = response.TotalRegistos;
                 TotalBadges = response.TotalBadges;
 
+                // 6. Badges
                 BadgesConquistadas.Clear();
-                foreach (var badge in response.BadgesConquistadas)
+                if (response.BadgesConquistadas != null && response.BadgesConquistadas.Any())
                 {
-                    BadgesConquistadas.Add(badge);
+                    foreach (var badge in response.BadgesConquistadas)
+                    {
+                        BadgesConquistadas.Add(badge);
+                    }
+                    Console.WriteLine($"✅ {BadgesConquistadas.Count} badges adicionadas");
                 }
 
+                // 7. Evolução do humor
                 EvolucaoHumor.Clear();
-                foreach (var dia in response.EvolucaoHumor)
+                if (response.EvolucaoHumor != null && response.EvolucaoHumor.Any())
                 {
-                    EvolucaoHumor.Add(dia);
+                    foreach (var dia in response.EvolucaoHumor)
+                    {
+                        EvolucaoHumor.Add(dia);
+                        Console.WriteLine($"   {dia.DiaSemana}: {dia.NivelHumor}");
+                    }
+                    Console.WriteLine($"✅ {EvolucaoHumor.Count} dias de evolução");
+
+                    // 8. Gráfico
+                    var humorEntries = response.EvolucaoHumor.Select(e => new ChartEntry(e.NivelHumor * 10)
+                    {
+                        Label = e.DiaSemana,
+                        ValueLabel = e.NivelHumor.ToString("F1"),
+                        Color = SKColor.Parse("#6C63FF")
+                    }).ToList();
+
+                    GraficoHumorDashboard = new LineChart
+                    {
+                        Entries = humorEntries,
+                        LineMode = LineMode.Spline,
+                        LineSize = 4,
+                        PointMode = PointMode.Circle,
+                        PointSize = 15,
+                        BackgroundColor = SKColors.Transparent,
+                        LabelTextSize = 28,
+                        ValueLabelOrientation = Orientation.Horizontal,
+                        MinValue = 0,
+                        MaxValue = 100
+                    };
+                    TemDados = true;
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ Sem dados de evolução");
+                    GraficoHumorDashboard = null;
+                    TemDados = false;
                 }
 
-                // Criar gráfico de linha do humor
-                var humorEntries = response.EvolucaoHumor.Select(e => new ChartEntry(e.NivelHumor * 10)
-                {
-                    Label = e.DiaSemana,
-                    ValueLabel = e.NivelHumor.ToString(),
-                    Color = SKColor.Parse("#6C63FF")
-                }).ToList();
-
-                GraficoHumorDashboard = new LineChart
-                {
-                    Entries = humorEntries,
-                    LineMode = LineMode.Spline,
-                    LineSize = 4,
-                    PointMode = PointMode.Circle,
-                    PointSize = 15,
-                    BackgroundColor = SKColors.Transparent,
-                    LabelTextSize = 28,
-                    ValueLabelOrientation = Orientation.Horizontal,
-                    MinValue = 0,
-                    MaxValue = 100
-                };
+                Console.WriteLine("========================================");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erro ao carregar dashboard: {ex.Message}");
-                CarregarDadosMock();
+                Console.WriteLine($"❌ Erro: {ex.Message}");
+                Console.WriteLine($"❌ StackTrace: {ex.StackTrace}");
+                MensagemErro = $"Erro: {ex.Message}";
+                TemDados = false;
             }
-        }
-
-        private void CarregarDadosMock()
-        {
-            NomeUtilizador = "Paciente de Teste";
-            NivelAtual = 1;
-            PontosAtuais = 100;
-            PontosParaProximoNivel = 600;
-            ProgressoPercentagem = 0.17;
-            SequenciaDias = 2;
-            TotalRegistos = 7;
-            TotalBadges = 0;
-
-            // Mock do gráfico de humor
-            var humorMockEntries = new List<ChartEntry>
+            finally
             {
-                new ChartEntry(60) { Label = "Seg", ValueLabel = "6", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(70) { Label = "Ter", ValueLabel = "7", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(50) { Label = "Qua", ValueLabel = "5", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(80) { Label = "Qui", ValueLabel = "8", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(70) { Label = "Sex", ValueLabel = "7", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(80) { Label = "Sáb", ValueLabel = "8", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(90) { Label = "Dom", ValueLabel = "9", Color = SKColor.Parse("#6C63FF") }
-            };
-
-            GraficoHumorDashboard = new LineChart
-            {
-                Entries = humorMockEntries,
-                LineMode = LineMode.Spline,
-                LineSize = 4,
-                PointMode = PointMode.Circle,
-                PointSize = 15,
-                BackgroundColor = SKColors.Transparent,
-                LabelTextSize = 28,
-                ValueLabelOrientation = Orientation.Horizontal,
-                MinValue = 0,
-                MaxValue = 100
-            };
+                IsLoading = false;
+            }
         }
 
         [RelayCommand]
         private async Task RegistarHumor()
         {
-            await Shell.Current.GoToAsync("registarhumor");
+            await Shell.Current.GoToAsync("RegistoHumor");
         }
 
         [RelayCommand]
         private async Task VerGraficoEvolucao()
         {
-            await Shell.Current.GoToAsync($"evolucao?pacienteId={_pacienteId}");
+            try
+            {
+                Console.WriteLine("========================================");
+                Console.WriteLine($"🔍 Comando VerGraficoEvolucao executado!");
+                Console.WriteLine($"🔍 PacienteId: {_pacienteId}");
+                Console.WriteLine($"🔍 Navegando para: evolucao?pacienteId={_pacienteId}");
+                Console.WriteLine("========================================");
+
+                await Shell.Current.GoToAsync($"evolucao?pacienteId={_pacienteId}");
+
+                Console.WriteLine("✅ Navegação concluída!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao navegar: {ex.Message}");
+                Console.WriteLine($"❌ StackTrace: {ex.StackTrace}");
+
+                await Application.Current.MainPage.DisplayAlert(
+                    "Erro",
+                    $"Erro ao navegar: {ex.Message}",
+                    "OK");
+            }
         }
 
         [RelayCommand]
         private async Task VerDesafios()
         {
-            await Shell.Current.GoToAsync("desafios");
+            await Shell.Current.GoToAsync("DesafiosPage");
         }
 
         [RelayCommand]
         private async Task ContactarPsicologo()
         {
             await Shell.Current.GoToAsync("contactar");
+        }
+
+        [RelayCommand]
+        private async Task Logout()
+        {
+            await _authService.LogoutAsync();
+            await Shell.Current.GoToAsync("//login");
+        }
+
+        [RelayCommand]
+        private async Task ShowBadgeDetails(BadgeConquistadaDto badge)
+        {
+            if (badge == null) return;
+
+            await Shell.Current.DisplayAlert(
+                $"{badge.ImagemUrl} {badge.Nome}",
+                $"{badge.Descricao}\n\nNível: {badge.Nivel}\n✨ Conquistada!",
+                "Fechar"
+            );
+        }
+
+        [RelayCommand]
+        private async Task Refresh()
+        {
+            await LoadDashboardAsync();
         }
     }
 }

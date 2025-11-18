@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MindCarePlus.Domain.Interfaces;
+using MindCarePlus.Shared.DTOs;
 
 namespace MindCarePlus.API.Controllers
 {
@@ -23,21 +24,32 @@ namespace MindCarePlus.API.Controllers
 
             var registos = await _unitOfWork.RegistosDiarios.FindAsync(r => r.PacienteId == pacienteId);
             var badgesAtribuidas = await _unitOfWork.BadgesAtribuidas.FindAsync(ba => ba.UtilizadorId == pacienteId);
+            var todasBadges = new List<BadgeConquistadaDto>();
 
-            var badges = new List<object>();
+
+            var badges = new List<BadgeConquistadaDto>();
+
             foreach (var badgeAtribuida in badgesAtribuidas)
             {
                 var badge = await _unitOfWork.Badges.GetByIdAsync(badgeAtribuida.BadgeId);
                 if (badge != null)
                 {
-                    badges.Add(new
+                    todasBadges.Add(new BadgeConquistadaDto 
                     {
-                        nome = badge.Nome,
-                        descricao = badge.Descricao,
-                        conquistada = true
+                        Nome = badge.Nome,
+                        Descricao = badge.Descricao,
+                        ImagemUrl = badge.ImagemUrl, 
+                        Conquistada = true,
+                        Nivel = badgeAtribuida.Nivel
                     });
                 }
             }
+
+            var badgesUnicas = todasBadges
+                .GroupBy(b => b.Nome)
+                .Select(g => g.OrderByDescending(b => b.Nivel).First())
+                .OrderByDescending(b => b.Nivel)
+                .ToList();
 
             var evolucaoHumor = registos
                 .OrderByDescending(r => r.DataRegisto)
@@ -46,7 +58,7 @@ namespace MindCarePlus.API.Controllers
                 .Select(r => new
                 {
                     diaSemana = GetDiaSemanaAbreviado(r.DataRegisto.DayOfWeek),
-                    nivelHumor = r.NivelEnergia
+                    nivelHumor = r.NivelHumor
                 })
                 .ToList();
 
@@ -61,8 +73,8 @@ namespace MindCarePlus.API.Controllers
                 progressoPercentagem = (double)paciente.Pontos / 600,
                 sequenciaDias = sequencia,
                 totalRegistos = registos.Count(),
-                totalBadges = badges.Count,
-                badgesConquistadas = badges,
+                totalBadges = todasBadges.Count,
+                badgesConquistadas = badgesUnicas,
                 evolucaoHumor = evolucaoHumor
             });
         }

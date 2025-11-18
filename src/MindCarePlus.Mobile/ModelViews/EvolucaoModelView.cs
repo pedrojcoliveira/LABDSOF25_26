@@ -1,19 +1,20 @@
-﻿/* using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using MindCarePlus.Mobile.Services;
 using MindCarePlus.Shared.DTOs;
-using System.Net.Http.Json;
 using Microcharts;
 using SkiaSharp;
-
 
 namespace MindCarePlus.Mobile.ModelViews
 {
     public partial class EvolucaoModelView : ObservableObject
     {
-        private readonly HttpClient _httpClient;
+        private readonly ApiService _apiService;  
+        private readonly AuthService _authService;
 
-        public EvolucaoModelView(HttpClient httpClient)
+        public EvolucaoModelView(ApiService apiService, AuthService authService)
         {
-            _httpClient = httpClient;
+            _apiService = apiService;
+            _authService = authService;
         }
 
         [ObservableProperty]
@@ -34,28 +35,93 @@ namespace MindCarePlus.Mobile.ModelViews
         [ObservableProperty]
         private Chart graficoStress;
 
-        public async Task LoadEvolucaoAsync(Guid pacienteId, int dias = 7)
+        [ObservableProperty]
+        private bool isLoading;
+
+        [ObservableProperty]
+        private string mensagemErro = string.Empty;
+
+        [ObservableProperty]
+        private bool temDados = true;
+
+        public async Task LoadEvolucaoAsync(Guid? pacienteId = null, int dias = 7)
         {
+            IsLoading = true;
+            MensagemErro = string.Empty;
+            TemDados = true;
+
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<EvolucaoResponseDto>($"api/evolucao/{pacienteId}?dias={dias}");
-                if (response == null) return;
+                Console.WriteLine("========================================");
+                Console.WriteLine(" Carregando evolução...");
 
+                // Se não foi passado pacienteId, obtém do token
+                if (pacienteId == null)
+                {
+                    if (!await _authService.IsAuthenticatedAsync())
+                    {
+                        Console.WriteLine("Não autenticado!");
+                        await Shell.Current.GoToAsync("//login");
+                        return;
+                    }
+
+                    pacienteId = await _authService.GetCurrentUserIdAsync();
+                    if (pacienteId == null)
+                    {
+                        Console.WriteLine("PacienteId é null!");
+                        MensagemErro = "Erro ao obter dados do utilizador.";
+                        await Shell.Current.GoToAsync("//login");
+                        return;
+                    }
+                }
+
+                Console.WriteLine($"PacienteId: {pacienteId}");
+                Console.WriteLine($"Dias: {dias}");
+
+                // Busca dados da API usando ApiService (com token!)
+                var response = await _apiService.GetEvolucaoAsync(pacienteId.Value, dias);
+
+                if (response == null)
+                {
+                    Console.WriteLine("Response é null!");
+                    MensagemErro = "Erro ao carregar dados.";
+                    TemDados = false;
+                    return;
+                }
+
+                Console.WriteLine($"   Evolução recebida:");
+                Console.WriteLine($"   Nome: {response.PacienteNome}");
+                Console.WriteLine($"   Período: {response.PeriodoInicio:dd/MM/yyyy} - {response.PeriodoFim:dd/MM/yyyy}");
+                Console.WriteLine($"   Total Registos: {response.TotalRegistos}");
+                Console.WriteLine($"   Evolução: {response.Evolucao?.Count ?? 0} dias");
+
+                // Preenche informações gerais
                 PacienteNome = response.PacienteNome;
-                Periodo = $"{response.PeriodoInicio} - {response.PeriodoFim}";
+                Periodo = $"{response.PeriodoInicio:dd/MM/yyyy} - {response.PeriodoFim:dd/MM/yyyy}";
                 TotalRegistos = response.TotalRegistos;
 
-                // Criar gráficos
-                var entries = response.Evolucao.Select(e => new ChartEntry(e.NivelHumor)
+                // Verifica se há dados
+                if (response.Evolucao == null || !response.Evolucao.Any())
+                {
+                    Console.WriteLine("Sem dados de evolução");
+                    TemDados = false;
+                    MensagemErro = "Ainda não há registos suficientes para mostrar a evolução.";
+                    return;
+                }
+
+                TemDados = true;
+
+                // Cria gráfico de HUMOR
+                var humorEntries = response.Evolucao.Select(e => new ChartEntry(e.NivelHumor)
                 {
                     Label = e.DiaSemana,
-                    ValueLabel = e.NivelHumor.ToString(),
+                    ValueLabel = e.NivelHumor.ToString("F1"),
                     Color = SKColor.Parse("#6C63FF")
                 }).ToList();
 
                 GraficoHumor = new LineChart
                 {
-                    Entries = entries,
+                    Entries = humorEntries,
                     LineMode = LineMode.Straight,
                     LineSize = 4,
                     PointMode = PointMode.Circle,
@@ -67,10 +133,13 @@ namespace MindCarePlus.Mobile.ModelViews
                     MaxValue = 10
                 };
 
+                Console.WriteLine("Gráfico de Humor criado");
+
+                // Cria gráfico de ENERGIA
                 var energiaEntries = response.Evolucao.Select(e => new ChartEntry(e.NivelEnergia)
                 {
                     Label = e.DiaSemana,
-                    ValueLabel = e.NivelEnergia.ToString(),
+                    ValueLabel = e.NivelEnergia.ToString("F1"),
                     Color = SKColor.Parse("#4CAF50")
                 }).ToList();
 
@@ -83,97 +152,24 @@ namespace MindCarePlus.Mobile.ModelViews
                     PointSize = 18,
                     BackgroundColor = SKColors.Transparent,
                     LabelTextSize = 32,
+                    ValueLabelOrientation = Orientation.Horizontal,
                     MinValue = 0,
                     MaxValue = 10
                 };
 
+                Console.WriteLine("Gráfico de Energia criado");
+
+                // Cria gráfico de STRESS
                 var stressEntries = response.Evolucao.Select(e => new ChartEntry(e.NivelStress)
                 {
                     Label = e.DiaSemana,
-                    ValueLabel = e.NivelStress.ToString(),
+                    ValueLabel = e.NivelStress.ToString("F1"),
                     Color = SKColor.Parse("#FF5252")
                 }).ToList();
 
                 GraficoStress = new LineChart
                 {
                     Entries = stressEntries,
-                    LineMode = LineMode.Straight,
-                    LineSize = 4,
-                    PointMode = PointMode.Circle,
-                    PointSize = 18,
-                    BackgroundColor = SKColors.Transparent,
-                    LabelTextSize = 32,
-                    MinValue = 0,
-                    MaxValue = 10
-                };
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erro ao carregar evolução: {ex.Message}");
-            }
-        }
-    }
-}
-
-*/
-
-using CommunityToolkit.Mvvm.ComponentModel;
-using MindCarePlus.Shared.DTOs;
-using System.Net.Http.Json;
-using Microcharts;
-using SkiaSharp;
-
-namespace MindCarePlus.Mobile.ModelViews
-{
-    public partial class EvolucaoModelView : ObservableObject
-    {
-        private readonly HttpClient _httpClient;
-
-        public EvolucaoModelView(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
-
-        [ObservableProperty]
-        private string pacienteNome = string.Empty;
-
-        [ObservableProperty]
-        private string periodo = string.Empty;
-
-        [ObservableProperty]
-        private int totalRegistos;
-
-        [ObservableProperty]
-        private Chart graficoHumor;
-
-        [ObservableProperty]
-        private Chart graficoEnergia;
-
-        [ObservableProperty]
-        private Chart graficoStress;
-
-        public async Task LoadEvolucaoAsync(Guid pacienteId, int dias = 7)
-        {
-            try
-            {
-                var response = await _httpClient.GetFromJsonAsync<EvolucaoResponseDto>($"api/evolucao/{pacienteId}?dias={dias}");
-                if (response == null) throw new Exception("Resposta vazia da API");
-
-                PacienteNome = response.PacienteNome;
-                Periodo = $"{response.PeriodoInicio} - {response.PeriodoFim}";
-                TotalRegistos = response.TotalRegistos;
-
-                // Criar gráficos
-                var entries = response.Evolucao.Select(e => new ChartEntry(e.NivelHumor)
-                {
-                    Label = e.DiaSemana,
-                    ValueLabel = e.NivelHumor.ToString(),
-                    Color = SKColor.Parse("#6C63FF")
-                }).ToList();
-
-                GraficoHumor = new LineChart
-                {
-                    Entries = entries,
                     LineMode = LineMode.Straight,
                     LineSize = 4,
                     PointMode = PointMode.Circle,
@@ -185,134 +181,27 @@ namespace MindCarePlus.Mobile.ModelViews
                     MaxValue = 10
                 };
 
-                var energiaEntries = response.Evolucao.Select(e => new ChartEntry(e.NivelEnergia)
-                {
-                    Label = e.DiaSemana,
-                    ValueLabel = e.NivelEnergia.ToString(),
-                    Color = SKColor.Parse("#4CAF50")
-                }).ToList();
-
-                GraficoEnergia = new LineChart
-                {
-                    Entries = energiaEntries,
-                    LineMode = LineMode.Straight,
-                    LineSize = 4,
-                    PointMode = PointMode.Circle,
-                    PointSize = 18,
-                    BackgroundColor = SKColors.Transparent,
-                    LabelTextSize = 32,
-                    MinValue = 0,
-                    MaxValue = 10
-                };
-
-                var stressEntries = response.Evolucao.Select(e => new ChartEntry(e.NivelStress)
-                {
-                    Label = e.DiaSemana,
-                    ValueLabel = e.NivelStress.ToString(),
-                    Color = SKColor.Parse("#FF5252")
-                }).ToList();
-
-                GraficoStress = new LineChart
-                {
-                    Entries = stressEntries,
-                    LineMode = LineMode.Straight,
-                    LineSize = 4,
-                    PointMode = PointMode.Circle,
-                    PointSize = 18,
-                    BackgroundColor = SKColors.Transparent,
-                    LabelTextSize = 32,
-                    MinValue = 0,
-                    MaxValue = 10
-                };
+                Console.WriteLine("Gráfico de Stress criado");
+                Console.WriteLine($"{response.Evolucao.Count} dias processados");
+                Console.WriteLine("========================================");
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"❌ Erro HTTP: {ex.Message}");
+                MensagemErro = "Erro de conexão com o servidor.";
+                TemDados = false;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erro ao carregar evolução: {ex.Message}");
-                CarregarDadosMock();
+                Console.WriteLine($"Erro: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                MensagemErro = $"Erro: {ex.Message}";
+                TemDados = false;
             }
-        }
-
-        private void CarregarDadosMock()
-        {
-            PacienteNome = "João Silva";
-            Periodo = "05/01/2025 - 11/01/2025";
-            TotalRegistos = 7;
-
-            // Dados mock - Gráfico de Humor
-            var humorEntries = new List<ChartEntry>
+            finally
             {
-                new ChartEntry(6) { Label = "Seg", ValueLabel = "6", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(7) { Label = "Ter", ValueLabel = "7", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(5) { Label = "Qua", ValueLabel = "5", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(8) { Label = "Qui", ValueLabel = "8", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(7) { Label = "Sex", ValueLabel = "7", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(8) { Label = "Sáb", ValueLabel = "8", Color = SKColor.Parse("#6C63FF") },
-                new ChartEntry(9) { Label = "Dom", ValueLabel = "9", Color = SKColor.Parse("#6C63FF") }
-            };
-
-            GraficoHumor = new LineChart
-            {
-                Entries = humorEntries,
-                LineMode = LineMode.Straight,
-                LineSize = 4,
-                PointMode = PointMode.Circle,
-                PointSize = 18,
-                BackgroundColor = SKColors.Transparent,
-                LabelTextSize = 32,
-                ValueLabelOrientation = Orientation.Horizontal,
-                MinValue = 0,
-                MaxValue = 10
-            };
-
-            // Dados mock - Gráfico de Energia
-            var energiaEntries = new List<ChartEntry>
-            {
-                new ChartEntry(7) { Label = "Seg", ValueLabel = "7", Color = SKColor.Parse("#4CAF50") },
-                new ChartEntry(8) { Label = "Ter", ValueLabel = "8", Color = SKColor.Parse("#4CAF50") },
-                new ChartEntry(6) { Label = "Qua", ValueLabel = "6", Color = SKColor.Parse("#4CAF50") },
-                new ChartEntry(9) { Label = "Qui", ValueLabel = "9", Color = SKColor.Parse("#4CAF50") },
-                new ChartEntry(8) { Label = "Sex", ValueLabel = "8", Color = SKColor.Parse("#4CAF50") },
-                new ChartEntry(9) { Label = "Sáb", ValueLabel = "9", Color = SKColor.Parse("#4CAF50") },
-                new ChartEntry(9) { Label = "Dom", ValueLabel = "9", Color = SKColor.Parse("#4CAF50") }
-            };
-
-            GraficoEnergia = new LineChart
-            {
-                Entries = energiaEntries,
-                LineMode = LineMode.Straight,
-                LineSize = 4,
-                PointMode = PointMode.Circle,
-                PointSize = 18,
-                BackgroundColor = SKColors.Transparent,
-                LabelTextSize = 32,
-                MinValue = 0,
-                MaxValue = 10
-            };
-
-            // Dados mock - Gráfico de Stress
-            var stressEntries = new List<ChartEntry>
-            {
-                new ChartEntry(4) { Label = "Seg", ValueLabel = "4", Color = SKColor.Parse("#FF5252") },
-                new ChartEntry(3) { Label = "Ter", ValueLabel = "3", Color = SKColor.Parse("#FF5252") },
-                new ChartEntry(5) { Label = "Qua", ValueLabel = "5", Color = SKColor.Parse("#FF5252") },
-                new ChartEntry(2) { Label = "Qui", ValueLabel = "2", Color = SKColor.Parse("#FF5252") },
-                new ChartEntry(3) { Label = "Sex", ValueLabel = "3", Color = SKColor.Parse("#FF5252") },
-                new ChartEntry(2) { Label = "Sáb", ValueLabel = "2", Color = SKColor.Parse("#FF5252") },
-                new ChartEntry(2) { Label = "Dom", ValueLabel = "2", Color = SKColor.Parse("#FF5252") }
-            };
-
-            GraficoStress = new LineChart
-            {
-                Entries = stressEntries,
-                LineMode = LineMode.Straight,
-                LineSize = 4,
-                PointMode = PointMode.Circle,
-                PointSize = 18,
-                BackgroundColor = SKColors.Transparent,
-                LabelTextSize = 32,
-                MinValue = 0,
-                MaxValue = 10
-            };
+                IsLoading = false;
+            }
         }
     }
 }

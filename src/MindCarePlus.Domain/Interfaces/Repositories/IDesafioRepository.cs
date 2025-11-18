@@ -2,7 +2,8 @@
 
 namespace MindCarePlus.Domain.Interfaces.Repositories
 {
-    public interface IDesafioRepository: IRepository<Desafio>
+    public interface IDesafioRepository : IRepository<Desafio>
     {
+        Task<Desafio?> GetDesafioAleatorioAsync(string tipo);
     }
 }

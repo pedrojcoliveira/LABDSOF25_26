@@ -4,12 +4,14 @@
              xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
              x:DataType="viewmodel:DashboardViewModel"
              x:Class="MindCarePlus.Mobile.Pages.DashboardPage"
-             Title="Dashboard"
-             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui">
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             Title="Dashboard">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#6C63FF">
 
+            <!-- Header -->
             <Label Text="{Binding NomeUtilizador, StringFormat='Olá, {0}! 👋'}" 
                    FontSize="28" 
                    FontAttributes="Bold" 
@@ -20,31 +22,36 @@
                    TextColor="White" 
                    Opacity="0.9"/>
 
-            <Frame BackgroundColor="White" 
-                   CornerRadius="15" 
-                   Padding="20" 
-                   HasShadow="True">
+            <!-- Gamificação -->
+            <Border BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 15"
+                    Padding="20" 
+                    Shadow="True">
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Text="{Binding NivelAtual, StringFormat='Nível {0} - Descobridor'}" 
                                FontSize="18" 
                                FontAttributes="Bold"/>
-                        <Frame Grid.Column="1" 
-                               BackgroundColor="#6C63FF" 
-                               CornerRadius="25" 
-                               Padding="15,10" 
-                               HasShadow="False">
+                        <Border Grid.Column="1" 
+                                BackgroundColor="#6C63FF" 
+                                StrokeShape="RoundRectangle 25"
+                                Padding="15,10" 
+                                Shadow="False">
                             <Label Text="{Binding NivelAtual}" 
                                    TextColor="White" 
                                    FontSize="20" 
                                    FontAttributes="Bold"/>
-                        </Frame>
+                        </Border>
                     </Grid>
 
-                    <Label Text="{Binding PontosParaProximoNivel, StringFormat='{0} pontos de 600 para o próximo nível'}" 
-                           FontSize="12" 
-                           TextColor="Gray"/>
+                    <Label Text="{Binding PontosAtuais, StringFormat='Tens {0} pontos'}" 
+                           FontSize="14" 
+                           FontAttributes="Bold"
+                           TextColor="#6C63FF"/>
 
+                    <Label Text="{Binding PontosParaProximoNivel, StringFormat='Faltam {0} pontos para o próximo nível'}" 
+                           FontSize="12" 
+                           TextColor="Gray"/>   
                     <ProgressBar Progress="{Binding ProgressoPercentagem}" 
                                  ProgressColor="#6C63FF" 
                                  HeightRequest="8"/>
@@ -94,98 +101,122 @@
                         </VerticalStackLayout>
                     </Grid>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
-            <Frame BackgroundColor="White" 
-       CornerRadius="15" 
-       Padding="20" 
-       HasShadow="True">
+            <!-- Evolução de Humor com Gráfico -->
+            <Border BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 15"
+                    Padding="20" 
+                    Shadow="True">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding VerGraficoEvolucaoCommand}"/>
+                </Border.GestureRecognizers>
+
                 <VerticalStackLayout Spacing="10">
                     <Label Text="📊 Evolução de Humor - Última Semana" 
-               FontSize="16" 
-               FontAttributes="Bold"/>
+                           FontSize="16" 
+                           FontAttributes="Bold"/>
 
                     <microcharts:ChartView Chart="{Binding GraficoHumorDashboard}" 
-                               HeightRequest="180"/>
+                                           HeightRequest="180"/>
 
-                    <Label Text="Toca no gráfico para análise detalhada →" 
-               FontSize="11" 
-               TextColor="Gray" 
-               HorizontalOptions="Center"
-               Opacity="0.7"/>
+                    <Label Text="Toca para ver análise detalhada →" 
+                           FontSize="11" 
+                           TextColor="Gray" 
+                           HorizontalOptions="Center"
+                           Opacity="0.7"/>
                 </VerticalStackLayout>
+            </Border>
 
-                <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding VerGraficoEvolucaoCommand}"/>
-                </Frame.GestureRecognizers>
-            </Frame>
-
-            <Frame BackgroundColor="White" 
-                   CornerRadius="15" 
-                   Padding="20" 
-                   HasShadow="True">
+            <!-- Badges Conquistadas -->
+            <Border BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 15"
+                    Padding="20" 
+                    Shadow="True">
                 <VerticalStackLayout Spacing="15">
                     <Label Text="🏆 Badges Conquistadas" 
                            FontSize="16" 
                            FontAttributes="Bold"/>
 
-                    <CollectionView ItemsSource="{Binding BadgesConquistadas}" 
-                                    HeightRequest="100">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="15"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <VerticalStackLayout Spacing="5" WidthRequest="80">
-                                    <Frame BackgroundColor="#FFD700" 
-                                           CornerRadius="40" 
-                                           WidthRequest="60" 
-                                           HeightRequest="60" 
-                                           Padding="0" 
-                                           HasShadow="True">
-                                        <Label Text="🏅" 
-                                               FontSize="30" 
-                                               HorizontalOptions="Center" 
-                                               VerticalOptions="Center"/>
-                                    </Frame>
-                                    <Label Text="{Binding Nome}" 
-                                           FontSize="10" 
-                                           TextColor="Gray" 
-                                           HorizontalOptions="Center" 
-                                           LineBreakMode="WordWrap" 
-                                           MaxLines="2"/>
-                                </VerticalStackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Frame>
+                    <ScrollView Orientation="Horizontal" HeightRequest="120">
+                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding BadgesConquistadas}" 
+                                               Spacing="15"
+                                               Padding="5">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="dto:BadgeConquistadaDto">
+                                    <VerticalStackLayout Spacing="8" WidthRequest="70">
+                                        <Border BackgroundColor="#FFD700" 
+                                                StrokeShape="RoundRectangle 30"
+                                                StrokeThickness="0"
+                                                WidthRequest="60" 
+                                                HeightRequest="60" 
+                                                Padding="0"
+                                                HorizontalOptions="Center">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:DashboardViewModel}}, Path=ShowBadgeDetailsCommand}"
+                                                                      CommandParameter="{Binding .}"/>
+                                            </Border.GestureRecognizers>
+                                            <Border.Shadow>
+                                                <Shadow Brush="#FFD700"
+                                                        Offset="0,4"
+                                                        Radius="8"
+                                                        Opacity="0.4"/>
+                                            </Border.Shadow>
+                                            <Label Text="{Binding ImagemUrl}"
+                                                   FontSize="32"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
 
+                                        <Label Text="{Binding Nome}" 
+                                               FontSize="10" 
+                                               TextColor="Gray" 
+                                               HorizontalOptions="Center"
+                                               HorizontalTextAlignment="Center"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"/>
+
+                                        <Label Text="{Binding Nivel}" 
+                                               FontSize="10" 
+                                               TextColor="Gray" 
+                                               HorizontalOptions="Center"
+                                               HorizontalTextAlignment="Center"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"/>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Ações Rápidas -->
             <Grid ColumnDefinitions="*,*" 
                   RowDefinitions="Auto,Auto" 
                   ColumnSpacing="15" 
                   RowSpacing="15">
 
-                <Frame Grid.Row="0" Grid.Column="0" 
-                       BackgroundColor="White" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
-                    <Frame.GestureRecognizers>
+                <Border Grid.Row="0" Grid.Column="0" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding RegistarHumorCommand}"/>
-                    </Frame.GestureRecognizers>
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="10">
-                        <Frame BackgroundColor="#6C63FF" 
-                               CornerRadius="30" 
-                               WidthRequest="60" 
-                               HeightRequest="60" 
-                               Padding="0" 
-                               HorizontalOptions="Center">
+                        <Border BackgroundColor="#6C63FF" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
                             <Label Text="😊" 
                                    FontSize="30" 
                                    HorizontalOptions="Center" 
                                    VerticalOptions="Center"/>
-                        </Frame>
+                        </Border>
                         <Label Text="Registar Humor" 
                                FontSize="14" 
                                FontAttributes="Bold" 
@@ -195,28 +226,28 @@
                                TextColor="Gray" 
                                HorizontalOptions="Center"/>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
-                <Frame Grid.Row="0" Grid.Column="1" 
-                       BackgroundColor="White" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
-                    <Frame.GestureRecognizers>
+                <Border Grid.Row="0" Grid.Column="1" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding VerDesafiosCommand}"/>
-                    </Frame.GestureRecognizers>
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="10">
-                        <Frame BackgroundColor="#4CAF50" 
-                               CornerRadius="30" 
-                               WidthRequest="60" 
-                               HeightRequest="60" 
-                               Padding="0" 
-                               HorizontalOptions="Center">
+                        <Border BackgroundColor="#4CAF50" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
                             <Label Text="✅" 
                                    FontSize="30" 
                                    HorizontalOptions="Center" 
                                    VerticalOptions="Center"/>
-                        </Frame>
+                        </Border>
                         <Label Text="Desafios Diários" 
                                FontSize="14" 
                                FontAttributes="Bold" 
@@ -226,55 +257,59 @@
                                TextColor="Gray" 
                                HorizontalOptions="Center"/>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
-                <Frame Grid.Row="1" Grid.Column="0" 
-                       BackgroundColor="White" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
+                <Border Grid.Row="1" Grid.Column="0" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding VerGraficoEvolucaoCommand}"/>
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="10">
-                        <Frame BackgroundColor="#2196F3" 
-                               CornerRadius="30" 
-                               WidthRequest="60" 
-                               HeightRequest="60" 
-                               Padding="0" 
-                               HorizontalOptions="Center">
-                            <Label Text="📝" 
+                        <Border BackgroundColor="#2196F3" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
+                            <Label Text="📈" 
                                    FontSize="30" 
                                    HorizontalOptions="Center" 
-                                   VerticalOptions="Center"/>       
-                        </Frame>
-                        <Label Text="Ver Relatórios" 
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Ver Evolução" 
                                FontSize="14" 
                                FontAttributes="Bold" 
                                HorizontalOptions="Center"/>
-                        <Label Text="Em breve..." 
+                        <Label Text="Gráficos detalhados" 
                                FontSize="10" 
                                TextColor="Gray" 
-                               HorizontalOptions="Center"/> 
+                               HorizontalOptions="Center"/>
                     </VerticalStackLayout>
-                </Frame>
-                <Frame Grid.Row="1" Grid.Column="1" 
-                       BackgroundColor="White" 
-                       CornerRadius="15" 
-                       Padding="20" 
-                       HasShadow="True">
-                    <Frame.GestureRecognizers>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="1" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ContactarPsicologoCommand}"/>
-                    </Frame.GestureRecognizers>
+                    </Border.GestureRecognizers>
                     <VerticalStackLayout Spacing="10">
-                        <Frame BackgroundColor="#9C27B0" 
-                               CornerRadius="30" 
-                               WidthRequest="60" 
-                               HeightRequest="60" 
-                               Padding="0" 
-                               HorizontalOptions="Center">
+                        <Border BackgroundColor="#9C27B0" 
+                                StrokeShape="RoundRectangle 30"
+                                WidthRequest="60" 
+                                HeightRequest="60" 
+                                Padding="0" 
+                                HorizontalOptions="Center">
                             <Label Text="💬" 
                                    FontSize="30" 
                                    HorizontalOptions="Center" 
                                    VerticalOptions="Center"/>
-                        </Frame>
+                        </Border>
                         <Label Text="Contactar" 
                                FontSize="14" 
                                FontAttributes="Bold" 
@@ -284,7 +319,7 @@
                                TextColor="Gray" 
                                HorizontalOptions="Center"/>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
             </Grid>
 
         </VerticalStackLayout>

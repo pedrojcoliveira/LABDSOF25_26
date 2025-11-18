@@ -1,14 +1,29 @@
 ﻿<?xml version = "1.0" encoding = "UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:MindCarePlus.Mobile"
-             x:Class="MindCarePlus.Mobile.App">
+             xmlns:converters="clr-namespace:MindCarePlus.Mobile.Converters"
+             x:Class="MindCarePlus.Mobile.App"
+             >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <converters:IntToBorderColorConverter x:Key="IntToBorderColorConverter" />
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:EstadoToBorderColorConverter x:Key="EstadoToBorderColorConverter" />
+            <converters:EstadoToButtonEnabledConverter x:Key="EstadoToButtonEnabledConverter" />
+            <converters:PercentToProgressConverter x:Key="PercentToProgressConverter" />
+            <converters:EstadoToCheckBgConverter x:Key="EstadoToCheckBgConverter" />
+            <converters:EstadoIsConcluidoConverter x:Key="EstadoIsConcluido"/>
+            <converters:EstadoToCheckColorConverter x:Key="EstadoToCheckColorConverter" />
+            <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <converters:ShowPasswordTextConverter x:Key="ShowPasswordTextConverter" />
+            <converters:CountToBoolConverter x:Key="CountToBoolConverter"/>
+            <converters:CountToInvertedBoolConverter x:Key="CountToInvertedBoolConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
