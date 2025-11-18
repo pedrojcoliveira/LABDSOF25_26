@@ -4,6 +4,7 @@
              xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
              x:DataType="viewmodel:DashboardViewModel"
              x:Class="MindCarePlus.Mobile.Pages.DashboardPage"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
              Title="Dashboard">
 
     <ScrollView>
@@ -109,7 +110,7 @@
                             <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="dto:DiaHumorDto">
                                 <VerticalStackLayout Spacing="5" WidthRequest="50">
                                     <BoxView Color="#6C63FF" 
                                              HeightRequest="{Binding NivelHumor}" 
@@ -137,35 +138,63 @@
                            FontSize="16" 
                            FontAttributes="Bold"/>
 
-                    <CollectionView ItemsSource="{Binding BadgesConquistadas}" 
-                                    HeightRequest="100">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="15"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <VerticalStackLayout Spacing="5" WidthRequest="80">
-                                    <Border BackgroundColor="#FFD700" 
-                                            StrokeShape="RoundRectangle 40"
-                                            WidthRequest="60" 
-                                            HeightRequest="60" 
-                                            Padding="0" 
-                                            Shadow="True">
-                                        <Label Text="{Binding ImagemUrl}"
-                                               FontSize="30"
+                    <ScrollView Orientation="Horizontal" HeightRequest="120">
+                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding BadgesConquistadas}" 
+                                               Spacing="15"
+                                               Padding="5">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="dto:BadgeConquistadaDto">
+                                    <VerticalStackLayout Spacing="8" WidthRequest="70">
+                                        <!-- Círculo Dourado com Tap -->
+                                        <Border BackgroundColor="#FFD700" 
+                                                StrokeShape="RoundRectangle 30"
+                                                StrokeThickness="0"
+                                                WidthRequest="60" 
+                                                HeightRequest="60" 
+                                                Padding="0"
+                                                HorizontalOptions="Center">
+
+                                            <!-- Gesture Recognizer -->
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnBadgeTapped"/>
+                                            </Border.GestureRecognizers>
+
+                                            <!-- Sombra -->
+                                            <Border.Shadow>
+                                                <Shadow Brush="#FFD700"
+                                                        Offset="0,4"
+                                                        Radius="8"
+                                                        Opacity="0.4"/>
+                                            </Border.Shadow>
+
+                                            <!-- Ícone -->
+                                            <Label Text="{Binding ImagemUrl}"
+                                                   FontSize="32"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+
+                                        <!-- Nome da Badge -->
+                                        <Label Text="{Binding Nome}" 
+                                               FontSize="10" 
+                                               TextColor="Gray" 
                                                HorizontalOptions="Center"
-                                               VerticalOptions="Center"/>
-                                    </Border>
-                                    <Label Text="{Binding Nome}" 
-                                           FontSize="10" 
-                                           TextColor="Gray" 
-                                           HorizontalOptions="Center" 
-                                           LineBreakMode="WordWrap" 
-                                           MaxLines="2"/>
-                                </VerticalStackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                                               HorizontalTextAlignment="Center"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"/>
+
+                                        <Label Text="{Binding Nivel}" 
+                                                FontSize="10" 
+                                                TextColor="Gray" 
+                                                HorizontalOptions="Center"
+                                                HorizontalTextAlignment="Center"
+                                                LineBreakMode="WordWrap"
+                                                MaxLines="2"/>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
                 </VerticalStackLayout>
             </Border>
 
