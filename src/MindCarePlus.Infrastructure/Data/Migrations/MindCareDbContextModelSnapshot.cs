@@ -330,7 +330,7 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("character varying(13)");
 
-                    b.Property<DateTime>("dataCriacao")
+                    b.Property<DateTime>("DataCriacao")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
