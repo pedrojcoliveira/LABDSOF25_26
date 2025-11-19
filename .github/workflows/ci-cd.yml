@@ -11,34 +11,40 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  statuses: write
+
 env:
   DOTNET_VERSION: '9.0.x'
   
 jobs:
   # ========== JOB 1: BUILD & TEST ==========
   build-and-test:
-    name: 🔨 Build & Test
+    name: Build & Test
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: 🔧 Setup .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           
-      - name: 📦 Restore dependencies
-        run: dotnet restore src/MindCarePlus.sln
+      - name: Restore dependencies
+        run: dotnet restore MindCarePlus.sln
         
-      - name: 🔨 Build solution
-        run: dotnet build src/MindCarePlus.sln --configuration Release --no-restore
+      - name: Build solution
+        run: dotnet build MindCarePlus.sln --configuration Release --no-restore
         
-      - name: 🧪 Run tests
-        run: dotnet test src/MindCarePlus.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+      - name: Run tests
+        run: dotnet test MindCarePlus.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
         
-      - name: 📊 Publish test results
+      - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
@@ -46,96 +52,96 @@ jobs:
           
   # ========== JOB 2: CODE QUALITY ==========
   code-quality:
-    name: 🔍 Code Quality
+    name: Code Quality
     runs-on: ubuntu-latest
     needs: build-and-test
     
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           
-      - name: 🔧 Setup .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           
-      - name: 📦 Restore dependencies
-        run: dotnet restore src/MindCarePlus.sln
+      - name: Restore dependencies
+        run: dotnet restore MindCarePlus.sln
         
-      - name: 🔍 Run code analysis
-        run: dotnet build src/MindCarePlus.sln --configuration Release /p:TreatWarningsAsErrors=false
+      - name: Run code analysis
+        run: dotnet build MindCarePlus.sln --configuration Release /p:TreatWarningsAsErrors=false
         
   # ========== JOB 3: SECURITY SCAN ==========
   security-scan:
-    name: 🔒 Security Scan
+    name: Security Scan
     runs-on: ubuntu-latest
     needs: build-and-test
     
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: 🔧 Setup .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           
-      - name: 🔒 Run security scan
+      - name: Run security scan
         run: |
-          dotnet list src/MindCarePlus.sln package --vulnerable --include-transitive 2>&1 | tee security-scan.txt
+          dotnet list MindCarePlus.sln package --vulnerable --include-transitive 2>&1 | tee security-scan.txt
           if grep -q "has the following vulnerable packages" security-scan.txt; then
-            echo "⚠️ Vulnerabilidades encontradas!"
+            echo "Vulnerabilidades encontradas!"
             exit 1
           fi
           
   # ========== JOB 4: PR VALIDATION ==========
   pr-validation:
-    name: ✅ PR Validation
+    name: PR Validation
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     needs: [build-and-test, code-quality, security-scan]
     
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: ✅ All checks passed
+      - name: All checks passed
         run: |
-          echo "🎉 Todos os checks passaram!"
-          echo "✅ Build: OK"
-          echo "✅ Tests: OK"
-          echo "✅ Code Quality: OK"
-          echo "✅ Security: OK"
+          echo "Todos os checks passaram!"
+          echo "Build: OK"
+          echo "Tests: OK"
+          echo "Code Quality: OK"
+          echo "Security: OK"
           echo ""
           echo "Este PR está pronto para merge! 🚀"
 
   # ========== JOB 5: JIRA - MOVE TO IN REVIEW ==========
   jira-in-review:
-    name: 🎫 Jira → In Review
+    name: Jira → In Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')
-    needs: [build-and-test, code-quality, security-scan]  # ← SÓ move se os testes passarem!
+    needs: [build-and-test, code-quality, security-scan]
     
     steps:
-      - name: 🎫 Extract Jira Issue Key
+      - name: Extract Jira Issue Key
         id: extract
         run: |
           BRANCH_NAME="${{ github.head_ref }}"
           ISSUE_KEY=$(echo "$BRANCH_NAME" | grep -oP 'KAN-\d+' | head -1)
           
           if [ -z "$ISSUE_KEY" ]; then
-            echo "⚠️ Nenhum ticket Jira encontrado na branch: $BRANCH_NAME"
-            echo "ℹ️  Use o formato: feature/KAN-XX-descricao"
+            echo "Nenhum ticket Jira encontrado na branch: $BRANCH_NAME"
+            echo "Use o formato: feature/KAN-XX-descricao"
             echo "issue_key=" >> $GITHUB_OUTPUT
             exit 0
           fi
           
           echo "issue_key=$ISSUE_KEY" >> $GITHUB_OUTPUT
-          echo "✅ Ticket encontrado: $ISSUE_KEY"
+          echo "Ticket encontrado: $ISSUE_KEY"
           
-      - name: 🔄 Transition to In Review
+      - name: Transition to In Review
         if: steps.extract.outputs.issue_key != ''
         uses: atlassian/gajira-transition@v3
         with:
@@ -146,7 +152,7 @@ jobs:
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           
-      - name: 💬 Comment on PR
+      - name: Comment on PR
         if: steps.extract.outputs.issue_key != ''
         uses: actions/github-script@v7
         with:
@@ -158,42 +164,39 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `🎫 **Jira Update**\n\n` +
+              body: `**Jira Update**\n\n` +
                     `Ticket [${issueKey}](${jiraUrl}/browse/${issueKey}) movido para **In Review** ✅\n\n` +
-                    `### ✅ Todos os checks passaram:\n` +
-                    `- ✅ Build & Tests\n` +
-                    `- ✅ Code Quality\n` +
-                    `- ✅ Security Scan\n\n` +
+                    `### Todos os checks passaram:\n` +
+                    `- Build & Tests\n` +
+                    `- Code Quality\n` +
+                    `- Security Scan\n\n` +
                     `Este PR está pronto para revisão! 🚀`
             });
 
   # ========== JOB 6: JIRA - MOVE TO IN DEPLOYMENT ==========
   jira-deployment:
-    name: 🚀 Jira → In Deployment
+    name: Jira → In Deployment
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [build-and-test, code-quality, security-scan]  # ← SÓ move se os testes passarem na main!
+    needs: [build-and-test, code-quality, security-scan]
     
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
           
-      - name: 🎫 Extract Jira Issue Key
+      - name: Extract Jira Issue Key
         id: extract
         run: |
-          # Tenta extrair do commit message (merge commit)
           COMMIT_MSG=$(git log -1 --pretty=%B)
-          echo "📝 Commit message: $COMMIT_MSG"
+          echo "Commit message: $COMMIT_MSG"
           
           ISSUE_KEY=$(echo "$COMMIT_MSG" | grep -oP 'KAN-\d+' | head -1)
           
-          # Se não encontrou no commit message, tenta extrair do merge commit
           if [ -z "$ISSUE_KEY" ]; then
-            # Busca a branch que foi mergeada
             MERGED_BRANCH=$(echo "$COMMIT_MSG" | grep -oP "from\s+\K[^\s]+" || echo "")
-            echo "🔍 Branch mergeada: $MERGED_BRANCH"
+            echo "Branch mergeada: $MERGED_BRANCH"
             
             if [ -n "$MERGED_BRANCH" ]; then
               ISSUE_KEY=$(echo "$MERGED_BRANCH" | grep -oP 'KAN-\d+' | head -1)
@@ -201,16 +204,16 @@ jobs:
           fi
           
           if [ -z "$ISSUE_KEY" ]; then
-            echo "⚠️ Nenhum ticket Jira encontrado no merge"
-            echo "📝 Commit message analisado: $COMMIT_MSG"
+            echo "Nenhum ticket Jira encontrado no merge"
+            echo "Commit message analisado: $COMMIT_MSG"
             echo "issue_key=" >> $GITHUB_OUTPUT
             exit 0
           fi
           
           echo "issue_key=$ISSUE_KEY" >> $GITHUB_OUTPUT
-          echo "✅ Ticket encontrado: $ISSUE_KEY"
+          echo "Ticket encontrado: $ISSUE_KEY"
           
-      - name: 🚀 Transition to In Deployment
+      - name: Transition to In Deployment
         if: steps.extract.outputs.issue_key != ''
         uses: atlassian/gajira-transition@v3
         with:
@@ -221,13 +224,14 @@ jobs:
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           
-      - name: 🎉 Success notification
+      - name: Success notification
         if: steps.extract.outputs.issue_key != ''
         run: |
           echo "=========================================="
-          echo "🎉 DEPLOYMENT SUCCESSFUL!"
+          echo "DEPLOYMENT SUCCESSFUL!"
           echo "=========================================="
-          echo "✅ Ticket: ${{ steps.extract.outputs.issue_key }}"
-          echo "✅ Status: In Deployment"
-          echo "✅ Branch: main"
-          echo "✅ Commit: ${{ github.sha }}"
+          echo "Ticket: ${{ steps.extract.outputs.issue_key }}"
+          echo "Status: In Deployment"
+          echo "Branch: main"
+          echo "Commit: ${{ github.sha }}"
+          echo "=========================================="
