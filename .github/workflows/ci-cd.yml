@@ -21,10 +21,9 @@ env:
   DOTNET_VERSION: '9.0.x'
   
 jobs:
-  # ========== JOB 1: BUILD & TEST ==========
   build-and-test:
-    name: Build & Test
-    runs-on: windows-latest  # ← MAUI precisa Windows
+    name: Build & Test Backend
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
@@ -34,35 +33,37 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Install MAUI Workloads
-        run: dotnet workload restore
-        shell: pwsh
           
-      - name: Restore dependencies
-        run: dotnet restore MindCarePlus.sln
-        shell: pwsh
+      - name: Restore Backend
+        run: |
+          dotnet restore src/MindCarePlus.API/MindCarePlus.API.csproj
+          dotnet restore src/MindCarePlus.Application/MindCarePlus.Application.csproj
+          dotnet restore src/MindCarePlus.Domain/MindCarePlus.Domain.csproj
+          dotnet restore src/MindCarePlus.Infrastructure/MindCarePlus.Infrastructure.csproj
+          dotnet restore src/MindCarePlus.Shared/MindCarePlus.Shared.csproj
         
-      - name: Build solution
-        run: dotnet build MindCarePlus.sln --configuration Release --no-restore
-        shell: pwsh
+      - name: Build Backend
+        run: |
+          dotnet build src/MindCarePlus.API/MindCarePlus.API.csproj --configuration Release --no-restore
+          dotnet build src/MindCarePlus.Application/MindCarePlus.Application.csproj --configuration Release --no-restore
+          dotnet build src/MindCarePlus.Domain/MindCarePlus.Domain.csproj --configuration Release --no-restore
+          dotnet build src/MindCarePlus.Infrastructure/MindCarePlus.Infrastructure.csproj --configuration Release --no-restore
+          dotnet build src/MindCarePlus.Shared/MindCarePlus.Shared.csproj --configuration Release --no-restore
         
-      # Testes unitários (só backend, sem mobile)
-      - name: Run backend tests
-        run: dotnet test MindCarePlus.sln --configuration Release --no-build --filter "FullyQualifiedName!~Mobile" --verbosity normal --logger "trx;LogFileName=test-results.trx"
+      - name: Run Backend Tests
+        run: |
+          dotnet test tests/MindCarePlus.Domain.Tests/MindCarePlus.Domain.Tests.csproj --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
         continue-on-error: true
-        shell: pwsh
         
       - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action/windows@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: '**/test-results.trx'
           
-  # ========== JOB 2: CODE QUALITY ==========
   code-quality:
     name: Code Quality
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build-and-test
     
     steps:
@@ -75,23 +76,20 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Install MAUI Workloads
-        run: dotnet workload restore
-        shell: pwsh
           
-      - name: Restore dependencies
-        run: dotnet restore MindCarePlus.sln
-        shell: pwsh
+      - name: Restore Backend
+        run: |
+          dotnet restore src/MindCarePlus.API/MindCarePlus.API.csproj
+          dotnet restore src/MindCarePlus.Application/MindCarePlus.Application.csproj
+          dotnet restore src/MindCarePlus.Domain/MindCarePlus.Domain.csproj
+          dotnet restore src/MindCarePlus.Infrastructure/MindCarePlus.Infrastructure.csproj
         
       - name: Run code analysis
-        run: dotnet build MindCarePlus.sln --configuration Release /p:TreatWarningsAsErrors=false
-        shell: pwsh
+        run: dotnet build src/MindCarePlus.API/MindCarePlus.API.csproj --configuration Release /p:TreatWarningsAsErrors=false
         
-  # ========== JOB 3: SECURITY SCAN ==========
   security-scan:
     name: Security Scan
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build-and-test
     
     steps:
@@ -105,14 +103,12 @@ jobs:
           
       - name: Run security scan
         run: |
-          dotnet list MindCarePlus.sln package --vulnerable --include-transitive 2>&1 | Tee-Object -FilePath security-scan.txt
-          if (Select-String -Path security-scan.txt -Pattern "has the following vulnerable packages") {
-            Write-Host "Vulnerabilidades encontradas!"
+          dotnet list src/MindCarePlus.API/MindCarePlus.API.csproj package --vulnerable --include-transitive 2>&1 | tee security-scan.txt
+          if grep -q "has the following vulnerable packages" security-scan.txt; then
+            echo "WARNING: Vulnerabilities found!"
             exit 1
-          }
-        shell: pwsh
+          fi
           
-  # ========== JOB 4: PR VALIDATION ==========
   pr-validation:
     name: PR Validation
     runs-on: ubuntu-latest
@@ -125,17 +121,18 @@ jobs:
         
       - name: All checks passed
         run: |
-          echo "Todos os checks passaram!"
-          echo "Build: OK"
-          echo "Tests: OK"
-          echo "Code Quality: OK"
-          echo "Security: OK"
+          echo "All checks passed!"
+          echo "- Build Backend: OK"
+          echo "- Tests: OK"
+          echo "- Code Quality: OK"
+          echo "- Security: OK"
           echo ""
-          echo "Este PR está pronto para merge!"
+          echo "NOTE: Mobile is not tested in pipeline (build locally)"
+          echo ""
+          echo "This PR is ready for merge!"
 
-  # ========== JOB 5: JIRA - MOVE TO IN REVIEW ==========
   jira-in-review:
-    name: Jira → In Review
+    name: Jira - Move to In Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')
     needs: [build-and-test, code-quality, security-scan]
@@ -148,14 +145,14 @@ jobs:
           ISSUE_KEY=$(echo "$BRANCH_NAME" | grep -oP 'KAN-\d+' | head -1)
           
           if [ -z "$ISSUE_KEY" ]; then
-            echo "Nenhum ticket Jira encontrado na branch: $BRANCH_NAME"
-            echo "Use o formato: feature/KAN-XX-descricao"
+            echo "WARNING: No Jira ticket found in branch: $BRANCH_NAME"
+            echo "INFO: Use format: feature/KAN-XX-description"
             echo "issue_key=" >> $GITHUB_OUTPUT
             exit 0
           fi
           
           echo "issue_key=$ISSUE_KEY" >> $GITHUB_OUTPUT
-          echo "Ticket encontrado: $ISSUE_KEY"
+          echo "SUCCESS: Ticket found: $ISSUE_KEY"
           
       - name: Transition to In Review
         if: steps.extract.outputs.issue_key != ''
@@ -181,17 +178,18 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `**Jira Update**\n\n` +
-                    `Ticket [${issueKey}](${jiraUrl}/browse/${issueKey}) movido para **In Review**\n\n` +
-                    `### Todos os checks passaram:\n` +
-                    `- Build & Tests\n` +
+                    `Ticket [${issueKey}](${jiraUrl}/browse/${issueKey}) moved to **In Review**\n\n` +
+                    `### All checks passed:\n` +
+                    `- Build Backend\n` +
+                    `- Tests\n` +
                     `- Code Quality\n` +
                     `- Security Scan\n\n` +
-                    `Este PR está pronto para revisão!`
+                    `**Note:** Mobile is not tested in pipeline.\n\n` +
+                    `This PR is ready for review!`
             });
 
-  # ========== JOB 6: JIRA - MOVE TO IN DEPLOYMENT ==========
   jira-deployment:
-    name: Jira → In Deployment
+    name: Jira - Move to In Deployment
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build-and-test, code-quality, security-scan]
@@ -212,7 +210,7 @@ jobs:
           
           if [ -z "$ISSUE_KEY" ]; then
             MERGED_BRANCH=$(echo "$COMMIT_MSG" | grep -oP "from\s+\K[^\s]+" || echo "")
-            echo "Branch mergeada: $MERGED_BRANCH"
+            echo "Merged branch: $MERGED_BRANCH"
             
             if [ -n "$MERGED_BRANCH" ]; then
               ISSUE_KEY=$(echo "$MERGED_BRANCH" | grep -oP 'KAN-\d+' | head -1)
@@ -220,14 +218,14 @@ jobs:
           fi
           
           if [ -z "$ISSUE_KEY" ]; then
-            echo "Nenhum ticket Jira encontrado no merge"
-            echo "Commit message analisado: $COMMIT_MSG"
+            echo "WARNING: No Jira ticket found in merge"
+            echo "Commit message analyzed: $COMMIT_MSG"
             echo "issue_key=" >> $GITHUB_OUTPUT
             exit 0
           fi
           
           echo "issue_key=$ISSUE_KEY" >> $GITHUB_OUTPUT
-          echo "Ticket encontrado: $ISSUE_KEY"
+          echo "SUCCESS: Ticket found: $ISSUE_KEY"
           
       - name: Transition to In Deployment
         if: steps.extract.outputs.issue_key != ''
