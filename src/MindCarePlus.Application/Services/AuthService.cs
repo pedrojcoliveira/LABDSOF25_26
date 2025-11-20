@@ -162,7 +162,7 @@ public class AuthService: IAuthService
                 Objectivo = dto.Objectivo?.Trim() ?? string.Empty,
                 NivelGamificacao = 1, // Começa no nível 1
                 Pontos = 0, // Começa com 0 pontos
-                dataCriacao = DateTime.UtcNow
+                DataCriacao = DateTime.UtcNow
             };
 
             // Persistir na base de dados
@@ -212,7 +212,7 @@ public class AuthService: IAuthService
                 NumeroCedulaProfissional = dto.NumeroCedulaProfissional.Trim(),
                 Especialidade = dto.Especialidade.Trim(),
                 Avaliacao = 0.0f, // Começa com avaliação 0
-                dataCriacao = DateTime.UtcNow
+                DataCriacao = DateTime.UtcNow
             };
 
             // Persistir na base de dados

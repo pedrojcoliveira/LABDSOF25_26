@@ -33,7 +33,7 @@
                         BackgroundColor="White"
                         Padding="12">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="1"/>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="5"/>
                     </Border.GestureRecognizers>
                     <HorizontalStackLayout Spacing="12">
                         <Border BackgroundColor="#22c55e" 
@@ -55,7 +55,7 @@
                         BackgroundColor="White"
                         Padding="12">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="2"/>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="4"/>
                     </Border.GestureRecognizers>
                     <HorizontalStackLayout Spacing="12">
                         <Border BackgroundColor="#60a5fa" 
@@ -99,7 +99,7 @@
                         BackgroundColor="White"
                         Padding="12">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="4"/>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="2"/>
                     </Border.GestureRecognizers>
                     <HorizontalStackLayout Spacing="12">
                         <Border BackgroundColor="#fb923c" 
@@ -121,7 +121,7 @@
                         BackgroundColor="White"
                         Padding="12">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="5"/>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="1"/>
                     </Border.GestureRecognizers>
                     <HorizontalStackLayout Spacing="12">
                         <Border BackgroundColor="#ef4444" 

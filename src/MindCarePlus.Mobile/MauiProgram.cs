@@ -92,11 +92,6 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
-
-
-        // Registar Services
-        // **CORREÇÃO 3: Apagámos o "AddSingleton<AuthService>()" duplicado**
-
         // Registar ViewModels
         builder.Services.AddTransient<SelectUserTypeViewModel>();
         builder.Services.AddTransient<RegisterPacienteViewModel>();
@@ -106,6 +101,10 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistoHumorModelView>();
         builder.Services.AddTransient<DesafiosModelView>();
         builder.Services.AddTransient<DashboardViewModel>();
+        builder.Services.AddTransient<ListaPacientesViewModel>();
+        builder.Services.AddTransient<DetalhePacienteViewModel>();
+        builder.Services.AddTransient<ListaPacientesViewModel>();
+        builder.Services.AddTransient<DetalhePacienteViewModel>();
         builder.Services.AddTransient<EvolucaoModelView>();
 
         // Registar Pages
@@ -118,6 +117,8 @@ public static class MauiProgram
         builder.Services.AddTransient<DesafiosPage>();
         builder.Services.AddTransient<DashboardPage>();
         builder.Services.AddTransient<EvolucaoPage>();
+        builder.Services.AddTransient<ListaPacientesPage>();
+        builder.Services.AddTransient<DetalhePacientePage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

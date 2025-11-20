@@ -6,6 +6,10 @@
     xmlns:local="clr-namespace:MindCarePlus.Mobile.Pages"
     Shell.FlyoutBehavior="Disabled">
 
+    <!-- ============================================ -->
+    <!-- PÁGINAS DE AUTENTICAÇÃO (sem tabs) -->
+    <!-- ============================================ -->
+
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
@@ -26,13 +30,16 @@
         ContentTemplate="{DataTemplate local:RegisterPsicologoPage}"
         Route="RegisterPsicologoPage" />
 
+    <!-- ============================================ -->
+    <!-- TABS DE PACIENTE -->
+    <!-- ============================================ -->
 
     <TabBar Route="MainFlow">
-
         <ShellContent
             Title="Início"
             ContentTemplate="{DataTemplate local:DashboardPage}"
             Route="DashboardPage" />
+
         <ShellContent
             ContentTemplate="{DataTemplate local:EvolucaoPage}"
             Route="evolucao"
@@ -41,10 +48,26 @@
             Title="Humor"
             ContentTemplate="{DataTemplate local:RegistoHumorPage}"
             Route="RegistoHumorPage" />
+
         <ShellContent
             Title="Desafios"
             ContentTemplate="{DataTemplate local:DesafiosPage}"
             Route="DesafiosPage" />
+    </TabBar>
+
+    <!-- ============================================ -->
+    <!-- TABS DE PSICÓLOGO (NOVO) -->
+    <!-- ============================================ -->
+
+    <TabBar Route="PsicologoFlow">
+        <ShellContent
+            Title="Pacientes"
+            ContentTemplate="{DataTemplate local:ListaPacientesPage}"
+            Route="ListaPacientesPage" />
+
+        <!-- Adiciona mais tabs aqui no futuro, ex: -->
+        <!-- <ShellContent Title="Mensagens" ... /> -->
+        <!-- <ShellContent Title="Calendário" ... /> -->
     </TabBar>
 
 </Shell>

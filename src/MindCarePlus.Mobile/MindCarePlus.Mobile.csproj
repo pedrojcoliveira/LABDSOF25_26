@@ -84,6 +84,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\DetalhePacientePage.xaml.cs">
+	    <DependentUpon>DetalhePacientePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\ListaPacientesPage.xaml.cs">
+	    <DependentUpon>ListaPacientesPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Pages\DetalhePacientePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\ListaPacientesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
