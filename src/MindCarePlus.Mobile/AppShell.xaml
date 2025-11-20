@@ -41,6 +41,10 @@
             Route="DashboardPage" />
 
         <ShellContent
+            ContentTemplate="{DataTemplate local:EvolucaoPage}"
+            Route="evolucao"
+            Shell.PresentationMode="ModalAnimated" />
+        <ShellContent
             Title="Humor"
             ContentTemplate="{DataTemplate local:RegistoHumorPage}"
             Route="RegistoHumorPage" />

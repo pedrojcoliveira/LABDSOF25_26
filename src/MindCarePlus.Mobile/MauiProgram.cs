@@ -9,6 +9,8 @@ using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
+using SkiaSharp.Views.Maui.Controls.Hosting;
+using Microcharts.Maui;
 
 namespace MindCarePlus.Mobile;
 
@@ -19,6 +21,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMicrocharts()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
@@ -102,6 +105,7 @@ public static class MauiProgram
         builder.Services.AddTransient<DetalhePacienteViewModel>();
         builder.Services.AddTransient<ListaPacientesViewModel>();
         builder.Services.AddTransient<DetalhePacienteViewModel>();
+        builder.Services.AddTransient<EvolucaoModelView>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -112,6 +116,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistoHumorPage>();
         builder.Services.AddTransient<DesafiosPage>();
         builder.Services.AddTransient<DashboardPage>();
+        builder.Services.AddTransient<EvolucaoPage>();
         builder.Services.AddTransient<ListaPacientesPage>();
         builder.Services.AddTransient<DetalhePacientePage>();
 

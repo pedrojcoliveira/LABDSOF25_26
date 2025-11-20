@@ -28,6 +28,8 @@
             <converters:TabBorderConverter x:Key="TabBorderConverter"/>
             <converters:TabTextColorConverter x:Key="TabTextColorConverter"/>
             <converters:AlertaToColorConverter x:Key="AlertaToColorConverter"/>
+            <converters:CountToBoolConverter x:Key="CountToBoolConverter"/>
+            <converters:CountToInvertedBoolConverter x:Key="CountToInvertedBoolConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

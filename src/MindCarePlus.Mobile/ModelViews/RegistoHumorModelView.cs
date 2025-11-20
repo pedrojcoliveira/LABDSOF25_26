@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;  // ← ADICIONA
 using MindCarePlus.Mobile.Services;
 using MindCarePlus.Mobile.Services.Interfaces;
+using MindCarePlus.Mobile.Messages;      // ← ADICIONA
 using MindCarePlus.Shared.DTOs;
 using MindCarePlus.Shared.DTOs.RegistoDiario;
 
@@ -38,10 +40,8 @@ namespace MindCarePlus.Mobile.ViewModels
         [RelayCommand]
         private void SelectMood(string moodStr)
         {
-            // 2. Converte a string para int
             if (int.TryParse(moodStr, out int moodId))
             {
-                // 3. Só depois atribui o valor
                 SelectedMood = moodId;
                 OnPropertyChanged(nameof(CanSave));
             }
@@ -104,10 +104,17 @@ namespace MindCarePlus.Mobile.ViewModels
                     Notas = Notes
                 };
 
+                Console.WriteLine("🔍 Criando registo...");
                 var resultado = await _apiService.CriarRegistoAsync(registo);
 
                 if (resultado != null)
                 {
+                    Console.WriteLine("✅ Registo criado com sucesso!");
+
+                    // ← ENVIA MENSAGEM PARA DASHBOARD ATUALIZAR!
+                    WeakReferenceMessenger.Default.Send(new RegistoCriadoMessage());
+                    Console.WriteLine("📤 Mensagem enviada para Dashboard atualizar");
+
                     await _dialogService.ShowAlertAsync("Sucesso ✅",
                         "Registo guardado com sucesso!", "OK");
 
@@ -117,15 +124,20 @@ namespace MindCarePlus.Mobile.ViewModels
                     EnergyLevel = 3;
                     Notes = string.Empty;
                     OnPropertyChanged(nameof(CanSave));
+
+                    // Volta para a dashboard
+                    await Shell.Current.GoToAsync("..");
                 }
                 else
                 {
+                    Console.WriteLine("❌ Erro: resultado null");
                     await _dialogService.ShowAlertAsync("Erro ❌",
                         "Não foi possível guardar o registo. Verifica se a API está a correr.", "OK");
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ Exceção: {ex.Message}");
                 await _dialogService.ShowAlertAsync("Erro ❌",
                     $"Erro: {ex.Message}", "OK");
             }

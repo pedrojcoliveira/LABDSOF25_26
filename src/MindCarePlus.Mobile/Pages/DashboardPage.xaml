@@ -5,11 +5,13 @@
              x:DataType="viewmodel:DashboardViewModel"
              x:Class="MindCarePlus.Mobile.Pages.DashboardPage"
              xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              Title="Dashboard">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#6C63FF">
 
+            <!-- Header -->
             <Label Text="{Binding NomeUtilizador, StringFormat='Olá, {0}! 👋'}" 
                    FontSize="28" 
                    FontAttributes="Bold" 
@@ -20,6 +22,7 @@
                    TextColor="White" 
                    Opacity="0.9"/>
 
+            <!-- Gamificação -->
             <Border BackgroundColor="White" 
                     StrokeShape="RoundRectangle 15"
                     Padding="20" 
@@ -41,10 +44,14 @@
                         </Border>
                     </Grid>
 
-                    <Label Text="{Binding PontosParaProximoNivel, StringFormat='{0} pontos de 600 para o próximo nível'}" 
-                           FontSize="12" 
-                           TextColor="Gray"/>
+                    <Label Text="{Binding PontosAtuais, StringFormat='Tens {0} pontos'}" 
+                           FontSize="14" 
+                           FontAttributes="Bold"
+                           TextColor="#6C63FF"/>
 
+                    <Label Text="{Binding PontosParaProximoNivel, StringFormat='Faltam {0} pontos para o próximo nível'}" 
+                           FontSize="12" 
+                           TextColor="Gray"/>   
                     <ProgressBar Progress="{Binding ProgressoPercentagem}" 
                                  ProgressColor="#6C63FF" 
                                  HeightRequest="8"/>
@@ -96,39 +103,32 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Evolução de Humor com Gráfico -->
             <Border BackgroundColor="White" 
                     StrokeShape="RoundRectangle 15"
                     Padding="20" 
                     Shadow="True">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding VerGraficoEvolucaoCommand}"/>
+                </Border.GestureRecognizers>
+
                 <VerticalStackLayout Spacing="10">
                     <Label Text="📊 Evolução de Humor - Última Semana" 
                            FontSize="16" 
                            FontAttributes="Bold"/>
 
-                    <CollectionView ItemsSource="{Binding EvolucaoHumor}">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="dto:DiaHumorDto">
-                                <VerticalStackLayout Spacing="5" WidthRequest="50">
-                                    <BoxView Color="#6C63FF" 
-                                             HeightRequest="{Binding NivelHumor}" 
-                                             WidthRequest="40" 
-                                             CornerRadius="5" 
-                                             VerticalOptions="End"
-                                             MinimumHeightRequest="20"/>
-                                    <Label Text="{Binding DiaSemana}" 
-                                           FontSize="10" 
-                                           TextColor="Gray" 
-                                           HorizontalOptions="Center"/>
-                                </VerticalStackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    <microcharts:ChartView Chart="{Binding GraficoHumorDashboard}" 
+                                           HeightRequest="180"/>
+
+                    <Label Text="Toca para ver análise detalhada →" 
+                           FontSize="11" 
+                           TextColor="Gray" 
+                           HorizontalOptions="Center"
+                           Opacity="0.7"/>
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Badges Conquistadas -->
             <Border BackgroundColor="White" 
                     StrokeShape="RoundRectangle 15"
                     Padding="20" 
@@ -145,7 +145,6 @@
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="dto:BadgeConquistadaDto">
                                     <VerticalStackLayout Spacing="8" WidthRequest="70">
-                                        <!-- Círculo Dourado com Tap -->
                                         <Border BackgroundColor="#FFD700" 
                                                 StrokeShape="RoundRectangle 30"
                                                 StrokeThickness="0"
@@ -153,28 +152,22 @@
                                                 HeightRequest="60" 
                                                 Padding="0"
                                                 HorizontalOptions="Center">
-
-                                            <!-- Gesture Recognizer -->
                                             <Border.GestureRecognizers>
-                                                <TapGestureRecognizer Tapped="OnBadgeTapped"/>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:DashboardViewModel}}, Path=ShowBadgeDetailsCommand}"
+                                                                      CommandParameter="{Binding .}"/>
                                             </Border.GestureRecognizers>
-
-                                            <!-- Sombra -->
                                             <Border.Shadow>
                                                 <Shadow Brush="#FFD700"
                                                         Offset="0,4"
                                                         Radius="8"
                                                         Opacity="0.4"/>
                                             </Border.Shadow>
-
-                                            <!-- Ícone -->
                                             <Label Text="{Binding ImagemUrl}"
                                                    FontSize="32"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"/>
                                         </Border>
 
-                                        <!-- Nome da Badge -->
                                         <Label Text="{Binding Nome}" 
                                                FontSize="10" 
                                                TextColor="Gray" 
@@ -184,12 +177,12 @@
                                                MaxLines="2"/>
 
                                         <Label Text="{Binding Nivel}" 
-                                                FontSize="10" 
-                                                TextColor="Gray" 
-                                                HorizontalOptions="Center"
-                                                HorizontalTextAlignment="Center"
-                                                LineBreakMode="WordWrap"
-                                                MaxLines="2"/>
+                                               FontSize="10" 
+                                               TextColor="Gray" 
+                                               HorizontalOptions="Center"
+                                               HorizontalTextAlignment="Center"
+                                               LineBreakMode="WordWrap"
+                                               MaxLines="2"/>
                                     </VerticalStackLayout>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
@@ -198,6 +191,7 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Ações Rápidas -->
             <Grid ColumnDefinitions="*,*" 
                   RowDefinitions="Auto,Auto" 
                   ColumnSpacing="15" 
@@ -280,16 +274,16 @@
                                 HeightRequest="60" 
                                 Padding="0" 
                                 HorizontalOptions="Center">
-                            <Label Text="📝" 
+                            <Label Text="📈" 
                                    FontSize="30" 
                                    HorizontalOptions="Center" 
                                    VerticalOptions="Center"/>
                         </Border>
-                        <Label Text="Ver Relatórios" 
+                        <Label Text="Ver Evolução" 
                                FontSize="14" 
                                FontAttributes="Bold" 
                                HorizontalOptions="Center"/>
-                        <Label Text="Análise detalhada" 
+                        <Label Text="Gráficos detalhados" 
                                FontSize="10" 
                                TextColor="Gray" 
                                HorizontalOptions="Center"/>
