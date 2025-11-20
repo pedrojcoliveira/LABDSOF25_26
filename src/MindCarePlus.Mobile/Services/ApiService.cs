@@ -210,6 +210,34 @@ namespace MindCarePlus.Mobile.Services
             }
         }
 
+        public async Task<EvolucaoResponseDto?> GetEvolucaoAsync(Guid pacienteId, int dias = 7)
+        {
+            await ConfigureAuthHeaderAsync();
+
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<EvolucaoResponseDto>(
+                    $"api/evolucao/{pacienteId}?dias={dias}");
+
+                Console.WriteLine($"Evolução carregada: {response?.TotalRegistos ?? 0} registos");
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Erro ao buscar evolução: {ex.Message}");
+                if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await HandleUnauthorizedAsync();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro inesperado na evolução: {ex.Message}");
+                return null;
+            }
+        }
+
     }
 
 

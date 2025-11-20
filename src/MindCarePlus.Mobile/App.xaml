@@ -22,6 +22,8 @@
             <converters:EstadoToCheckColorConverter x:Key="EstadoToCheckColorConverter" />
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <converters:ShowPasswordTextConverter x:Key="ShowPasswordTextConverter" />
+            <converters:CountToBoolConverter x:Key="CountToBoolConverter"/>
+            <converters:CountToInvertedBoolConverter x:Key="CountToInvertedBoolConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

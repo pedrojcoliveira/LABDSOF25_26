@@ -26,6 +26,7 @@ namespace MindCarePlus.API.Controllers
             var badgesAtribuidas = await _unitOfWork.BadgesAtribuidas.FindAsync(ba => ba.UtilizadorId == pacienteId);
             var todasBadges = new List<BadgeConquistadaDto>();
 
+
             var badges = new List<BadgeConquistadaDto>();
 
             foreach (var badgeAtribuida in badgesAtribuidas)

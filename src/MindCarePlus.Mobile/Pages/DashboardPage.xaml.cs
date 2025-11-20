@@ -17,22 +17,33 @@ namespace MindCarePlus.Mobile.Pages
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            // Carrega a dashboard automaticamente quando a página aparece
+            Console.WriteLine("========================================");
+            Console.WriteLine("🔍 DashboardPage.OnAppearing()");
+            Console.WriteLine("========================================");
+
+            // SEMPRE carrega os dados quando a página aparece
             await _viewModel.LoadDashboardAsync();
+        }
+
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            base.OnNavigatedTo(args);
+            Console.WriteLine("========================================");
+            Console.WriteLine("🔍 DashboardPage.OnNavigatedTo()");
+            Console.WriteLine("🔄 Forçando refresh...");
+            Console.WriteLine("========================================");
         }
 
         private async void OnBadgeTapped(object sender, EventArgs e)
         {
             if (sender is Border border && border.BindingContext is BadgeConquistadaDto badge)
             {
-                // Animação de feedback visual
                 await border.ScaleTo(0.9, 50);
                 await border.ScaleTo(1.0, 50);
 
-                // Mostrar popup com detalhes
                 await DisplayAlert(
                     $"{badge.ImagemUrl} {badge.Nome}",
-                    $"{badge.Descricao}✨ Conquistada com sucesso! Está no nivel: {badge.Nivel}\n\n",
+                    $"{badge.Descricao}\n\nNível: {badge.Nivel}\n✨ Conquistada!",
                     "Fechar"
                 );
             }
