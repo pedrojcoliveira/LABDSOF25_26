@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Options;
+using MindCarePlus.Application.Configuration;
 using MindCarePlus.Application.Services;
 using MindCarePlus.Domain.Entities;
 using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Domain.Interfaces.Repositories;
 using MindCarePlus.Shared.DTOs.Auth;
 using Moq;
-using Xunit;
 
 namespace MindCarePlus.Application.Tests;
 
@@ -14,6 +15,7 @@ public class AuthServiceTests
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IPacienteRepository> _mockPacienteRepository;
     private readonly Mock<IPsicologoRepository> _mockPsicologoRepository;
+    private readonly Mock<IOptions<JwtSettings>> _mockJwtSettings; // Add this field
     private readonly AuthService _authService;
 
     public AuthServiceTests()
@@ -22,13 +24,17 @@ public class AuthServiceTests
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockPacienteRepository = new Mock<IPacienteRepository>();
         _mockPsicologoRepository = new Mock<IPsicologoRepository>();
+        _mockJwtSettings = new Mock<IOptions<JwtSettings>>(); // Initialize mock
 
         // Configurar UnitOfWork para retornar os repositórios mockados
         _mockUnitOfWork.Setup(u => u.Pacientes).Returns(_mockPacienteRepository.Object);
         _mockUnitOfWork.Setup(u => u.Psicologos).Returns(_mockPsicologoRepository.Object);
 
+        // Opcional: Setup JwtSettings if needed for tests
+        _mockJwtSettings.Setup(x => x.Value).Returns(new JwtSettings());
+
         // Criar instância do serviço com o mock
-        _authService = new AuthService(_mockUnitOfWork.Object);
+        _authService = new AuthService(_mockUnitOfWork.Object, _mockJwtSettings.Object); // Pass jwtSettings
     }
 
     #region RegisterPacienteAsync Tests
@@ -512,7 +518,9 @@ public class AuthServiceTests
     public void Constructor_WithNullUnitOfWork_ShouldThrowException()
     {
         // Act
-        Action act = () => new AuthService(null!);
+        var mockJwtSettings = new Mock<IOptions<JwtSettings>>();
+        mockJwtSettings.Setup(x => x.Value).Returns(new JwtSettings());
+        Action act = () => new AuthService(null!, mockJwtSettings.Object);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()

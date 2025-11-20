@@ -99,14 +99,12 @@ namespace MindCarePlus.API.Controllers
             if (!string.IsNullOrEmpty(dto.Notas) && dto.Notas.Length > 200)
                 return BadRequest("Notas não podem ter mais de 200 caracteres");
 
-            int nivelHumorInvertido = 6 - dto.NivelHumor;
-
             var registo = new RegistoDiario
             {
                 Id = Guid.NewGuid(),
                 PacienteId = userId, // 🔑 USA O ID DO TOKEN (não do DTO!)
                 DataRegisto = DateTime.UtcNow,
-                NivelHumor = nivelHumorInvertido,
+                NivelHumor = dto.NivelHumor,
                 NivelStress = dto.NivelStress,
                 NivelEnergia = dto.NivelEnergia,
                 Notas = dto.Notas ?? string.Empty
