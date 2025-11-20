@@ -3,7 +3,8 @@ using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Shared.DTOs.Paciente;
 
 namespace MindCarePlus.Application.Services;
-public class PacienteService: IPacienteService
+
+public class PacienteService : IPacienteService
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -72,9 +73,9 @@ public class PacienteService: IPacienteService
             {
                 Id = r.Id,
                 DataGeracao = r.DataGeracao,
-                Conteudo = r.ConteudoGeradoIA,
-                TipoRelatorio = r.TipoRelatorio,
-                NivelAlerta = r.NivelAlerta
+                //Conteudo = r.ConteudoGeradoIA,
+                //TipoRelatorio = r.TipoRelatorio,
+                //NivelAlerta = r.NivelAlerta
             })
             .ToList();
 

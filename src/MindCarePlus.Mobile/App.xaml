@@ -22,6 +22,12 @@
             <converters:EstadoToCheckColorConverter x:Key="EstadoToCheckColorConverter" />
             <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <converters:ShowPasswordTextConverter x:Key="ShowPasswordTextConverter" />
+            <converters:InicialNomeConverter x:Key="InicialNomeConverter"/>
+            <converters:IntToBoolConverter x:Key="IntToBoolConverter"/>
+            <converters:TabBackgroundConverter x:Key="TabBackgroundConverter"/>
+            <converters:TabBorderConverter x:Key="TabBorderConverter"/>
+            <converters:TabTextColorConverter x:Key="TabTextColorConverter"/>
+            <converters:AlertaToColorConverter x:Key="AlertaToColorConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

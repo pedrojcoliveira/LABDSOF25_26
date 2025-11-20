@@ -73,31 +73,39 @@ public partial class LoginViewModel: ObservableObject
                     ClearSavedCredentials();
                 }
 
-                // Navegar para a página principal
-                await Shell.Current.GoToAsync("//MainFlow");
+                // ✅ NOVO: Verificar o role do utilizador
+                var role = await _authService.GetUserRoleAsync();
 
-                // Opcional: Mostrar mensagem de sucesso
-                await Shell.Current.DisplayAlert(
-                    "Sucesso",
-                    "Login efetuado com sucesso!",
-                    "OK");
+                if (role == "Paciente")
+                {
+                    // Navegar para as tabs de paciente (Dashboard, Humor, Desafios)
+                    await Shell.Current.GoToAsync("//MainFlow");
+                }
+                else if (role == "Psicologo")
+                {
+                    // Navegar para as tabs de psicólogo (Lista de Pacientes)
+                    await Shell.Current.GoToAsync("//PsicologoFlow");
+                }
+                else
+                {
+                    ErrorMessage = "Role de utilizador desconhecido";
+                    await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
+                    return;
+                }
+
+                // Opcional: Mostrar mensagem de sucesso (pode remover se preferires)
+                // await Shell.Current.DisplayAlert("Sucesso", "Login efetuado com sucesso!", "OK");
             }
             else
             {
                 ErrorMessage = result.Message;
-                await Shell.Current.DisplayAlert(
-                    "Erro",
-                    result.Message,
-                    "OK");
+                await Shell.Current.DisplayAlert("Erro", result.Message, "OK");
             }
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Erro inesperado: {ex.Message}";
-            await Shell.Current.DisplayAlert(
-                "Erro",
-                ErrorMessage,
-                "OK");
+            await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
         }
         finally
         {

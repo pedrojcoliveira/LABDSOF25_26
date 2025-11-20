@@ -52,8 +52,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // ===== CONFIGURAR SERVICES =====
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IPacienteService, IPacienteService>();
+builder.Services.AddScoped<IPacienteService, PacienteService>();
 builder.Services.AddScoped<IDesafioService, DesafioService>();
 
 
