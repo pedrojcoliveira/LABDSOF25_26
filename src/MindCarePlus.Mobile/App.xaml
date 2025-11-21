@@ -32,6 +32,7 @@
             <converters:CountToInvertedBoolConverter x:Key="CountToInvertedBoolConverter"/>
             <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
             <converters:BoolToLidoConverter x:Key="BoolToLidoConverter" />
+            <converters:DesafioTypeFilterConverter x:Key="DesafioTypeFilterConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

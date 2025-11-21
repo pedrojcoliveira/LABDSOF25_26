@@ -75,6 +75,13 @@ namespace MindCarePlus.Infrastructure.Data
                     Nome = "Guerreiro da Semana",
                     Descricao = "Completou todos os 7 desafios semanais!",
                     ImagemUrl = "🏆"
+                },
+                new Badge
+                {
+                    Id = Guid.Parse("10000000-0000-0000-0000-000000000100"),
+                    Nome = "Artista",
+                    Descricao = "Completou desafio de hobby",
+                    ImagemUrl = "📋"
                 }
             };
 

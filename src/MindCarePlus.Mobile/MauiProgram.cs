@@ -106,6 +106,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ListaPacientesViewModel>();
         builder.Services.AddTransient<DetalhePacienteViewModel>();
         builder.Services.AddTransient<EvolucaoModelView>();
+        builder.Services.AddTransient<CriarTarefaViewModel>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -119,6 +120,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EvolucaoPage>();
         builder.Services.AddTransient<ListaPacientesPage>();
         builder.Services.AddTransient<DetalhePacientePage>();
+        builder.Services.AddTransient<CriarTarefaPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -455,4 +455,15 @@ public partial class DetalhePacienteViewModel : ObservableObject
         MostrarDetalheRelatorio = false;  
         RelatorioSelecionado = null;
     }
+
+
+    /// <summary>
+    /// Navega para criar nova tarefa terapêutica
+    /// </summary>
+    [RelayCommand]
+    public async Task CriarNovaTarefaAsync()
+    {
+        await Shell.Current.GoToAsync($"CriarTarefaPage?pacienteId={PacienteId}&pacienteNome={Nome}");
+    }
+
 }

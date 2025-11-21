@@ -149,6 +149,15 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsTarefaTerapeutica")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("Prazo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PsicologoId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UtilizadorId")
                         .HasColumnType("uuid");
 

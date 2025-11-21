@@ -80,7 +80,7 @@
                 StrokeThickness="0"
                 Padding="0"
                 Margin="0">
-            <Grid ColumnDefinitions="*,*,*,*" HeightRequest="50">
+            <Grid ColumnDefinitions="*,*,*,*,Auto" HeightRequest="50">
 
                 <!-- Tab Dados -->
                 <Border Grid.Column="0"
@@ -149,6 +149,26 @@
                         </Label.GestureRecognizers>
                     </Label>
                 </Border>
+
+                <Border Grid.Column="4"
+                        BackgroundColor="White"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 20"
+                        Padding="20,10"
+                        Margin="10,0,0,0">
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CriarNovaTarefaCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <Label Text="+ Nova Tarefa"
+                           TextColor="#3B82F6"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Border>
+
 
             </Grid>
         </Border>

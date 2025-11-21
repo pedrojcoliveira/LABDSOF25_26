@@ -15,15 +15,63 @@
             Command="{Binding CarregarDesafiosCommand}" />
     </ContentPage.Behaviors>
 
-    <Grid>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="DesafioItemTemplate" x:DataType="dto:DesafioAtribuidoDto">
+                <Border StrokeThickness="2"
+                        Stroke="{Binding Estado, Converter={StaticResource EstadoToBorderColorConverter}}"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="White"
+                        Padding="12"
+                        Margin="0,0,0,12">
 
-        <ScrollView IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer 
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DesafiosModelView}}, Path=ConcluirDesafioCommand}"
+                            CommandParameter="{Binding .}"/>
+                    </Border.GestureRecognizers>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Border Grid.Column="0" StrokeThickness="0" StrokeShape="RoundRectangle 12" WidthRequest="48" HeightRequest="48" Padding="0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#7C3AED" Offset="0.0" />
+                                    <GradientStop Color="#3B82F6" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Label Text="{Binding Desafio.BadgeIcone}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White"/>
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                            <Label Text="{Binding Desafio.Titulo}" FontAttributes="Bold" TextColor="#1F2937" FontSize="16"/>
+                            <Label Text="{Binding Desafio.Descricao}" FontSize="14" TextColor="#6B7280"/>
+                            <HorizontalStackLayout Spacing="8">
+                                <Border BackgroundColor="#F3E8FF" Padding="6,3" StrokeShape="RoundRectangle 12" StrokeThickness="0">
+                                    <Label Text="{Binding Desafio.Tipo}" TextColor="#7C3AED" FontSize="10"/>
+                                </Border>
+                                <Label Text="{Binding Desafio.PontosRecompensa, StringFormat='+{0} pts'}" TextColor="#6B7280" FontSize="12" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding DiaSemana}" TextColor="#9CA3AF" FontSize="11"/>
+                        </VerticalStackLayout>
+
+                        <Border Grid.Column="2" WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16" Padding="0" StrokeThickness="2"
+                                Stroke="{Binding Estado, Converter={StaticResource EstadoToCheckColorConverter}}"
+                                BackgroundColor="{Binding Estado, Converter={StaticResource EstadoToCheckBgConverter}}">
+                            <Label Text="✓" TextColor="White" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"
+                                   IsVisible="{Binding Estado, Converter={StaticResource EstadoIsConcluidoConverter}}"/>
+                        </Border>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*, Auto">
+
+        <ScrollView Grid.Row="0" IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
             <VerticalStackLayout Padding="20" Spacing="20">
 
-                <Border StrokeThickness="0"
-                        BackgroundColor="#7C3AED"
-                        StrokeShape="RoundRectangle 16"
-                        Padding="20">
+                <Border StrokeThickness="0" BackgroundColor="#7C3AED" StrokeShape="RoundRectangle 16" Padding="20">
                     <Grid>
                         <BoxView>
                             <BoxView.Background>
@@ -33,129 +81,41 @@
                                 </LinearGradientBrush>
                             </BoxView.Background>
                         </BoxView>
-
                         <VerticalStackLayout Spacing="12">
                             <Grid ColumnDefinitions="*,*">
                                 <VerticalStackLayout Grid.Column="0">
                                     <Label Text="Progresso da Semana" TextColor="White" FontSize="12" Opacity="0.9"/>
                                     <Label Text="{Binding DesafiosConcluidos, StringFormat='{0}/7'}" TextColor="White" FontSize="32" FontAttributes="Bold"/>
                                 </VerticalStackLayout>
-
                                 <VerticalStackLayout Grid.Column="1" HorizontalOptions="End">
                                     <Label Text="Pontos" TextColor="White" FontSize="12" Opacity="0.9"/>
                                     <Label Text="{Binding PontosTotais}" TextColor="White" FontSize="32" FontAttributes="Bold"/>
                                 </VerticalStackLayout>
                             </Grid>
-
-                            <ProgressBar Progress="{Binding ProgressoPercentagem}"
-                                         ProgressColor="White"
-                                         HeightRequest="8"/>
-
-                            <Label Text="🏆 Completa os 7 desafios para ganhar a badge 'Guerreiro da Semana'!"
-                                   TextColor="White" FontSize="12" Opacity="0.9"
-                                   HorizontalOptions="Center" HorizontalTextAlignment="Center"
-                                   IsVisible="{Binding CompletouSemana, Converter={StaticResource InvertedBoolConverter}}"/>
-
-                            <Label Text="🎉 SEMANA COMPLETA! Parabéns!"
-                                   TextColor="White" FontSize="14" FontAttributes="Bold"
-                                   HorizontalOptions="Center"
-                                   IsVisible="{Binding CompletouSemana}"/>
+                            <ProgressBar Progress="{Binding ProgressoPercentagem}" ProgressColor="White" HeightRequest="8"/>
+                            <Label Text="🏆 Completa os 7 desafios para ganhar a badge 'Guerreiro da Semana'!" TextColor="White" FontSize="12" Opacity="0.9" HorizontalOptions="Center" IsVisible="{Binding CompletouSemana, Converter={StaticResource InvertedBoolConverter}}"/>
+                            <Label Text="🎉 SEMANA COMPLETA! Parabéns!" TextColor="White" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" IsVisible="{Binding CompletouSemana}"/>
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
 
-                <Label Text="Tarefas Disponíveis"
-                       TextColor="#1F2937"
-                       FontAttributes="Bold"
-                       FontSize="18"/>
+                <Label Text="📋 Tarefas Terapêuticas" TextColor="#7C3AED" FontAttributes="Bold" FontSize="18"/>
 
-                <CollectionView ItemsSource="{Binding Desafios}"
-                                SelectionMode="None">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="dto:DesafioAtribuidoDto">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Desafios, Converter={StaticResource DesafioTypeFilterConverter}, ConverterParameter='Terapeutico'}"
+                                     BindableLayout.ItemTemplate="{StaticResource DesafioItemTemplate}"
+                                     Spacing="0"/>
 
-                            <Border StrokeThickness="2"
-                                    Stroke="{Binding Estado, Converter={StaticResource EstadoToBorderColorConverter}}"
-                                    StrokeShape="RoundRectangle 12"
-                                    BackgroundColor="White"
-                                    Padding="12"
-                                    Margin="0,0,0,12">
+                <Label Text="📅 Desafios Diários" TextColor="#1F2937" FontAttributes="Bold" FontSize="18" Margin="0,10,0,0"/>
 
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DesafiosModelView}}, Path=ConcluirDesafioCommand}"
-                                        CommandParameter="{Binding .}"/>
-                                </Border.GestureRecognizers>
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Desafios, Converter={StaticResource DesafioTypeFilterConverter}, ConverterParameter='Diario'}"
+                                     BindableLayout.ItemTemplate="{StaticResource DesafioItemTemplate}"
+                                     Spacing="0"/>
 
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
 
-                                    <Border Grid.Column="0"
-                                            StrokeThickness="0"
-                                            StrokeShape="RoundRectangle 12"
-                                            WidthRequest="48"
-                                            HeightRequest="48">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="#7C3AED" Offset="0.0" />
-                                                <GradientStop Color="#3B82F6" Offset="1.0" />
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                        <Label Text="{Binding Desafio.BadgeIcone}"
-                                               FontSize="24"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center"
-                                               TextColor="White"/>
-                                    </Border>
-
-                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                        <Label Text="{Binding Desafio.Titulo}"
-                                               FontAttributes="Bold"
-                                               TextColor="#1F2937"
-                                               FontSize="16"/>
-                                        <Label Text="{Binding Desafio.Descricao}"
-                                               FontSize="14"
-                                               TextColor="#6B7280"/>
-                                        <HorizontalStackLayout Spacing="8">
-                                            <Border BackgroundColor="#F3E8FF" Padding="6,3" StrokeShape="RoundRectangle 12" StrokeThickness="0">
-                                                <Label Text="{Binding Desafio.Tipo}" TextColor="#7C3AED" FontSize="10"/>
-                                            </Border>
-                                            <Label Text="{Binding Desafio.PontosRecompensa, StringFormat='+{0} pts'}"
-                                                   TextColor="#6B7280"
-                                                   FontSize="12"
-                                                   VerticalOptions="Center"/>
-                                        </HorizontalStackLayout>
-                                        <Label Text="{Binding DiaSemana}" TextColor="#9CA3AF" FontSize="11"/>
-                                    </VerticalStackLayout>
-
-                                    <Border Grid.Column="2"
-                                            WidthRequest="32"
-                                            HeightRequest="32"
-                                            StrokeShape="RoundRectangle 16"
-                                            Padding="0"
-                                            StrokeThickness="2"
-                                            Stroke="{Binding Estado, Converter={StaticResource EstadoToCheckColorConverter}}"
-                                            BackgroundColor="{Binding Estado, Converter={StaticResource EstadoToCheckBgConverter}}">
-                                        <Label Text="✓"
-                                               TextColor="White"
-                                               FontSize="18"
-                                               FontAttributes="Bold"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center"
-                                               IsVisible="{Binding Estado, Converter={StaticResource EstadoIsConcluidoConverter}}"/>
-                                    </Border>
-                                </Grid>
-                            </Border>
-
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
             </VerticalStackLayout>
         </ScrollView>
 
-        <ActivityIndicator IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           Color="{StaticResource Primary}" />
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="Center" Color="{StaticResource Primary}" />
     </Grid>
 </ContentPage>

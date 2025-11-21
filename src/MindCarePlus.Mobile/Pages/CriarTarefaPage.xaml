@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:Class="MindCarePlus.Mobile.Pages.CriarTarefaPage"
+             x:DataType="vm:CriarTarefaViewModel"
+             Title="Nova Tarefa Terapêutica">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Header -->
+            <Label Text="📋 Criar Tarefa para o Paciente"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="#1F2937"
+                   Margin="0,0,0,10"/>
+
+            <!-- Erro -->
+            <Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                    BackgroundColor="#FEE2E2"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="16">
+                <Label Text="{Binding MensagemErro}"
+                       TextColor="#991B1B"
+                       FontSize="14"/>
+            </Border>
+
+            <!-- Título -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Título *"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#374151"/>
+                <Border BackgroundColor="White"
+                        StrokeThickness="1"
+                        Stroke="#D1D5DB"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="0">
+                    <Entry Text="{Binding Titulo}"
+                           Placeholder="Ex: Praticar mindfulness diariamente"
+                           MaxLength="100"
+                           TextColor="#1F2937"/>
+                </Border>
+                <Label Text="{Binding Titulo.Length, StringFormat='{0}/100'}"
+                       FontSize="12"
+                       TextColor="#9CA3AF"
+                       HorizontalOptions="End"/>
+            </VerticalStackLayout>
+
+            <!-- Descrição -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Descrição *"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#374151"/>
+                <Border BackgroundColor="White"
+                        StrokeThickness="1"
+                        Stroke="#D1D5DB"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="0">
+                    <Editor Text="{Binding Descricao}"
+                            Placeholder="Detalhe a tarefa que o paciente deve realizar..."
+                            HeightRequest="120"
+                            MaxLength="500"
+                            AutoSize="TextChanges"
+                            TextColor="#1F2937"/>
+                </Border>
+                <Label Text="{Binding Descricao.Length, StringFormat='{0}/500'}"
+                       FontSize="12"
+                       TextColor="#9CA3AF"
+                       HorizontalOptions="End"/>
+            </VerticalStackLayout>
+
+            <!-- Prazo -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Prazo *"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#374151"/>
+                <Border BackgroundColor="White"
+                        StrokeThickness="1"
+                        Stroke="#D1D5DB"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="12">
+                    <DatePicker Date="{Binding Prazo}"
+                                MinimumDate="{Binding DataMinima}"
+                                TextColor="#1F2937"/>
+                </Border>
+                <Label Text="Data limite para conclusão da tarefa"
+                       FontSize="12"
+                       TextColor="#6B7280"/>
+            </VerticalStackLayout>
+
+            <!-- Pontos -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Pontos de Recompensa"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="#374151"/>
+                <Border BackgroundColor="White"
+                        StrokeThickness="1"
+                        Stroke="#D1D5DB"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="12">
+                    <HorizontalStackLayout Spacing="12">
+                        <Stepper Value="{Binding PontosRecompensa}"
+                                 Minimum="5"
+                                 Maximum="100"
+                                 Increment="5"/>
+                        <Label Text="{Binding PontosRecompensa, StringFormat='{0} pontos'}"
+                               TextColor="#1F2937"
+                               VerticalOptions="Center"
+                               FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Botões -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,20,0,0">
+                <Button Grid.Column="0"
+                        Text="Cancelar"
+                        BackgroundColor="#F3F4F6"
+                        TextColor="#374151"
+                        Command="{Binding CancelarCommand}"/>
+
+                <Button Grid.Column="1"
+                        Text="Criar Tarefa"
+                        BackgroundColor="#3B82F6"
+                        TextColor="White"
+                        Command="{Binding CriarTarefaCommand}"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+            </Grid>
+
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="#3B82F6"
+                              HeightRequest="50"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
