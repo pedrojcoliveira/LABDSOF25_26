@@ -319,6 +319,35 @@ public class ApiService
         }
     }
 
+    // ==================== RELATÓRIOS IA ====================
+
+    public async Task<List<RelatorioIAResumoDto>> GetRelatoriosPacienteAsync(Guid pacienteId)
+    {
+        var response = await _httpClient.GetAsync($"api/RelatorioIA/paciente/{pacienteId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<RelatorioIAResumoDto>>() ?? new();
+    }
+
+    public async Task<RelatorioIAResumoDto?> GerarRelatorioIAAsync(Guid pacienteId)
+    {
+        var response = await _httpClient.PostAsync($"api/RelatorioIA/gerar/{pacienteId}", null);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<RelatorioIAResumoDto>();
+    }
+
+    public async Task<RelatorioIADetalheDto?> GetRelatorioDetalheAsync(Guid relatorioId)
+    {
+        var response = await _httpClient.GetAsync($"api/RelatorioIA/{relatorioId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<RelatorioIADetalheDto>();
+    }
+
+    public async Task MarcarRelatorioLidoAsync(Guid relatorioId)
+    {
+        var response = await _httpClient.PatchAsync($"api/RelatorioIA/{relatorioId}/marcar-lido", null);
+        response.EnsureSuccessStatusCode();
+    }
+
 }
 
 

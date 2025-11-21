@@ -64,14 +64,7 @@
             Title="Pacientes"
             ContentTemplate="{DataTemplate local:ListaPacientesPage}"
             Route="ListaPacientesPage" />
-        <ShellContent
-        Title="Relatórios IA"
-        ContentTemplate="{DataTemplate local:RelatorioIAPage}"
-        Route="RelatoriosIA" />
 
-        <!-- Adiciona mais tabs aqui no futuro, ex: -->
-        <!-- <ShellContent Title="Mensagens" ... /> -->
-        <!-- <ShellContent Title="Calendário" ... /> -->
     </TabBar>
 
 
