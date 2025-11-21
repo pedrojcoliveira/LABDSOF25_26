@@ -134,7 +134,7 @@ namespace MindCarePlus.Mobile.ViewModels
                 // A barra de progresso e o "CompletouSemana" devem depender APENAS dos desafios semanais
                 // (Ignoramos as tarefas terapêuticas para este cálculo)
 
-                int semanaisFeitos = progresso.Desafios.Count(d => d.Estado == "Concluido");
+                int semanaisFeitos = progresso.Desafios.Count(d => d.Estado == "Concluido" && d.Desafio.Tipo != "TarefaTerapeutica");
 
                 DesafiosConcluidos = semanaisFeitos;
                 TotalDesafios = 7; // A meta semanal é sempre 7
