@@ -3,13 +3,76 @@
     x:Class="MindCarePlus.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:MindCarePlus.Mobile"
-    xmlns:views="clr-namespace:MindCarePlus.Mobile.Views"
-    Title="MindCarePlus.Mobile">
+    xmlns:local="clr-namespace:MindCarePlus.Mobile.Pages"
+    Shell.FlyoutBehavior="Disabled">
+
+    <!-- ============================================ -->
+    <!-- PÁGINAS DE AUTENTICAÇÃO (sem tabs) -->
+    <!-- ============================================ -->
 
     <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate local:LoginPage}"
+        Route="LoginPage" />
+
+    <ShellContent
+        Title="Tipo de Utilizador"
+        ContentTemplate="{DataTemplate local:SelectUserTypePage}"
+        Route="SelectUserTypePage" />
+
+    <ShellContent
+        Title="Registar Paciente"
+        ContentTemplate="{DataTemplate local:RegisterPacientePage}"
+        Route="RegisterPacientePage" />
+
+    <ShellContent
+        Title="Registar Psicólogo"
+        ContentTemplate="{DataTemplate local:RegisterPsicologoPage}"
+        Route="RegisterPsicologoPage" />
+
+    <!-- ============================================ -->
+    <!-- TABS DE PACIENTE -->
+    <!-- ============================================ -->
+
+    <TabBar Route="MainFlow">
+        <ShellContent
+            Title="Início"
+            ContentTemplate="{DataTemplate local:DashboardPage}"
+            Route="DashboardPage" />
+
+        <ShellContent
+            ContentTemplate="{DataTemplate local:EvolucaoPage}"
+            Route="evolucao"
+            Shell.PresentationMode="ModalAnimated" />
+        <ShellContent
+            Title="Humor"
+            ContentTemplate="{DataTemplate local:RegistoHumorPage}"
+            Route="RegistoHumorPage" />
+
+        <ShellContent
+            Title="Desafios"
+            ContentTemplate="{DataTemplate local:DesafiosPage}"
+            Route="DesafiosPage" />
+    </TabBar>
+
+    <!-- ============================================ -->
+    <!-- TABS DE PSICÓLOGO (NOVO) -->
+    <!-- ============================================ -->
+
+    <TabBar Route="PsicologoFlow">
+        <ShellContent
+            Title="Pacientes"
+            ContentTemplate="{DataTemplate local:ListaPacientesPage}"
+            Route="ListaPacientesPage" />
+        <ShellContent
         Title="Relatórios IA"
-        ContentTemplate="{DataTemplate views:RelatoriosIAPage}"
+        ContentTemplate="{DataTemplate local:RelatorioIAPage}"
         Route="RelatoriosIA" />
+
+        <!-- Adiciona mais tabs aqui no futuro, ex: -->
+        <!-- <ShellContent Title="Mensagens" ... /> -->
+        <!-- <ShellContent Title="Calendário" ... /> -->
+    </TabBar>
+
 
 </Shell>

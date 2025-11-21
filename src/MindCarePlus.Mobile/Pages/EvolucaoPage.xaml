@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             x:DataType="viewmodel:EvolucaoModelView"
+             x:Class="MindCarePlus.Mobile.Pages.EvolucaoPage"
+             Title="Evolução de Humor">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="White">
+
+            <Label Text="📊 Gráfico de Evolução" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   TextColor="#6C63FF"/>
+
+            <Frame BackgroundColor="#F5F5F5" 
+                   CornerRadius="10" 
+                   Padding="15" 
+                   HasShadow="False">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="{Binding PacienteNome}" 
+                           FontSize="16" 
+                           FontAttributes="Bold"/>
+                    <Label Text="{Binding Periodo}" 
+                           FontSize="14" 
+                           TextColor="Gray"/>
+                    <Label Text="{Binding TotalRegistos, StringFormat='{0} registos'}" 
+                           FontSize="14" 
+                           TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Gráfico de Humor -->
+            <Frame BackgroundColor="White" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Nível de Humor (1-10)" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="#6C63FF"/>
+
+                    <microcharts:ChartView Chart="{Binding GraficoHumor}" 
+                                           HeightRequest="250"/>
+
+                    <Label Text="Eixo Y: Nível de humor | Eixo X: Dias da semana" 
+                           FontSize="12" 
+                           TextColor="Gray" 
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Gráfico de Energia -->
+            <Frame BackgroundColor="White" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Nível de Energia (1-10)" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="#4CAF50"/>
+
+                    <microcharts:ChartView Chart="{Binding GraficoEnergia}" 
+                                           HeightRequest="250"/>
+
+                    <Label Text="Maior energia indica melhor disposição" 
+                           FontSize="12" 
+                           TextColor="Gray" 
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Gráfico de Stress -->
+            <Frame BackgroundColor="White" 
+                   CornerRadius="15" 
+                   Padding="20" 
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Nível de Stress (1-10)" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="#FF5252"/>
+
+                    <microcharts:ChartView Chart="{Binding GraficoStress}" 
+                                           HeightRequest="250"/>
+
+                    <Label Text="Menor stress indica melhor bem-estar" 
+                           FontSize="12" 
+                           TextColor="Gray" 
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs.Paciente;assembly=MindCarePlus.Shared"
+             x:Class="MindCarePlus.Mobile.Pages.ListaPacientesPage"
+             x:DataType="vm:ListaPacientesViewModel"
+             Title="Meus Pacientes"
+             Shell.NavBarIsVisible="True">
+
+	<Shell.BackButtonBehavior>
+		<BackButtonBehavior IsVisible="False" />
+	</Shell.BackButtonBehavior>
+
+	<Grid RowDefinitions="Auto,*" Padding="16">
+
+		<!-- Barra de Pesquisa -->
+		<Border Grid.Row="0"
+                StrokeThickness="0"
+                BackgroundColor="#F3F4F6"
+                StrokeShape="RoundRectangle 12"
+                Padding="12"
+                Margin="0,0,0,16">
+			<Grid ColumnDefinitions="*,Auto">
+				<Entry Grid.Column="0"
+                       Placeholder="Pesquisar paciente..."
+                       Text="{Binding TextoPesquisa}"
+                       TextChanged="OnPesquisaTextChanged"
+                       BackgroundColor="Transparent"
+                       PlaceholderColor="#9CA3AF"
+                       TextColor="#1F2937"/>
+
+				<ImageButton Grid.Column="1"
+                             Source="close.png"
+                             WidthRequest="24"
+                             HeightRequest="24"
+                             Command="{Binding LimparPesquisaCommand}"
+                             IsVisible="{Binding TextoPesquisa, Converter={StaticResource StringNotEmptyConverter}}"
+                             BackgroundColor="Transparent"/>
+			</Grid>
+		</Border>
+
+		<!-- Conteúdo Principal -->
+		<RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefrescarPacientesCommand}">
+
+			<ScrollView>
+				<VerticalStackLayout Spacing="16">
+
+					<!-- Loading Indicator -->
+					<ActivityIndicator IsRunning="{Binding IsLoading}"
+                                     IsVisible="{Binding IsLoading}"
+                                     Color="#3B82F6"
+                                     HeightRequest="50"/>
+
+					<!-- Mensagem de Erro -->
+					<Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                            BackgroundColor="#FEE2E2"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16">
+						<Label Text="{Binding MensagemErro}"
+                               TextColor="#991B1B"
+                               FontSize="14"
+                               HorizontalTextAlignment="Center"/>
+					</Border>
+
+					<!-- Lista de Pacientes -->
+					<CollectionView ItemsSource="{Binding Pacientes}"
+                                  SelectionMode="None"
+                                  IsVisible="{Binding TemPacientes}">
+						<CollectionView.ItemTemplate>
+							<DataTemplate x:DataType="dto:PacienteResumoDto">
+
+								<Border StrokeThickness="0"
+                                        BackgroundColor="White"
+                                        StrokeShape="RoundRectangle 16"
+                                        Padding="16"
+                                        Margin="0,0,0,12">
+
+									<Border.Shadow>
+										<Shadow Brush="#E5E7EB"
+                                                Offset="0,2"
+                                                Radius="8"
+                                                Opacity="0.5"/>
+									</Border.Shadow>
+
+									<Border.GestureRecognizers>
+										<TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ListaPacientesViewModel}}, Path=SelecionarPacienteCommand}"
+                                            CommandParameter="{Binding .}"/>
+									</Border.GestureRecognizers>
+
+									<Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="60,*,Auto">
+
+										<!-- Avatar/Ícone -->
+										<Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                                                WidthRequest="50"
+                                                HeightRequest="50"
+                                                BackgroundColor="#E0F2FE"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 25"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center">
+											<Label Text="{Binding Nome, Converter={StaticResource InicialNomeConverter}}"
+                                                   TextColor="#0284C7"
+                                                   FontSize="20"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+										</Border>
+
+										<!-- Nome -->
+										<Label Grid.Row="0" Grid.Column="1"
+                                               Text="{Binding Nome}"
+                                               TextColor="#1F2937"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               Margin="12,0,0,4"/>
+
+										<!-- Idade -->
+										<Label Grid.Row="1" Grid.Column="1"
+                                               TextColor="#6B7280"
+                                               FontSize="14"
+                                               Margin="12,0,0,4">
+											<Label.FormattedText>
+												<FormattedString>
+													<Span Text="Idade: "/>
+													<Span Text="{Binding Idade}"/>
+													<Span Text=" anos"/>
+												</FormattedString>
+											</Label.FormattedText>
+										</Label>
+
+										<!-- Info Adicional -->
+										<HorizontalStackLayout Grid.Row="2" Grid.Column="1"
+                                                             Spacing="16"
+                                                             Margin="12,4,0,0">
+
+											<!-- Total de Sessões -->
+											<HorizontalStackLayout Spacing="4">
+												<Label Text="📅" FontSize="14"/>
+												<Label TextColor="#6B7280" FontSize="12">
+													<Label.FormattedText>
+														<FormattedString>
+															<Span Text="{Binding TotalSessoes}"/>
+															<Span Text=" sessões"/>
+														</FormattedString>
+													</Label.FormattedText>
+												</Label>
+											</HorizontalStackLayout>
+
+											<!-- Último Registo -->
+											<HorizontalStackLayout Spacing="4">
+												<Label Text="🕐" FontSize="14"/>
+												<Label Text="{Binding UltimoRegisto, StringFormat='{0:dd/MM/yyyy}'}"
+                                                       TextColor="#6B7280"
+                                                       FontSize="12"/>
+											</HorizontalStackLayout>
+
+										</HorizontalStackLayout>
+
+										<!-- Seta -->
+										<Label Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
+                                               Text="›"
+                                               TextColor="#9CA3AF"
+                                               FontSize="24"
+                                               VerticalOptions="Center"/>
+
+									</Grid>
+								</Border>
+
+							</DataTemplate>
+						</CollectionView.ItemTemplate>
+					</CollectionView>
+
+					<!-- Mensagem Vazia -->
+					<VerticalStackLayout IsVisible="{Binding TemPacientes, Converter={StaticResource InvertedBoolConverter}}"
+                                       Spacing="16"
+                                       Padding="32"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center">
+						<Label Text="👥"
+                               FontSize="64"
+                               HorizontalOptions="Center"/>
+						<Label Text="Nenhum paciente encontrado"
+                               TextColor="#6B7280"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+						<Label Text="Os seus pacientes aparecerão aqui após a primeira sessão."
+                               TextColor="#9CA3AF"
+                               FontSize="14"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+					</VerticalStackLayout>
+
+				</VerticalStackLayout>
+			</ScrollView>
+
+		</RefreshView>
+
+	</Grid>
+
+</ContentPage>

@@ -84,6 +84,9 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                     b.Property<DateTime>("DataAtribuicao")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Nivel")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("UtilizadorId")
                         .HasColumnType("uuid");
 
@@ -333,6 +336,9 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -352,9 +358,6 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(13)
                         .HasColumnType("character varying(13)");
-
-                    b.Property<DateTime>("dataCriacao")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

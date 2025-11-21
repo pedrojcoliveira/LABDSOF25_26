@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ViewModels"
+             x:Class="MindCarePlus.Mobile.Pages.RegistoHumorPage"
+             x:DataType="vm:RegistoHumorModelView"
+             Title="Como te sentes hoje?"
+             BackgroundColor="#F9FAFB">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Date Header 
+            <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                <Label Text="📅" FontSize="32" HorizontalOptions="Center"/>
+                    <Label Text="{Binding Source={x:Static System: TimePicker}, StringFormat='{0:dddd, dd \'de\' MMMM yyyy}'}"
+                       TextColor="#6B7280"
+                       HorizontalOptions="Center"
+                       FontSize="14"/> 
+            </VerticalStackLayout> Por enquanto deixar comentado -->
+
+            <!-- Mood Selection -->
+            <VerticalStackLayout Spacing="12">
+                <Label Text="Como te sentes hoje?"
+                       TextColor="#374151"
+                       FontAttributes="Bold"
+                       FontSize="12"/>
+
+                <!-- Muito Bem -->
+                <Border StrokeThickness="2" 
+                        Stroke="{Binding SelectedMood, Converter={StaticResource IntToBorderColorConverter}, ConverterParameter='1'}"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="White"
+                        Padding="12">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="5"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12">
+                        <Border BackgroundColor="#22c55e" 
+                                StrokeShape="RoundRectangle 24" 
+                                WidthRequest="48" 
+                                HeightRequest="48"
+                                Padding="0"
+                                StrokeThickness="0">
+                            <Label Text="😄" FontSize="28" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Muito Bem" VerticalOptions="Center" FontSize="16" FontAttributes="Bold" TextColor="Purple"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Bem -->
+                <Border StrokeThickness="2" 
+                        Stroke="{Binding SelectedMood, Converter={StaticResource IntToBorderColorConverter}, ConverterParameter='2'}"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="White"
+                        Padding="12">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="4"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12">
+                        <Border BackgroundColor="#60a5fa" 
+                                StrokeShape="RoundRectangle 24" 
+                                WidthRequest="48" 
+                                HeightRequest="48"
+                                Padding="0"
+                                StrokeThickness="0">
+                            <Label Text="🙂" FontSize="28" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Bem" VerticalOptions="Center" FontSize="16" FontAttributes="Bold" TextColor="Purple"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Normal -->
+                <Border StrokeThickness="2" 
+                        Stroke="{Binding SelectedMood, Converter={StaticResource IntToBorderColorConverter}, ConverterParameter='3'}"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="White"
+                        Padding="12">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="3"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12">
+                        <Border BackgroundColor="#facc15" 
+                                StrokeShape="RoundRectangle 24" 
+                                WidthRequest="48" 
+                                HeightRequest="48"
+                                Padding="0"
+                                StrokeThickness="0">
+                            <Label Text="😐" FontSize="28" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Normal" VerticalOptions="Center" FontSize="16" FontAttributes="Bold" TextColor="Purple"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Mal -->
+                <Border StrokeThickness="2" 
+                        Stroke="{Binding SelectedMood, Converter={StaticResource IntToBorderColorConverter}, ConverterParameter='4'}"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="White"
+                        Padding="12">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="2"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12">
+                        <Border BackgroundColor="#fb923c" 
+                                StrokeShape="RoundRectangle 24" 
+                                WidthRequest="48" 
+                                HeightRequest="48"
+                                Padding="0"
+                                StrokeThickness="0">
+                            <Label Text="😟" FontSize="28" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Mal" VerticalOptions="Center" FontSize="16" FontAttributes="Bold" TextColor="Purple"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Muito Mal -->
+                <Border StrokeThickness="2" 
+                        Stroke="{Binding SelectedMood, Converter={StaticResource IntToBorderColorConverter}, ConverterParameter='5'}"
+                        StrokeShape="RoundRectangle 12"
+                        BackgroundColor="White"
+                        Padding="12">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectMoodCommand}" CommandParameter="1"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12">
+                        <Border BackgroundColor="#ef4444" 
+                                StrokeShape="RoundRectangle 24" 
+                                WidthRequest="48" 
+                                HeightRequest="48"
+                                Padding="0"
+                                StrokeThickness="0">
+                            <Label Text="😢" FontSize="28" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Muito Mal" VerticalOptions="Center" FontSize="16" FontAttributes="Bold" TextColor="Purple"/>
+                    </HorizontalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Stress Level -->
+            <VerticalStackLayout Spacing="12">
+                <HorizontalStackLayout>
+                    <Label Text="NÍVEL DE STRESS"
+                           TextColor="#374151"
+                           FontAttributes="Bold"
+                           FontSize="12"
+                           HorizontalOptions="StartAndExpand"/>
+                    <Label Text="{Binding StressLevel, StringFormat='{0}/5'}"
+                           TextColor="#7C3AED"
+                           FontAttributes="Bold"
+                           FontSize="16"/>
+                </HorizontalStackLayout>
+
+                <Border BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 12" 
+                        Padding="16"
+                        StrokeThickness="0">
+                    <VerticalStackLayout Spacing="12">
+                        <Slider Minimum="1" 
+                                Maximum="5" 
+                                Value="{Binding StressLevel}"
+                                MinimumTrackColor="#7C3AED"
+                                MaximumTrackColor="#E5E7EB"/>
+
+                        <Grid ColumnDefinitions="*,*">
+                            <Label Text="Relaxado" TextColor="#6B7280" FontSize="12" Grid.Column="0"/>
+                            <Label Text="Muito Stressado" TextColor="#6B7280" FontSize="12" Grid.Column="1" HorizontalOptions="End"/>
+                        </Grid>
+
+                        <Border BackgroundColor="{Binding StressColor}"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="8"
+                                StrokeThickness="0">
+                            <Label Text="{Binding StressLevelText}"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   FontAttributes="Bold"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Energy Level -->
+            <VerticalStackLayout Spacing="12">
+                <HorizontalStackLayout>
+                    <Label Text="NÍVEL DE ENERGIA"
+                           TextColor="#374151"
+                           FontAttributes="Bold"
+                           FontSize="12"
+                           HorizontalOptions="StartAndExpand"/>
+                    <Label Text="{Binding EnergyLevel, StringFormat='{0}/5'}"
+                           TextColor="#7C3AED"
+                           FontAttributes="Bold"
+                           FontSize="16"/>
+                </HorizontalStackLayout>
+
+                <Border BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 12" 
+                        Padding="16"
+                        StrokeThickness="0">
+                    <VerticalStackLayout Spacing="12">
+                        <Slider Minimum="1" 
+                                Maximum="5" 
+                                Value="{Binding EnergyLevel}"
+                                MinimumTrackColor="#7C3AED"
+                                MaximumTrackColor="#E5E7EB"/>
+
+                        <Grid ColumnDefinitions="*,*">
+                            <Label Text="Exausto" TextColor="#6B7280" FontSize="12" Grid.Column="0"/>
+                            <Label Text="Muito Energético" TextColor="#6B7280" FontSize="12" Grid.Column="1" HorizontalOptions="End"/>
+                        </Grid>
+
+                        <Border BackgroundColor="{Binding EnergyColor}"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="8"
+                                StrokeThickness="0">
+                            <Label Text="{Binding EnergyLevelText}"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   FontAttributes="Bold"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Notes -->
+            <VerticalStackLayout Spacing="12">
+                <Label Text="NOTAS ADICIONAIS (OPCIONAL)"
+                       TextColor="#374151"
+                       FontAttributes="Bold"
+                       FontSize="12"/>
+
+                <Border BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 12" 
+                        Padding="16"
+                        StrokeThickness="0">
+                    <VerticalStackLayout Spacing="8">
+                        <Editor Text="{Binding Notes}"
+                                Placeholder="Como foi o teu dia? O que sentiste?"
+                                HeightRequest="100"
+                                MaxLength="200"
+                                TextColor="Purple"/>
+                        <Label Text="{Binding Notes.Length, StringFormat='{0}/200'}"
+                               TextColor="#9CA3AF"
+                               FontSize="12"
+                               HorizontalOptions="End"/>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Save Button -->
+            <Button Text="Guardar Registo"
+                    Command="{Binding SaveMoodCommand}"
+                    BackgroundColor="#7C3AED"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    IsEnabled="{Binding CanSave}"/>
+
+            <!-- View History Button -->
+            <Button Text="📈 Ver Histórico"
+                    Command="{Binding ViewHistoryCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="#7C3AED"
+                    FontAttributes="Bold"
+                    FontSize="14"/>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                              IsVisible="{Binding IsBusy}"
+                              Color="#7C3AED"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

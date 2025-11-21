@@ -2,7 +2,9 @@
 
 namespace MindCarePlus.Domain.Interfaces.Repositories
 {
-    public interface IDesafioAtribuidoRepository: IRepository<DesafioAtribuido>
+    public interface IDesafioAtribuidoRepository : IRepository<DesafioAtribuido>
     {
+        Task<List<DesafioAtribuido>> GetDesafiosSemanaAtualAsync(Guid utilizadorId);
+        Task<bool> VerificarSemanaCompletaAsync(Guid utilizadorId);
     }
 }

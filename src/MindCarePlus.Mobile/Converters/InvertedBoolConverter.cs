@@ -1,25 +1,28 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace MindCarePlus.Mobile.Converters
+namespace MindCarePlus.Mobile.Converters;
+public class InvertedBoolConverter : IValueConverter
 {
-    public class InvertedBoolConverter : IValueConverter
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        if (value is bool boolValue)
         {
-            if (value is bool boolValue)
-            {
-                return !boolValue;
-            }
-            return true;
+            return !boolValue;
         }
+        return false;
+    }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is bool boolValue)
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is bool boolValue)
             {
-                return !boolValue;
+            return !boolValue;
             }
-            return false;
-        }
+        return false;
     }
 }
