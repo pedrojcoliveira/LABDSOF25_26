@@ -1,5 +1,7 @@
 ﻿using MindCarePlus.Mobile.Pages;
 
+using MindCarePlus.Mobile.Views;
+
 namespace MindCarePlus.Mobile;
 
 public partial class AppShell : Shell
@@ -18,5 +20,6 @@ public partial class AppShell : Shell
         //Routing.RegisterRoute("Dashboard", typeof(DashboardPage));
 
         Routing.RegisterRoute("DetalhePacientePage", typeof(DetalhePacientePage));
-    }
+        Routing.RegisterRoute("relatoriodetalhes", typeof(RelatorioDetalhesPage));
+    } 
 }

@@ -1,4 +1,4 @@
-﻿using MindCarePlus.Mobile.ModelViews;
+using MindCarePlus.Mobile.ModelViews;
 using System;
 using System.Collections.Generic;
 using System.Linq;

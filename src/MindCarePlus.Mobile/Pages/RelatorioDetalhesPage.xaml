@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:Class="MindCarePlus.Mobile.Views.RelatorioDetalhesPage"
+             x:DataType="viewmodels:RelatorioDetalhesViewModel"
+             Title="Detalhes do Relatório">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="20">
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="{StaticResource Primary}"
+                              VerticalOptions="Center"
+                              HeightRequest="100"/>
+
+            <!-- Conteúdo Principal -->
+            <VerticalStackLayout IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                                Spacing="20">
+
+                <!-- Header: Paciente e Período -->
+                <Frame BackgroundColor="{StaticResource Primary}"
+                       Padding="20"
+                       CornerRadius="12"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding PacienteNome}"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="White"/>
+                        <Label Text="{Binding Periodo}"
+                               FontSize="14"
+                               TextColor="White"
+                               Opacity="0.9"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Médias: Cards -->
+                <Label Text="Resumo Semanal"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       Margin="0,8,0,0"/>
+
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+
+                    <!-- Humor -->
+                    <Frame Grid.Column="0" 
+                           BackgroundColor="#E3F2FD"
+                           Padding="16"
+                           CornerRadius="12"
+                           HasShadow="False"
+                           BorderColor="Transparent">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="😊" 
+                                   FontSize="32"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Humor" 
+                                   FontSize="12" 
+                                   TextColor="#1976D2"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="{Binding MediaHumor, StringFormat='{0:F1}/5'}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Energia -->
+                    <Frame Grid.Column="1" 
+                           BackgroundColor="#FFF3E0"
+                           Padding="16"
+                           CornerRadius="12"
+                           HasShadow="False"
+                           BorderColor="Transparent">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="⚡" 
+                                   FontSize="32"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Energia" 
+                                   FontSize="12" 
+                                   TextColor="#F57C00"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="{Binding MediaEnergia, StringFormat='{0:F1}/5'}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="#F57C00"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Stress -->
+                    <Frame Grid.Column="2" 
+                           BackgroundColor="#FCE4EC"
+                           Padding="16"
+                           CornerRadius="12"
+                           HasShadow="False"
+                           BorderColor="Transparent">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="😰" 
+                                   FontSize="32"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Stress" 
+                                   FontSize="12" 
+                                   TextColor="#C2185B"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="{Binding MediaStress, StringFormat='{0:F1}/5'}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="#C2185B"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Tendências Humor -->
+                <Frame Padding="16" 
+                       CornerRadius="12"
+                       BorderColor="LightGray"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="😊"
+                                   FontSize="20"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Tendências de Humor"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding TendenciasHumor}"
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Tendências Energia -->
+                <Frame Padding="16" 
+                       CornerRadius="12"
+                       BorderColor="LightGray"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="⚡"
+                                   FontSize="20"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Tendências de Energia"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding TendenciasEnergia}"
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Tendências Stress -->
+                <Frame Padding="16" 
+                       CornerRadius="12"
+                       BorderColor="LightGray"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="😰"
+                                   FontSize="20"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Tendências de Stress"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding TendenciasStress}"
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Recomendações -->
+                <Frame Padding="16" 
+                       CornerRadius="12"
+                       BorderColor="LightGray"
+                       HasShadow="True"
+                       BackgroundColor="#F0F8FF">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="💡"
+                                   FontSize="20"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Recomendações Clínicas"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding Recomendacoes}"
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Relatório Completo -->
+                <Frame Padding="16" 
+                       CornerRadius="12"
+                       BorderColor="LightGray"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="📋"
+                                   FontSize="20"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Relatório Completo"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding RelatorioCompleto}"
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Mensagem de Erro -->
+                <Frame IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                       Padding="16"
+                       BackgroundColor="#FFEBEE"
+                       CornerRadius="12"
+                       BorderColor="#EF5350">
+                    <Label Text="{Binding MensagemErro}"
+                           TextColor="#C62828"
+                           FontSize="14"/>
+                </Frame>
+
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

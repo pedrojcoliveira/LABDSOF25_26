@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -10,556 +10,683 @@
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="0">
 
-		<!-- Header com Info Básica -->
-		<Border Grid.Row="0"
+        <!-- Header com Info Básica -->
+        <Border Grid.Row="0"
                 BackgroundColor="#3B82F6"
                 StrokeThickness="0"
                 Padding="20"
                 Margin="0,0,0,0">
 
-			<VerticalStackLayout Spacing="8">
+            <VerticalStackLayout Spacing="8">
 
-				<!-- Avatar -->
-				<Border WidthRequest="80"
+                <!-- Avatar -->
+                <Border WidthRequest="80"
                         HeightRequest="80"
                         BackgroundColor="White"
                         StrokeThickness="0"
                         StrokeShape="RoundRectangle 40"
                         HorizontalOptions="Center">
-					<Label Text="{Binding Nome, Converter={StaticResource InicialNomeConverter}}"
+                    <Label Text="{Binding Nome, Converter={StaticResource InicialNomeConverter}}"
                            TextColor="#3B82F6"
                            FontSize="32"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            VerticalOptions="Center"/>
-				</Border>
+                </Border>
 
-				<!-- Nome -->
-				<Label Text="{Binding Nome}"
+                <!-- Nome -->
+                <Label Text="{Binding Nome}"
                        TextColor="White"
                        FontSize="24"
                        FontAttributes="Bold"
                        HorizontalOptions="Center"/>
 
-				<!-- Idade e Nível -->
-				<HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
-					<Label TextColor="White" FontSize="14" Opacity="0.9">
-						<Label.FormattedText>
-							<FormattedString>
-								<Span Text="{Binding Idade}"/>
-								<Span Text=" anos"/>
-							</FormattedString>
-						</Label.FormattedText>
-					</Label>
-					<Label Text="•" TextColor="White" FontSize="14" Opacity="0.9"/>
-					<Label TextColor="White" FontSize="14" Opacity="0.9">
-						<Label.FormattedText>
-							<FormattedString>
-								<Span Text="Nível "/>
-								<Span Text="{Binding NivelGamificacao}"/>
-							</FormattedString>
-						</Label.FormattedText>
-					</Label>
-					<Label Text="•" TextColor="White" FontSize="14" Opacity="0.9"/>
-					<Label TextColor="White" FontSize="14" Opacity="0.9">
-						<Label.FormattedText>
-							<FormattedString>
-								<Span Text="{Binding Pontos}"/>
-								<Span Text=" pts"/>
-							</FormattedString>
-						</Label.FormattedText>
-					</Label>
-				</HorizontalStackLayout>
+                <!-- Idade e Nível -->
+                <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+                    <Label TextColor="White" FontSize="14" Opacity="0.9">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding Idade}"/>
+                                <Span Text=" anos"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label Text="•" TextColor="White" FontSize="14" Opacity="0.9"/>
+                    <Label TextColor="White" FontSize="14" Opacity="0.9">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Nível "/>
+                                <Span Text="{Binding NivelGamificacao}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label Text="•" TextColor="White" FontSize="14" Opacity="0.9"/>
+                    <Label TextColor="White" FontSize="14" Opacity="0.9">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding Pontos}"/>
+                                <Span Text=" pts"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </HorizontalStackLayout>
 
-			</VerticalStackLayout>
-		</Border>
+            </VerticalStackLayout>
+        </Border>
 
-		<!-- Tabs de Navegação -->
-		<Border Grid.Row="1"
+        <!-- Tabs de Navegação -->
+        <Border Grid.Row="1"
                 BackgroundColor="White"
                 StrokeThickness="0"
                 Padding="0"
                 Margin="0">
-			<Grid ColumnDefinitions="*,*,*,*" HeightRequest="50">
+            <Grid ColumnDefinitions="*,*,*,*" HeightRequest="50">
 
-				<!-- Tab Dados -->
-				<Border Grid.Column="0"
+                <!-- Tab Dados -->
+                <Border Grid.Column="0"
                         BackgroundColor="{Binding TabSelecionada, Converter={StaticResource TabBackgroundConverter}, ConverterParameter=0}"
-                        StrokeThickness="0,0,0,3"
+                        StrokeThickness="0"
                         Stroke="{Binding TabSelecionada, Converter={StaticResource TabBorderConverter}, ConverterParameter=0}">
-					<Label Text="Dados"
+                    <Label Text="Dados"
                            TextColor="{Binding TabSelecionada, Converter={StaticResource TabTextColorConverter}, ConverterParameter=0}"
                            FontSize="14"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            VerticalOptions="Center">
-						<Label.GestureRecognizers>
-							<TapGestureRecognizer Command="{Binding MostrarDadosCommand}"/>
-						</Label.GestureRecognizers>
-					</Label>
-				</Border>
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding MostrarDadosCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Border>
 
-				<!-- Tab Humor -->
-				<Border Grid.Column="1"
+                <!-- Tab Humor -->
+                <Border Grid.Column="1"
                         BackgroundColor="{Binding TabSelecionada, Converter={StaticResource TabBackgroundConverter}, ConverterParameter=1}"
-                        StrokeThickness="0,0,0,3"
+                        StrokeThickness="0"
                         Stroke="{Binding TabSelecionada, Converter={StaticResource TabBorderConverter}, ConverterParameter=1}">
-					<Label Text="Humor"
+                    <Label Text="Humor"
                            TextColor="{Binding TabSelecionada, Converter={StaticResource TabTextColorConverter}, ConverterParameter=1}"
                            FontSize="14"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            VerticalOptions="Center">
-						<Label.GestureRecognizers>
-							<TapGestureRecognizer Command="{Binding MostrarHistoricoHumorCommand}"/>
-						</Label.GestureRecognizers>
-					</Label>
-				</Border>
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding MostrarHistoricoHumorCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Border>
 
-				<!-- Tab Sessões -->
-				<Border Grid.Column="2"
+                <!-- Tab Sessões -->
+                <Border Grid.Column="2"
                         BackgroundColor="{Binding TabSelecionada, Converter={StaticResource TabBackgroundConverter}, ConverterParameter=2}"
-                        StrokeThickness="0,0,0,3"
+                        StrokeThickness="0"
                         Stroke="{Binding TabSelecionada, Converter={StaticResource TabBorderConverter}, ConverterParameter=2}">
-					<Label Text="Sessões"
+                    <Label Text="Sessões"
                            TextColor="{Binding TabSelecionada, Converter={StaticResource TabTextColorConverter}, ConverterParameter=2}"
                            FontSize="14"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            VerticalOptions="Center">
-						<Label.GestureRecognizers>
-							<TapGestureRecognizer Command="{Binding MostrarSessoesCommand}"/>
-						</Label.GestureRecognizers>
-					</Label>
-				</Border>
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding MostrarSessoesCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Border>
 
-				<!-- Tab Relatórios -->
-				<Border Grid.Column="3"
+                <!-- Tab Relatórios -->
+                <Border Grid.Column="3"
                         BackgroundColor="{Binding TabSelecionada, Converter={StaticResource TabBackgroundConverter}, ConverterParameter=3}"
-                        StrokeThickness="0,0,0,3"
+                        StrokeThickness="0"
                         Stroke="{Binding TabSelecionada, Converter={StaticResource TabBorderConverter}, ConverterParameter=3}">
-					<Label Text="Relatórios"
+                    <Label Text="Relatórios"
                            TextColor="{Binding TabSelecionada, Converter={StaticResource TabTextColorConverter}, ConverterParameter=3}"
                            FontSize="14"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            VerticalOptions="Center">
-						<Label.GestureRecognizers>
-							<TapGestureRecognizer Command="{Binding MostrarRelatoriosCommand}"/>
-						</Label.GestureRecognizers>
-					</Label>
-				</Border>
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding MostrarRelatoriosCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Border>
 
-			</Grid>
-		</Border>
+            </Grid>
+        </Border>
 
-		<!-- Conteúdo dos Tabs -->
-		<ScrollView Grid.Row="2">
+        <!-- Conteúdo dos Tabs -->
+        <ScrollView Grid.Row="2">
 
-			<VerticalStackLayout Padding="16" Spacing="16">
+            <VerticalStackLayout Padding="16" Spacing="16">
 
-				<!-- Loading -->
-				<ActivityIndicator IsRunning="{Binding IsLoading}"
+                <!-- Loading -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
                                  IsVisible="{Binding IsLoading}"
                                  Color="#3B82F6"
                                  HeightRequest="50"/>
 
-				<!-- Erro -->
-				<Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                <!-- Erro -->
+                <Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
                         BackgroundColor="#FEE2E2"
                         StrokeThickness="0"
                         StrokeShape="RoundRectangle 12"
                         Padding="16">
-					<Label Text="{Binding MensagemErro}"
+                    <Label Text="{Binding MensagemErro}"
                            TextColor="#991B1B"
                            FontSize="14"/>
-				</Border>
+                </Border>
 
-				<!-- TAB 0: Dados Pessoais -->
-				<VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=0}">
+                <!-- TAB 0: Dados Pessoais -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=0}">
 
-					<Label Text="Informações Pessoais"
+                    <Label Text="Informações Pessoais"
                            TextColor="#1F2937"
                            FontSize="18"
                            FontAttributes="Bold"
                            Margin="0,8,0,8"/>
 
-					<Border BackgroundColor="White"
+                    <Border BackgroundColor="White"
                             StrokeThickness="0"
                             StrokeShape="RoundRectangle 12"
                             Padding="16">
-						<VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout Spacing="12">
 
-							<Grid ColumnDefinitions="Auto,*">
-								<Label Grid.Column="0" Text="Email:" TextColor="#6B7280" FontSize="14" FontAttributes="Bold"/>
-								<Label Grid.Column="1" Text="{Binding Email}" TextColor="#1F2937" FontSize="14" Margin="8,0,0,0"/>
-							</Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Grid.Column="0" Text="Email:" TextColor="#6B7280" FontSize="14" FontAttributes="Bold"/>
+                                <Label Grid.Column="1" Text="{Binding Email}" TextColor="#1F2937" FontSize="14" Margin="8,0,0,0"/>
+                            </Grid>
 
-							<BoxView HeightRequest="1" Color="#E5E7EB"/>
+                            <BoxView HeightRequest="1" Color="#E5E7EB"/>
 
-							<Grid ColumnDefinitions="Auto,*">
-								<Label Grid.Column="0" Text="Objectivo:" TextColor="#6B7280" FontSize="14" FontAttributes="Bold"/>
-								<Label Grid.Column="1" Text="{Binding Objectivo}" TextColor="#1F2937" FontSize="14" Margin="8,0,0,0"/>
-							</Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Grid.Column="0" Text="Objectivo:" TextColor="#6B7280" FontSize="14" FontAttributes="Bold"/>
+                                <Label Grid.Column="1" Text="{Binding Objectivo}" TextColor="#1F2937" FontSize="14" Margin="8,0,0,0"/>
+                            </Grid>
 
-							<BoxView HeightRequest="1" Color="#E5E7EB"/>
+                            <BoxView HeightRequest="1" Color="#E5E7EB"/>
 
-							<Grid ColumnDefinitions="Auto,*">
-								<Label Grid.Column="0" Text="Registo:" TextColor="#6B7280" FontSize="14" FontAttributes="Bold"/>
-								<Label Grid.Column="1" Text="{Binding DataRegisto, StringFormat='{0:dd/MM/yyyy}'}" TextColor="#1F2937" FontSize="14" Margin="8,0,0,0"/>
-							</Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Grid.Column="0" Text="Registo:" TextColor="#6B7280" FontSize="14" FontAttributes="Bold"/>
+                                <Label Grid.Column="1" Text="{Binding DataRegisto, StringFormat='{0:dd/MM/yyyy}'}" TextColor="#1F2937" FontSize="14" Margin="8,0,0,0"/>
+                            </Grid>
 
-						</VerticalStackLayout>
-					</Border>
+                        </VerticalStackLayout>
+                    </Border>
 
-					<Label Text="Estatísticas"
+                    <Label Text="Estatísticas"
                            TextColor="#1F2937"
                            FontSize="18"
                            FontAttributes="Bold"
                            Margin="0,16,0,8"/>
 
-					<Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*" RowSpacing="12" ColumnSpacing="12">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*" RowSpacing="12" ColumnSpacing="12">
 
-						<!-- Total Registos -->
-						<Border Grid.Row="0" Grid.Column="0"
+                        <!-- Total Registos -->
+                        <Border Grid.Row="0" Grid.Column="0"
                                 BackgroundColor="#DBEAFE"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 12"
                                 Padding="16">
-							<VerticalStackLayout Spacing="4">
-								<Label Text="{Binding TotalRegistos}"
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding TotalRegistos}"
                                        TextColor="#1E40AF"
                                        FontSize="24"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"/>
-								<Label Text="Registos"
+                                <Label Text="Registos"
                                        TextColor="#1E40AF"
                                        FontSize="12"
                                        HorizontalOptions="Center"/>
-							</VerticalStackLayout>
-						</Border>
+                            </VerticalStackLayout>
+                        </Border>
 
-						<!-- Total Sessões -->
-						<Border Grid.Row="0" Grid.Column="1"
+                        <!-- Total Sessões -->
+                        <Border Grid.Row="0" Grid.Column="1"
                                 BackgroundColor="#D1FAE5"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 12"
                                 Padding="16">
-							<VerticalStackLayout Spacing="4">
-								<Label Text="{Binding TotalSessoes}"
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding TotalSessoes}"
                                        TextColor="#065F46"
                                        FontSize="24"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"/>
-								<Label Text="Sessões"
+                                <Label Text="Sessões"
                                        TextColor="#065F46"
                                        FontSize="12"
                                        HorizontalOptions="Center"/>
-							</VerticalStackLayout>
-						</Border>
+                            </VerticalStackLayout>
+                        </Border>
 
-						<!-- Dias Consecutivos -->
-						<Border Grid.Row="0" Grid.Column="2"
+                        <!-- Dias Consecutivos -->
+                        <Border Grid.Row="0" Grid.Column="2"
                                 BackgroundColor="#FEF3C7"
                                 StrokeThickness="0"
                                 StrokeShape="RoundRectangle 12"
                                 Padding="16">
-							<VerticalStackLayout Spacing="4">
-								<Label Text="{Binding DiasConsecutivos}"
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding DiasConsecutivos}"
                                        TextColor="#92400E"
                                        FontSize="24"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"/>
-								<Label Text="Dias"
+                                <Label Text="Dias"
                                        TextColor="#92400E"
                                        FontSize="12"
                                        HorizontalOptions="Center"/>
-							</VerticalStackLayout>
-						</Border>
+                            </VerticalStackLayout>
+                        </Border>
 
-						<!-- Média Humor -->
-						<Border Grid.Row="1" Grid.Column="0"
+                        <!-- Média Humor -->
+                        <Border Grid.Row="1" Grid.Column="0"
                                 BackgroundColor="White"
                                 StrokeThickness="1"
                                 Stroke="#E5E7EB"
                                 StrokeShape="RoundRectangle 12"
                                 Padding="12">
-							<VerticalStackLayout Spacing="2">
-								<Label Text="{Binding MediaHumor, StringFormat='{0:F1}'}"
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding MediaHumor, StringFormat='{0:F1}'}"
                                        TextColor="#1F2937"
                                        FontSize="20"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"/>
-								<Label Text="Média Humor"
+                                <Label Text="Média Humor"
                                        TextColor="#6B7280"
                                        FontSize="11"
                                        HorizontalOptions="Center"/>
-							</VerticalStackLayout>
-						</Border>
+                            </VerticalStackLayout>
+                        </Border>
 
-						<!-- Média Stress -->
-						<Border Grid.Row="1" Grid.Column="1"
+                        <!-- Média Stress -->
+                        <Border Grid.Row="1" Grid.Column="1"
                                 BackgroundColor="White"
                                 StrokeThickness="1"
                                 Stroke="#E5E7EB"
                                 StrokeShape="RoundRectangle 12"
                                 Padding="12">
-							<VerticalStackLayout Spacing="2">
-								<Label Text="{Binding MediaStress, StringFormat='{0:F1}'}"
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding MediaStress, StringFormat='{0:F1}'}"
                                        TextColor="#1F2937"
                                        FontSize="20"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"/>
-								<Label Text="Média Stress"
+                                <Label Text="Média Stress"
                                        TextColor="#6B7280"
                                        FontSize="11"
                                        HorizontalOptions="Center"/>
-							</VerticalStackLayout>
-						</Border>
+                            </VerticalStackLayout>
+                        </Border>
 
-						<!-- Média Energia -->
-						<Border Grid.Row="1" Grid.Column="2"
+                        <!-- Média Energia -->
+                        <Border Grid.Row="1" Grid.Column="2"
                                 BackgroundColor="White"
                                 StrokeThickness="1"
                                 Stroke="#E5E7EB"
                                 StrokeShape="RoundRectangle 12"
                                 Padding="12">
-							<VerticalStackLayout Spacing="2">
-								<Label Text="{Binding MediaEnergia, StringFormat='{0:F1}'}"
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding MediaEnergia, StringFormat='{0:F1}'}"
                                        TextColor="#1F2937"
                                        FontSize="20"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"/>
-								<Label Text="Média Energia"
+                                <Label Text="Média Energia"
                                        TextColor="#6B7280"
                                        FontSize="11"
                                        HorizontalOptions="Center"/>
-							</VerticalStackLayout>
-						</Border>
+                            </VerticalStackLayout>
+                        </Border>
 
-					</Grid>
+                    </Grid>
 
-				</VerticalStackLayout>
+                </VerticalStackLayout>
 
-				<!-- TAB 1: Histórico de Humor -->
-				<VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=1}">
+                <!-- TAB 1: Histórico de Humor -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=1}">
 
-					<Label Text="Histórico de Humor (30 dias)"
+                    <Label Text="Histórico de Humor (30 dias)"
                            TextColor="#1F2937"
                            FontSize="18"
                            FontAttributes="Bold"
                            Margin="0,8,0,8"/>
 
-					<CollectionView ItemsSource="{Binding HistoricoHumor}"
+                    <CollectionView ItemsSource="{Binding HistoricoHumor}"
                                   SelectionMode="None">
-						<CollectionView.ItemTemplate>
-							<DataTemplate x:DataType="dto:RegistoHumorDto">
-								<Border BackgroundColor="White"
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:RegistoHumorDto">
+                                <Border BackgroundColor="White"
                                         StrokeThickness="1"
                                         Stroke="#E5E7EB"
                                         StrokeShape="RoundRectangle 12"
                                         Padding="16"
                                         Margin="0,0,0,12">
 
-									<Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+                                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
 
-										<!-- Data -->
-										<Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                        <!-- Data -->
+                                        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                                Text="{Binding DataRegisto, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
                                                TextColor="#6B7280"
                                                FontSize="12"
                                                Margin="0,0,0,8"/>
 
-										<!-- Níveis -->
-										<VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="4">
-											<HorizontalStackLayout Spacing="8">
-												<Label Text="😊" FontSize="16"/>
-												<Label Text="Humor:" TextColor="#6B7280" FontSize="14"/>
-												<Label Text="{Binding NivelHumor}" TextColor="#1F2937" FontSize="14" FontAttributes="Bold"/>
-											</HorizontalStackLayout>
+                                        <!-- Níveis -->
+                                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="4">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="😊" FontSize="16"/>
+                                                <Label Text="Humor:" TextColor="#6B7280" FontSize="14"/>
+                                                <Label Text="{Binding NivelHumor}" TextColor="#1F2937" FontSize="14" FontAttributes="Bold"/>
+                                            </HorizontalStackLayout>
 
-											<HorizontalStackLayout Spacing="8">
-												<Label Text="😰" FontSize="16"/>
-												<Label Text="Stress:" TextColor="#6B7280" FontSize="14"/>
-												<Label Text="{Binding NivelStress}" TextColor="#1F2937" FontSize="14" FontAttributes="Bold"/>
-											</HorizontalStackLayout>
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="😰" FontSize="16"/>
+                                                <Label Text="Stress:" TextColor="#6B7280" FontSize="14"/>
+                                                <Label Text="{Binding NivelStress}" TextColor="#1F2937" FontSize="14" FontAttributes="Bold"/>
+                                            </HorizontalStackLayout>
 
-											<HorizontalStackLayout Spacing="8">
-												<Label Text="⚡" FontSize="16"/>
-												<Label Text="Energia:" TextColor="#6B7280" FontSize="14"/>
-												<Label Text="{Binding NivelEnergia}" TextColor="#1F2937" FontSize="14" FontAttributes="Bold"/>
-											</HorizontalStackLayout>
-										</VerticalStackLayout>
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="⚡" FontSize="16"/>
+                                                <Label Text="Energia:" TextColor="#6B7280" FontSize="14"/>
+                                                <Label Text="{Binding NivelEnergia}" TextColor="#1F2937" FontSize="14" FontAttributes="Bold"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
 
-										<!-- Notas -->
-										<Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                        <!-- Notas -->
+                                        <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                                Text="{Binding Notas}"
                                                TextColor="#4B5563"
                                                FontSize="13"
                                                Margin="0,8,0,0"
                                                IsVisible="{Binding Notas, Converter={StaticResource StringNotEmptyConverter}}"/>
 
-									</Grid>
-								</Border>
-							</DataTemplate>
-						</CollectionView.ItemTemplate>
-					</CollectionView>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-					<!-- Mensagem Vazia -->
-					<Label Text="Sem registos de humor nos últimos 30 dias."
+                    <!-- Mensagem Vazia -->
+                    <Label Text="Sem registos de humor nos últimos 30 dias."
                            TextColor="#9CA3AF"
                            FontSize="14"
                            HorizontalOptions="Center"
                            Margin="0,32,0,0"
                            IsVisible="{Binding TemHistorico, Converter={StaticResource InvertedBoolConverter}}"/>
 
-				</VerticalStackLayout>
+                </VerticalStackLayout>
 
-				<!-- TAB 2: Sessões -->
-				<VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=2}">
+                <!-- TAB 2: Sessões -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=2}">
 
-					<Label Text="Sessões Realizadas"
+                    <Label Text="Sessões Realizadas"
                            TextColor="#1F2937"
                            FontSize="18"
                            FontAttributes="Bold"
                            Margin="0,8,0,8"/>
 
-					<CollectionView ItemsSource="{Binding Sessoes}"
+                    <CollectionView ItemsSource="{Binding Sessoes}"
                                   SelectionMode="None">
-						<CollectionView.ItemTemplate>
-							<DataTemplate x:DataType="dto:SessaoResumoDto">
-								<Border BackgroundColor="White"
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:SessaoResumoDto">
+                                <Border BackgroundColor="White"
                                         StrokeThickness="1"
                                         Stroke="#E5E7EB"
                                         StrokeShape="RoundRectangle 12"
                                         Padding="16"
                                         Margin="0,0,0,12">
 
-									<Border.GestureRecognizers>
-										<TapGestureRecognizer
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalhePacienteViewModel}}, Path=VerDetalhesSessaoCommand}"
                                             CommandParameter="{Binding .}"/>
-									</Border.GestureRecognizers>
+                                    </Border.GestureRecognizers>
 
-									<Grid ColumnDefinitions="*,Auto">
-										<VerticalStackLayout Grid.Column="0" Spacing="4">
-											<Label Text="{Binding DataSessao, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                            <Label Text="{Binding DataSessao, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
                                                    TextColor="#1F2937"
                                                    FontSize="14"
                                                    FontAttributes="Bold"/>
-											<Label TextColor="#6B7280" FontSize="13">
-												<Label.FormattedText>
-													<FormattedString>
-														<Span Text="Duração: "/>
-														<Span Text="{Binding Duracao}"/>
-														<Span Text=" min"/>
-													</FormattedString>
-												</Label.FormattedText>
-											</Label>
-											<Label IsVisible="{Binding Avaliada}">
-												<Label.FormattedText>
-													<FormattedString>
-														<Span Text="⭐ " FontSize="12"/>
-														<Span Text="{Binding NotaAvaliacao}" FontSize="12"/>
-														<Span Text="/5" FontSize="12"/>
-													</FormattedString>
-												</Label.FormattedText>
-											</Label>
-										</VerticalStackLayout>
+                                            <Label TextColor="#6B7280" FontSize="13">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="Duração: "/>
+                                                        <Span Text="{Binding Duracao}"/>
+                                                        <Span Text=" min"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label IsVisible="{Binding Avaliada}">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="⭐ " FontSize="12"/>
+                                                        <Span Text="{Binding NotaAvaliacao}" FontSize="12"/>
+                                                        <Span Text="/5" FontSize="12"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </VerticalStackLayout>
 
-										<Label Grid.Column="1" Text="›" TextColor="#9CA3AF" FontSize="20" VerticalOptions="Center"/>
-									</Grid>
-								</Border>
-							</DataTemplate>
-						</CollectionView.ItemTemplate>
-					</CollectionView>
+                                        <Label Grid.Column="1" Text="›" TextColor="#9CA3AF" FontSize="20" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-					<!-- Mensagem Vazia -->
-					<Label Text="Ainda não foram realizadas sessões com este paciente."
+                    <!-- Mensagem Vazia -->
+                    <Label Text="Ainda não foram realizadas sessões com este paciente."
                            TextColor="#9CA3AF"
                            FontSize="14"
                            HorizontalOptions="Center"
                            Margin="0,32,0,0"
                            IsVisible="{Binding TemSessoes, Converter={StaticResource InvertedBoolConverter}}"/>
 
-				</VerticalStackLayout>
+                </VerticalStackLayout>
 
-				<!-- TAB 3: Relatórios IA -->
-				<VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=3}">
+                <!-- TAB 3: Relatórios IA -->
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding TabSelecionada, Converter={StaticResource IntToBoolConverter}, ConverterParameter=3}">
 
-					<Label Text="Relatórios Gerados pela IA"
-                           TextColor="#1F2937"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           Margin="0,8,0,8"/>
+                    <!-- Header com botão -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,8">
+                        <Label Text="Relatórios Gerados pela IA"
+                               TextColor="#1F2937"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"/>
 
-					<CollectionView ItemsSource="{Binding RelatoriosIA}"
-                                  SelectionMode="None">
-						<CollectionView.ItemTemplate>
-							<DataTemplate x:DataType="dto:RelatorioIAResumoDto">
-								<Border BackgroundColor="White"
+                        <Button Grid.Column="1"
+                                Text="Gerar Novo"
+                                Command="{Binding GerarRelatorioIACommand}"
+                                IsVisible="{Binding IsGerandoRelatorio, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="#3B82F6"
+                                TextColor="White"
+                                FontSize="12"
+                                CornerRadius="8"
+                                HeightRequest="36"
+                                Padding="12,0"/>
+
+                        <ActivityIndicator Grid.Column="1"
+                           IsRunning="True"
+                           IsVisible="{Binding IsGerandoRelatorio}"
+                           Color="#3B82F6"
+                           HeightRequest="30"
+                           WidthRequest="30"/>
+                    </Grid>
+
+                    <!-- Loading ao gerar -->
+                    <Border IsVisible="{Binding IsGerandoRelatorio}"
+                            BackgroundColor="#EFF6FF"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16">
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                            <ActivityIndicator IsRunning="True" Color="#3B82F6" HeightRequest="20" WidthRequest="20"/>
+                            <Label Text="A gerar relatório com IA..." TextColor="#1E40AF" FontSize="14"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- DETALHE DO RELATÓRIO EXPANDIDO -->
+                    <Border IsVisible="{Binding MostrarDetalheRelatorio}"
+                            BackgroundColor="#F8FAFC"
+                            StrokeThickness="1"
+                            Stroke="#E2E8F0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16"
+                            Margin="0,0,0,12">
+
+                        <VerticalStackLayout Spacing="16">
+
+                            <!-- Header do detalhe -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout>
+                                    <Label Text="Relatório Semanal"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="#1F2937"/>
+                                    <Label Text="{Binding RelatorioPeriodo}"
+                                           FontSize="12"
+                                           TextColor="#6B7280"/>
+                                </VerticalStackLayout>
+
+                                <Button Grid.Column="1"
+                                        Text="✕"
+                                        Command="{Binding FecharDetalheRelatorioCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="#6B7280"
+                                        FontSize="18"
+                                        WidthRequest="40"
+                                        HeightRequest="40"/>
+                            </Grid>
+
+                            <!-- Médias -->
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                <Border BackgroundColor="#DBEAFE" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="😊" FontSize="20" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding RelatorioMediaHumor, StringFormat='{0:F1}/5'}"
+                               FontSize="16" FontAttributes="Bold" TextColor="#1E40AF" HorizontalOptions="Center"/>
+                                        <Label Text="Humor" FontSize="10" TextColor="#1E40AF" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border BackgroundColor="#FEF3C7" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="⚡" FontSize="20" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding RelatorioMediaEnergia, StringFormat='{0:F1}/5'}"
+                               FontSize="16" FontAttributes="Bold" TextColor="#92400E" HorizontalOptions="Center"/>
+                                        <Label Text="Energia" FontSize="10" TextColor="#92400E" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border BackgroundColor="#FCE7F3" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="😰" FontSize="20" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding RelatorioMediaStress, StringFormat='{0:F1}/5'}"
+                               FontSize="16" FontAttributes="Bold" TextColor="#BE185D" HorizontalOptions="Center"/>
+                                        <Label Text="Stress" FontSize="10" TextColor="#BE185D" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+
+                            <!-- Tendências Humor -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="😊 Tendências de Humor" FontSize="14" FontAttributes="Bold" TextColor="#1E40AF"/>
+                                <Label Text="{Binding RelatorioTendenciasHumor}" FontSize="13" TextColor="#374151" LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+
+                            <!-- Tendências Energia -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="⚡ Tendências de Energia" FontSize="14" FontAttributes="Bold" TextColor="#92400E"/>
+                                <Label Text="{Binding RelatorioTendenciasEnergia}" FontSize="13" TextColor="#374151" LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+
+                            <!-- Tendências Stress -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="😰 Tendências de Stress" FontSize="14" FontAttributes="Bold" TextColor="#BE185D"/>
+                                <Label Text="{Binding RelatorioTendenciasStress}" FontSize="13" TextColor="#374151" LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+
+                            <!-- Recomendações -->
+                            <Border BackgroundColor="#F0FDF4" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="💡 Recomendações Clínicas" FontSize="14" FontAttributes="Bold" TextColor="#166534"/>
+                                    <Label Text="{Binding RelatorioRecomendacoes}" FontSize="13" TextColor="#374151" LineBreakMode="WordWrap"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Relatório Completo -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="📋 Análise Completa" FontSize="14" FontAttributes="Bold" TextColor="#1F2937"/>
+                                <Label Text="{Binding RelatorioCompleto}" FontSize="13" TextColor="#374151" LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Lista de relatórios -->
+                    <CollectionView ItemsSource="{Binding RelatoriosIA}"
+                                    SelectionMode="None"
+                                    IsVisible="{Binding MostrarDetalheRelatorio, Converter={StaticResource InvertedBoolConverter}}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:RelatorioIAResumoDto">
+                                <Border BackgroundColor="White"
                                         StrokeThickness="1"
                                         Stroke="#E5E7EB"
                                         StrokeShape="RoundRectangle 12"
                                         Padding="16"
                                         Margin="0,0,0,12">
 
-									<Border.GestureRecognizers>
-										<TapGestureRecognizer
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalhePacienteViewModel}}, Path=VerDetalhesRelatorioCommand}"
-                                            CommandParameter="{Binding .}"/>
-									</Border.GestureRecognizers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalhePacienteViewModel}}, Path=VerDetalhesRelatorioCommand}"
+                                CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
 
-									<Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto">
-										<Label Grid.Row="0" Grid.Column="0"
-                                               Text="{Binding TipoRelatorio}"
-                                               TextColor="#1F2937"
-                                               FontSize="14"
-                                               FontAttributes="Bold"/>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <VerticalStackLayout Spacing="4">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding DataGeracao, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                                       TextColor="#1F2937"
+                                       FontSize="14"
+                                       FontAttributes="Bold"/>
 
-										<Label Grid.Row="1" Grid.Column="0"
-                                               Text="{Binding DataGeracao, StringFormat='{0:dd/MM/yyyy}'}"
-                                               TextColor="#6B7280"
-                                               FontSize="12"
-                                               Margin="0,4,0,4"/>
+                                                <!-- Badge Novo -->
+                                                <Border IsVisible="{Binding Lido, Converter={StaticResource InvertedBoolConverter}}"
+                                        BackgroundColor="#3B82F6"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="6,2">
+                                                    <Label Text="Novo" TextColor="White" FontSize="10"/>
+                                                </Border>
+                                            </HorizontalStackLayout>
 
-										<Border Grid.Row="2" Grid.Column="0"
-                                                BackgroundColor="{Binding NivelAlerta, Converter={StaticResource AlertaToColorConverter}}"
-                                                StrokeThickness="0"
-                                                StrokeShape="RoundRectangle 12"
-                                                Padding="8,4"
-                                                HorizontalOptions="Start">
-											<Label Text="{Binding NivelAlerta}"
-                                                   TextColor="White"
-                                                   FontSize="11"
-                                                   FontAttributes="Bold"/>
-										</Border>
+                                            <Label Text="Relatório Semanal"
+                                   TextColor="#6B7280"
+                                   FontSize="12"/>
+                                        </VerticalStackLayout>
 
-										<Label Grid.Row="0" Grid.Column="1" Grid.RowSpan="3"
-                                               Text="›"
-                                               TextColor="#9CA3AF"
-                                               FontSize="20"
-                                               VerticalOptions="Center"/>
-									</Grid>
-								</Border>
-							</DataTemplate>
-						</CollectionView.ItemTemplate>
-					</CollectionView>
+                                        <Label Grid.Column="1" Text="›" TextColor="#9CA3AF" FontSize="24" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-					<!-- Mensagem Vazia -->
-					<Label Text="Ainda não foram gerados relatórios pela IA para este paciente."
+                    <!-- Mensagem Vazia -->
+                    <Label Text="Ainda não foram gerados relatórios pela IA para este paciente."
                            TextColor="#9CA3AF"
                            FontSize="14"
                            HorizontalOptions="Center"
                            Margin="0,32,0,0"
                            IsVisible="{Binding TemRelatorios, Converter={StaticResource InvertedBoolConverter}}"/>
 
-				</VerticalStackLayout>
+                </VerticalStackLayout>
 
-			</VerticalStackLayout>
+            </VerticalStackLayout>
 
-		</ScrollView>
+        </ScrollView>
 
-	</Grid>
+    </Grid>
 
 </ContentPage>

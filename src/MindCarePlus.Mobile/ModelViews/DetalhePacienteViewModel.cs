@@ -27,6 +27,7 @@ public partial class DetalhePacienteViewModel : ObservableObject
         RelatoriosIA = new ObservableCollection<RelatorioIAResumoDto>();
     }
 
+
     #region Propriedades - Navegação
 
     [ObservableProperty]
@@ -35,6 +36,7 @@ public partial class DetalhePacienteViewModel : ObservableObject
     #endregion
 
     #region Propriedades - Dados do Paciente
+
 
     [ObservableProperty]
     private string nome = string.Empty;
@@ -118,6 +120,51 @@ public partial class DetalhePacienteViewModel : ObservableObject
     private bool temRelatorios;
 
     #endregion
+
+    #region Propriedades - AI Report
+    [ObservableProperty]
+    private bool isGerandoRelatorio;
+    #endregion
+
+    #region Propriedades - Relatório Expandido
+
+    [ObservableProperty]
+    private RelatorioIAResumoDto? relatorioSelecionado;
+
+    [ObservableProperty]
+    private bool mostrarDetalheRelatorio;
+
+    // Detalhes do relatório selecionado
+    [ObservableProperty]
+    private string relatorioTendenciasHumor = string.Empty;
+
+    [ObservableProperty]
+    private string relatorioTendenciasEnergia = string.Empty;
+
+    [ObservableProperty]
+    private string relatorioTendenciasStress = string.Empty;
+
+    [ObservableProperty]
+    private string relatorioRecomendacoes = string.Empty;
+
+    [ObservableProperty]
+    private string relatorioCompleto = string.Empty;
+
+    [ObservableProperty]
+    private decimal relatorioMediaHumor;
+
+    [ObservableProperty]
+    private decimal relatorioMediaEnergia;
+
+    [ObservableProperty]
+    private decimal relatorioMediaStress;
+
+    [ObservableProperty]
+    private string relatorioPeriodo = string.Empty;
+
+    #endregion
+
+
 
     /// <summary>
     /// Carrega os detalhes completos do paciente
@@ -280,19 +327,132 @@ public partial class DetalhePacienteViewModel : ObservableObject
             "OK");
     }
 
-    /// <summary>
-    /// Abre detalhes de um relatório IA específico
-    /// </summary>
+
+    [RelayCommand]
+    public async Task VerRelatorioDetalheAsync(RelatorioIAResumoDto relatorio)
+    {
+        if (relatorio == null) return;
+
+        try
+        {
+            var detalhe = await _apiService.GetRelatorioDetalheAsync(relatorio.Id);
+
+            if (detalhe != null)
+            {
+                relatorio.Lido = true;
+                await Shell.Current.GoToAsync($"RelatorioDetalhe?relatorioId={relatorio.Id}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+    }
+
+    [RelayCommand]
+    public async Task CarregarRelatoriosAsync()
+    {
+        if (string.IsNullOrEmpty(PacienteId)) return;
+    
+        if (!Guid.TryParse(PacienteId, out Guid pacienteGuid)) return;
+
+        try
+        {
+            var relatorios = await _apiService.GetRelatoriosPacienteAsync(pacienteGuid);
+            RelatoriosIA = new ObservableCollection<RelatorioIAResumoDto>(relatorios);
+            TemRelatorios = RelatoriosIA.Count > 0;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar relatórios: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    public async Task GerarRelatorioIAAsync()
+    {
+        if (IsGerandoRelatorio || string.IsNullOrEmpty(PacienteId)) return;
+
+        if (!Guid.TryParse(PacienteId, out Guid pacienteGuid)) return;
+
+        bool confirmar = await Shell.Current.DisplayAlert(
+            "Gerar Relatório IA",
+            "Deseja gerar um novo relatório semanal com análise de IA?\n\nIsto pode demorar alguns segundos.",
+            "Sim", "Não");
+
+        if (!confirmar) return;
+
+        try
+        {
+            IsGerandoRelatorio = true;
+
+            var novoRelatorio = await _apiService.GerarRelatorioIAAsync(pacienteGuid);
+
+            if (novoRelatorio != null)
+            {
+                RelatoriosIA.Insert(0, novoRelatorio);
+                TemRelatorios = true;
+                TotalRelatorios++;
+
+                await Shell.Current.DisplayAlert(
+                    "Sucesso",
+                    "Relatório gerado com sucesso!",
+                    "OK");
+
+                // Expandir automaticamente o novo relatório
+                await VerDetalhesRelatorioAsync(novoRelatorio);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert(
+                "Erro",
+                $"Não foi possível gerar o relatório: {ex.Message}",
+                "OK");
+        }
+        finally
+        {
+            IsGerandoRelatorio = false;
+        }
+    }
+
     [RelayCommand]
     public async Task VerDetalhesRelatorioAsync(RelatorioIAResumoDto relatorio)
     {
         if (relatorio == null) return;
 
-        await Shell.Current.DisplayAlert(
-            $"Relatório IA - {relatorio.TipoRelatorio}",
-            $"Data: {relatorio.DataGeracao:dd/MM/yyyy}\n" +
-            $"Nível de Alerta: {relatorio.NivelAlerta}\n\n" +
-            $"{relatorio.Conteudo}",
-            "OK");
+        try
+        {
+            var detalhe = await _apiService.GetRelatorioDetalheAsync(relatorio.Id);
+
+            if (detalhe != null)
+            {
+                relatorio.Lido = true;
+
+                // USA MAIÚSCULAS - Propriedades, não campos!
+                RelatorioSelecionado = relatorio;
+                RelatorioPeriodo = $"{detalhe.PeriodoInicio} - {detalhe.PeriodoFim}";
+                RelatorioMediaHumor = detalhe.MediaHumor;
+                RelatorioMediaEnergia = detalhe.MediaEnergia;
+                RelatorioMediaStress = detalhe.MediaStress;
+                RelatorioTendenciasHumor = detalhe.TendenciasHumor;
+                RelatorioTendenciasEnergia = detalhe.TendenciasEnergia;
+                RelatorioTendenciasStress = detalhe.TendenciasStress;
+                RelatorioRecomendacoes = detalhe.Recomendacoes;
+                RelatorioCompleto = detalhe.RelatorioCompleto;
+                MostrarDetalheRelatorio = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+    }
+
+    [RelayCommand]
+    public void FecharDetalheRelatorio()
+    {
+        MostrarDetalheRelatorio = false;  
+        RelatorioSelecionado = null;
     }
 }

@@ -65,9 +65,7 @@
             ContentTemplate="{DataTemplate local:ListaPacientesPage}"
             Route="ListaPacientesPage" />
 
-        <!-- Adiciona mais tabs aqui no futuro, ex: -->
-        <!-- <ShellContent Title="Mensagens" ... /> -->
-        <!-- <ShellContent Title="Calendário" ... /> -->
     </TabBar>
+
 
 </Shell>
