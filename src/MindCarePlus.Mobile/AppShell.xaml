@@ -53,6 +53,11 @@
             Title="Desafios"
             ContentTemplate="{DataTemplate local:DesafiosPage}"
             Route="DesafiosPage" />
+        <ShellContent
+            Title="Psicólogos"
+            ContentTemplate="{DataTemplate local:ContactarPsicologoPage}"
+            Route="ContactarPsicologoPage"
+            Icon="psicologo_icon.png" />
     </TabBar>
 
     <!-- ============================================ -->
