@@ -79,8 +79,8 @@ namespace MindCarePlus.Infrastructure.Data
                 new Badge
                 {
                     Id = Guid.Parse("10000000-0000-0000-0000-000000000100"),
-                    Nome = "Artista",
-                    Descricao = "Completou desafio de hobby",
+                    Nome = "Tarefa Terapêutica",
+                    Descricao = "Completou uma tarefa prescrita pelo psicólogo",
                     ImagemUrl = "📋"
                 }
             };

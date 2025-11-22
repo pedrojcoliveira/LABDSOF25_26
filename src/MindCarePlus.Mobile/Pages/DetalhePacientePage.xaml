@@ -151,22 +151,21 @@
                 </Border>
 
                 <Border Grid.Column="4"
-                        BackgroundColor="White"
+                        BackgroundColor="{Binding TabSelecionada, Converter={StaticResource TabBackgroundConverter}, ConverterParameter=4}"
                         StrokeThickness="0"
-                        StrokeShape="RoundRectangle 20"
-                        Padding="20,10"
-                        Margin="10,0,0,0">
+                        Stroke="{Binding TabSelecionada, Converter={StaticResource TabBorderConverter}, ConverterParameter=4}">
 
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CriarNovaTarefaCommand}"/>
-                    </Border.GestureRecognizers>
-
-                    <Label Text="+ Nova Tarefa"
-                           TextColor="#3B82F6"
+                    <Label Text="Atribuir Nova Tarefa"
+                           TextColor="{Binding TabSelecionada, Converter={StaticResource TabTextColorConverter}, ConverterParameter=4}"
                            FontSize="14"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
-                           VerticalOptions="Center"/>
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CriarNovaTarefaCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+
                 </Border>
 
 
