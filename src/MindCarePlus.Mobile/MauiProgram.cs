@@ -90,6 +90,14 @@ public static class MauiProgram
         })
         .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>(); // Usa o handler registado
 
+        // Registar o PsicologoService
+        builder.Services.AddHttpClient<PsicologoService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>();
+
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
         // Registar ViewModels
@@ -106,6 +114,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ListaPacientesViewModel>();
         builder.Services.AddTransient<DetalhePacienteViewModel>();
         builder.Services.AddTransient<EvolucaoModelView>();
+        builder.Services.AddTransient<ContactarPsicologoViewModel>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -119,6 +128,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EvolucaoPage>();
         builder.Services.AddTransient<ListaPacientesPage>();
         builder.Services.AddTransient<DetalhePacientePage>();
+        builder.Services.AddTransient<ContactarPsicologoPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
