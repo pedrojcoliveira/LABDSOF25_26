@@ -13,7 +13,7 @@ namespace MindCarePlus.Domain.Entities
         public Utilizador Remetente { get; set; } = null!;
         public Guid DestinatarioId { get; set; }
         public Utilizador Destinatario { get; set; } = null!;
-        public string Counteudo { get; set; } = string.Empty;
+        public string Conteudo { get; set; } = string.Empty;
         public DateTime DataEnvio { get; set; }
         public bool Lida { get; set; }
         public DateTime? DataLeitura { get; set; }

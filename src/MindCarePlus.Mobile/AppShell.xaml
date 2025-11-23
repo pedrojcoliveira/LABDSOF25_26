@@ -41,10 +41,6 @@
             Route="DashboardPage" />
 
         <ShellContent
-            ContentTemplate="{DataTemplate local:EvolucaoPage}"
-            Route="evolucao"
-            Shell.PresentationMode="ModalAnimated" />
-        <ShellContent
             Title="Humor"
             ContentTemplate="{DataTemplate local:RegistoHumorPage}"
             Route="RegistoHumorPage" />
@@ -58,6 +54,11 @@
             ContentTemplate="{DataTemplate local:ContactarPsicologoPage}"
             Route="ContactarPsicologoPage"
             Icon="psicologo_icon.png" />
+        <ShellContent
+            Title="Mensagens"
+            ContentTemplate="{DataTemplate local:ConversasPage}"
+            Route="ConversasPage"
+            Icon="mensagens_icon.png" />
     </TabBar>
 
     <!-- ============================================ -->
@@ -70,9 +71,7 @@
             ContentTemplate="{DataTemplate local:ListaPacientesPage}"
             Route="ListaPacientesPage" />
 
-        <!-- Adiciona mais tabs aqui no futuro, ex: -->
-        <!-- <ShellContent Title="Mensagens" ... /> -->
-        <!-- <ShellContent Title="Calendário" ... /> -->
     </TabBar>
+
 
 </Shell>

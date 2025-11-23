@@ -1,4 +1,4 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:MindCarePlus.Mobile.Converters"
@@ -30,6 +30,10 @@
             <converters:AlertaToColorConverter x:Key="AlertaToColorConverter"/>
             <converters:CountToBoolConverter x:Key="CountToBoolConverter"/>
             <converters:CountToInvertedBoolConverter x:Key="CountToInvertedBoolConverter"/>
+            <converters:BoolToCheckMarkConverter x:Key="BoolToCheckMarkConverter" />
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <converters:BoolToLidoConverter x:Key="BoolToLidoConverter" />
+            <converters:DesafioTypeFilterConverter x:Key="DesafioTypeFilterConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

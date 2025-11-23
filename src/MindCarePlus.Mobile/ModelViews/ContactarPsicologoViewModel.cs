@@ -206,6 +206,7 @@ public partial class ContactarPsicologoViewModel : ObservableObject
         }
     }
 
+    /// Inicia um chat com o psicólogo
     [RelayCommand]
     public async Task IniciarChatAsync(PsicologoContactoDto psicologo)
     {
@@ -213,19 +214,14 @@ public partial class ContactarPsicologoViewModel : ObservableObject
 
         try
         {
-            bool confirmacao = await Shell.Current.DisplayAlert(
-                "Iniciar Chat",
-                $"Deseja iniciar uma conversa com {psicologo.Nome}?",
-                "Sim",
-                "Não");
+            var parametros = new Dictionary<string, object>
+        {
+            { "outroUtilizadorId", psicologo.Id },
+            { "outroUtilizadorNome", psicologo.Nome },
+            { "outroUtilizadorAvatar", "👨‍⚕️" }
+        };
 
-            if (confirmacao)
-            {
-                await Shell.Current.DisplayAlert(
-                    "Sucesso",
-                    "Funcionalidade de chat em desenvolvimento. Em breve você poderá conversar diretamente!",
-                    "OK");
-            }
+            await Shell.Current.GoToAsync("ChatPage", parametros);
         }
         catch (Exception ex)
         {

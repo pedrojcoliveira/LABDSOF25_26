@@ -12,13 +12,15 @@ namespace MindCarePlus.Mobile.ModelViews
 {
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly ApiService _apiService;  // ← USA ApiService!
+        private readonly ApiService _apiService;
         private readonly AuthService _authService;
+        private readonly ChatService _chatService;
 
-        public DashboardViewModel(ApiService apiService, AuthService authService)
+        public DashboardViewModel(ApiService apiService, AuthService authService, ChatService chatService)
         {
             _apiService = apiService;
             _authService = authService;
+            _chatService = chatService;
 
             BadgesConquistadas = new ObservableCollection<BadgeConquistadaDto>();
             EvolucaoHumor = new ObservableCollection<DiaHumorDto>();
@@ -27,7 +29,7 @@ namespace MindCarePlus.Mobile.ModelViews
             {
                 Console.WriteLine("========================================");
                 Console.WriteLine("🔔 Mensagem recebida: Registo criado!");
-                Console.WriteLine("🔄 Atualizando dashboard...");
+                Console.WriteLine("🔄 A atualizar dashboard...");
                 Console.WriteLine("========================================");
 
                 await LoadDashboardAsync();
@@ -70,6 +72,9 @@ namespace MindCarePlus.Mobile.ModelViews
         [ObservableProperty]
         private bool temDados = true;
 
+        [ObservableProperty]
+        private int totalMensagensNaoLidas;
+
         private Guid _pacienteId;
 
         public int PontosParaProximoNivel
@@ -79,11 +84,10 @@ namespace MindCarePlus.Mobile.ModelViews
                 // Cada nível precisa de 600 pontos
                 int pontosNecessarios = NivelAtual * 600;
                 int pontosFaltam = pontosNecessarios - PontosAtuais;
-                return Math.Max(0, pontosFaltam); // Nunca retorna negativo
+                return Math.Max(0, pontosFaltam);
             }
         }
 
-        // ← RECALCULA PROGRESSO TAMBÉM
         public double ProgressoPercentagem
         {
             get
@@ -92,11 +96,10 @@ namespace MindCarePlus.Mobile.ModelViews
                 if (pontosNecessarios == 0) return 0;
 
                 double progresso = (double)PontosAtuais / pontosNecessarios;
-                return Math.Min(1.0, progresso); // Máximo 100%
+                return Math.Min(1.0, progresso);
             }
         }
 
-        // ← NOTIFICA QUANDO PONTOS MUDAM
         partial void OnPontosAtuaisChanged(int value)
         {
             OnPropertyChanged(nameof(PontosParaProximoNivel));
@@ -109,8 +112,6 @@ namespace MindCarePlus.Mobile.ModelViews
             OnPropertyChanged(nameof(ProgressoPercentagem));
         }
 
-
-
         public async Task LoadDashboardAsync()
         {
             IsLoading = true;
@@ -120,7 +121,7 @@ namespace MindCarePlus.Mobile.ModelViews
             try
             {
                 Console.WriteLine("========================================");
-                Console.WriteLine("🔍 Iniciando carregamento da Dashboard");
+                Console.WriteLine("🔍 A iniciar carregamento da Dashboard");
 
                 // 1. Verifica autenticação
                 if (!await _authService.IsAuthenticatedAsync())
@@ -236,6 +237,18 @@ namespace MindCarePlus.Mobile.ModelViews
                     TemDados = false;
                 }
 
+                // CARREGAR MENSAGENS NÃO LIDAS
+                try
+                {
+                    TotalMensagensNaoLidas = await _chatService.ContarMensagensNaoLidasAsync();
+                    Console.WriteLine($"📬 {TotalMensagensNaoLidas} mensagens não lidas");
+                }
+                catch (Exception chatEx)
+                {
+                    Console.WriteLine($"⚠️ Erro ao carregar mensagens: {chatEx.Message}");
+                    TotalMensagensNaoLidas = 0;
+                }
+
                 Console.WriteLine("========================================");
             }
             catch (Exception ex)
@@ -265,7 +278,7 @@ namespace MindCarePlus.Mobile.ModelViews
                 Console.WriteLine("========================================");
                 Console.WriteLine($"🔍 Comando VerGraficoEvolucao executado!");
                 Console.WriteLine($"🔍 PacienteId: {_pacienteId}");
-                Console.WriteLine($"🔍 Navegando para: evolucao?pacienteId={_pacienteId}");
+                Console.WriteLine($"🔍 A navegar para: evolucao?pacienteId={_pacienteId}");
                 Console.WriteLine("========================================");
 
                 await Shell.Current.GoToAsync($"evolucao?pacienteId={_pacienteId}");
@@ -302,6 +315,21 @@ namespace MindCarePlus.Mobile.ModelViews
                 Console.WriteLine($"❌ Erro ao navegar para ContactarPsicologoPage: {ex.Message}");
                 await Shell.Current.DisplayAlert("Erro",
                     $"Erro ao abrir página de contacto: {ex.Message}", "OK");
+            }
+        }
+
+        [RelayCommand]
+        private async Task AbrirMensagens()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("//ConversasPage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao navegar para ConversasPage: {ex.Message}");
+                await Shell.Current.DisplayAlert("Erro",
+                    $"Erro ao abrir mensagens: {ex.Message}", "OK");
             }
         }
 

@@ -1,14 +1,16 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MindCarePlus.API.Hubs;
 using MindCarePlus.Application.Configuration;
 using MindCarePlus.Application.Interfaces;
 using MindCarePlus.Application.Services;
+using MindCarePlus.API.Services;
 using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Domain.Services;
 using MindCarePlus.Infrastructure.Data;
 using MindCarePlus.Infrastructure.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,10 +54,16 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // ===== CONFIGURAR SERVICES =====
+// ===== SERVIÇOS =====
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IRelatorioIAService, RelatorioIAService>();
+
+// ===== CONFIGURAR UNIT OF WORK =====
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPacienteService, PacienteService>();
 builder.Services.AddScoped<IDesafioService, DesafioService>();
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -86,6 +94,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+// ===== SIGNALR PARA CHAT EM TEMPO REAL =====
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true; // Apenas em desenvolvimento
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+});
 
 var app = builder.Build();
 
@@ -111,6 +126,8 @@ app.UseHttpsRedirection();
 app.UseCors("AllowMobile");
 
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chathub");
 
 app.MapControllers();
 
