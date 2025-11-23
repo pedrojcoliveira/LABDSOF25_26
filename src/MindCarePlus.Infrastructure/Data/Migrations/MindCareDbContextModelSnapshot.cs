@@ -149,6 +149,15 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsTarefaTerapeutica")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("Prazo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PsicologoId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UtilizadorId")
                         .HasColumnType("uuid");
 
@@ -235,21 +244,47 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ConteudoGeradoIA")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("DataGeracao")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("NivelAlerta")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("Lido")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("MediaEnergia")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MediaHumor")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MediaStress")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid>("PacienteId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("TipoRelatorio")
+                    b.Property<DateTime>("PeriodoFim")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("PeriodoInicio")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Recomendacoes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RelatorioCompleto")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TendenciasEnergia")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TendenciasHumor")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TendenciasStress")
                         .IsRequired()
                         .HasColumnType("text");
 

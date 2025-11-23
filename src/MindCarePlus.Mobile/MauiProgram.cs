@@ -123,6 +123,7 @@ public static class MauiProgram
         builder.Services.AddTransient<DetalhePacienteViewModel>();
         builder.Services.AddTransient<EvolucaoModelView>();
         builder.Services.AddTransient<ContactarPsicologoViewModel>();
+        builder.Services.AddTransient<CriarTarefaViewModel>();
         builder.Services.AddTransient<ConversasViewModel>();
         builder.Services.AddTransient<ChatViewModel>();
 
@@ -139,6 +140,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ListaPacientesPage>();
         builder.Services.AddTransient<DetalhePacientePage>();
         builder.Services.AddTransient<ContactarPsicologoPage>();
+        builder.Services.AddTransient<CriarTarefaPage>();
         builder.Services.AddTransient<ConversasPage>();
         builder.Services.AddTransient<ChatPage>();
 
