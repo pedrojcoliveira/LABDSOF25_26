@@ -11,15 +11,17 @@ using System.Threading.Tasks;
 
 namespace MindCarePlus.Mobile.ModelViews;
 
-public partial class ListaPacientesViewModel: ObservableObject
+public partial class ListaPacientesViewModel : ObservableObject
 {
     private readonly ApiService _apiService;
     private readonly AuthService _authService;
+    private readonly ChatService _chatService;
 
-    public ListaPacientesViewModel(ApiService apiService, AuthService authService)
+    public ListaPacientesViewModel(ApiService apiService, AuthService authService, ChatService chatService)
     {
         _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+        _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         Pacientes = new ObservableCollection<PacienteResumoDto>();
     }
 
@@ -40,6 +42,9 @@ public partial class ListaPacientesViewModel: ObservableObject
 
     [ObservableProperty]
     private string textoPesquisa = string.Empty;
+
+    [ObservableProperty]
+    private int totalMensagensNaoLidas;
 
     private List<PacienteResumoDto> _todosOsPacientes = new();
 
@@ -89,6 +94,18 @@ public partial class ListaPacientesViewModel: ObservableObject
             if (!TemPacientes)
             {
                 MensagemErro = "Ainda não tem pacientes associados.";
+            }
+
+            // CARREGAR MENSAGENS NÃO LIDAS
+            try
+            {
+                TotalMensagensNaoLidas = await _chatService.ContarMensagensNaoLidasAsync();
+                Console.WriteLine($"📬 {TotalMensagensNaoLidas} mensagens não lidas");
+            }
+            catch (Exception chatEx)
+            {
+                Console.WriteLine($"⚠️ Erro ao carregar mensagens: {chatEx.Message}");
+                TotalMensagensNaoLidas = 0;
             }
         }
         catch (Exception ex)
@@ -182,5 +199,20 @@ public partial class ListaPacientesViewModel: ObservableObject
     {
         TextoPesquisa = string.Empty;
         PesquisarPacientes();
+    }
+
+    [RelayCommand]
+    private async Task AbrirMensagens()
+    {
+        try
+        {
+            await Shell.Current.GoToAsync("//ConversasPage");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Erro ao navegar para ConversasPage: {ex.Message}");
+            await Shell.Current.DisplayAlert("Erro",
+                $"Erro ao abrir mensagens: {ex.Message}", "OK");
+        }
     }
 }

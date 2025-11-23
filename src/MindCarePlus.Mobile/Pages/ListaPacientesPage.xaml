@@ -9,21 +9,21 @@
              Title="Meus Pacientes"
              Shell.NavBarIsVisible="True">
 
-	<Shell.BackButtonBehavior>
-		<BackButtonBehavior IsVisible="False" />
-	</Shell.BackButtonBehavior>
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" />
+    </Shell.BackButtonBehavior>
 
-	<Grid RowDefinitions="Auto,*" Padding="16">
+    <Grid RowDefinitions="Auto,Auto,*" Padding="16">
 
-		<!-- Barra de Pesquisa -->
-		<Border Grid.Row="0"
+        <!-- Barra de Pesquisa -->
+        <Border Grid.Row="0"
                 StrokeThickness="0"
                 BackgroundColor="#F3F4F6"
                 StrokeShape="RoundRectangle 12"
                 Padding="12"
                 Margin="0,0,0,16">
-			<Grid ColumnDefinitions="*,Auto">
-				<Entry Grid.Column="0"
+            <Grid ColumnDefinitions="*,Auto">
+                <Entry Grid.Column="0"
                        Placeholder="Pesquisar paciente..."
                        Text="{Binding TextoPesquisa}"
                        TextChanged="OnPesquisaTextChanged"
@@ -31,72 +31,138 @@
                        PlaceholderColor="#9CA3AF"
                        TextColor="#1F2937"/>
 
-				<ImageButton Grid.Column="1"
+                <ImageButton Grid.Column="1"
                              Source="close.png"
                              WidthRequest="24"
                              HeightRequest="24"
                              Command="{Binding LimparPesquisaCommand}"
                              IsVisible="{Binding TextoPesquisa, Converter={StaticResource StringNotEmptyConverter}}"
                              BackgroundColor="Transparent"/>
-			</Grid>
-		</Border>
+            </Grid>
+        </Border>
 
-		<!-- Conteúdo Principal -->
-		<RefreshView Grid.Row="1"
+        <!-- Card de Mensagens (Grid.Row="1") -->
+        <Border Grid.Row="1"
+                BackgroundColor="White"
+                StrokeThickness="0"
+                Padding="15"
+                Margin="0,0,0,16">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12"/>
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.1" Radius="8" Offset="0,2"/>
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding AbrirMensagensCommand}"/>
+            </Border.GestureRecognizers>
+
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
+                <!-- Ícone -->
+                <Border Grid.Column="0"
+                        BackgroundColor="#E0F2FE"
+                        StrokeShape="RoundRectangle 25"
+                        HeightRequest="50"
+                        WidthRequest="50"
+                        VerticalOptions="Center">
+                    <Label Text="💬"
+                           FontSize="25"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Border>
+
+                <!-- Texto -->
+                <VerticalStackLayout Grid.Column="1" 
+                                     Spacing="2" 
+                                     VerticalOptions="Center">
+                    <Label Text="Mensagens dos Pacientes"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#1F2937"/>
+                    <Label Text="Ver conversas e responder"
+                           FontSize="13"
+                           TextColor="#6B7280"/>
+                </VerticalStackLayout>
+
+                <!-- Badge e Seta -->
+                <HorizontalStackLayout Grid.Column="2" 
+                                      Spacing="10" 
+                                      VerticalOptions="Center">
+                    <!-- Badge de não lidas -->
+                    <Border BackgroundColor="#EF4444"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="8,4"
+                            IsVisible="{Binding TotalMensagensNaoLidas, Converter={StaticResource IntToBoolConverter}}">
+                        <Label Text="{Binding TotalMensagensNaoLidas}"
+                               TextColor="White"
+                               FontSize="12"
+                               FontAttributes="Bold"/>
+                    </Border>
+
+                    <!-- Seta -->
+                    <Label Text="›"
+                           FontSize="24"
+                           TextColor="#0284C7"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <RefreshView Grid.Row="2"
                      IsRefreshing="{Binding IsRefreshing}"
                      Command="{Binding RefrescarPacientesCommand}">
 
-			<ScrollView>
-				<VerticalStackLayout Spacing="16">
+            <ScrollView>
+                <VerticalStackLayout Spacing="16">
 
-					<!-- Loading Indicator -->
-					<ActivityIndicator IsRunning="{Binding IsLoading}"
+                    <!-- Loading Indicator -->
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
                                      IsVisible="{Binding IsLoading}"
                                      Color="#3B82F6"
                                      HeightRequest="50"/>
 
-					<!-- Mensagem de Erro -->
-					<Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                    <!-- Mensagem de Erro -->
+                    <Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
                             BackgroundColor="#FEE2E2"
                             StrokeThickness="0"
                             StrokeShape="RoundRectangle 12"
                             Padding="16">
-						<Label Text="{Binding MensagemErro}"
+                        <Label Text="{Binding MensagemErro}"
                                TextColor="#991B1B"
                                FontSize="14"
                                HorizontalTextAlignment="Center"/>
-					</Border>
+                    </Border>
 
-					<!-- Lista de Pacientes -->
-					<CollectionView ItemsSource="{Binding Pacientes}"
+                    <!-- Lista de Pacientes -->
+                    <CollectionView ItemsSource="{Binding Pacientes}"
                                   SelectionMode="None"
                                   IsVisible="{Binding TemPacientes}">
-						<CollectionView.ItemTemplate>
-							<DataTemplate x:DataType="dto:PacienteResumoDto">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:PacienteResumoDto">
 
-								<Border StrokeThickness="0"
+                                <Border StrokeThickness="0"
                                         BackgroundColor="White"
                                         StrokeShape="RoundRectangle 16"
                                         Padding="16"
                                         Margin="0,0,0,12">
 
-									<Border.Shadow>
-										<Shadow Brush="#E5E7EB"
+                                    <Border.Shadow>
+                                        <Shadow Brush="#E5E7EB"
                                                 Offset="0,2"
                                                 Radius="8"
                                                 Opacity="0.5"/>
-									</Border.Shadow>
+                                    </Border.Shadow>
 
-									<Border.GestureRecognizers>
-										<TapGestureRecognizer
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ListaPacientesViewModel}}, Path=SelecionarPacienteCommand}"
                                             CommandParameter="{Binding .}"/>
-									</Border.GestureRecognizers>
+                                    </Border.GestureRecognizers>
 
-									<Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="60,*,Auto">
+                                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="60,*,Auto">
 
-										<!-- Avatar/Ícone -->
-										<Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                                        <!-- Avatar/Ícone -->
+                                        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
                                                 WidthRequest="50"
                                                 HeightRequest="50"
                                                 BackgroundColor="#E0F2FE"
@@ -104,16 +170,16 @@
                                                 StrokeShape="RoundRectangle 25"
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="Center">
-											<Label Text="{Binding Nome, Converter={StaticResource InicialNomeConverter}}"
+                                            <Label Text="{Binding Nome, Converter={StaticResource InicialNomeConverter}}"
                                                    TextColor="#0284C7"
                                                    FontSize="20"
                                                    FontAttributes="Bold"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"/>
-										</Border>
+                                        </Border>
 
-										<!-- Nome -->
-										<Label Grid.Row="0" Grid.Column="1"
+                                        <!-- Nome -->
+                                        <Label Grid.Row="0" Grid.Column="1"
                                                Text="{Binding Nome}"
                                                TextColor="#1F2937"
                                                FontSize="16"
@@ -121,88 +187,88 @@
                                                VerticalOptions="Center"
                                                Margin="12,0,0,4"/>
 
-										<!-- Idade -->
-										<Label Grid.Row="1" Grid.Column="1"
+                                        <!-- Idade -->
+                                        <Label Grid.Row="1" Grid.Column="1"
                                                TextColor="#6B7280"
                                                FontSize="14"
                                                Margin="12,0,0,4">
-											<Label.FormattedText>
-												<FormattedString>
-													<Span Text="Idade: "/>
-													<Span Text="{Binding Idade}"/>
-													<Span Text=" anos"/>
-												</FormattedString>
-											</Label.FormattedText>
-										</Label>
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="Idade: "/>
+                                                    <Span Text="{Binding Idade}"/>
+                                                    <Span Text=" anos"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
 
-										<!-- Info Adicional -->
-										<HorizontalStackLayout Grid.Row="2" Grid.Column="1"
+                                        <!-- Info Adicional -->
+                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="1"
                                                              Spacing="16"
                                                              Margin="12,4,0,0">
 
-											<!-- Total de Sessões -->
-											<HorizontalStackLayout Spacing="4">
-												<Label Text="📅" FontSize="14"/>
-												<Label TextColor="#6B7280" FontSize="12">
-													<Label.FormattedText>
-														<FormattedString>
-															<Span Text="{Binding TotalSessoes}"/>
-															<Span Text=" sessões"/>
-														</FormattedString>
-													</Label.FormattedText>
-												</Label>
-											</HorizontalStackLayout>
+                                            <!-- Total de Sessões -->
+                                            <HorizontalStackLayout Spacing="4">
+                                                <Label Text="📅" FontSize="14"/>
+                                                <Label TextColor="#6B7280" FontSize="12">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="{Binding TotalSessoes}"/>
+                                                            <Span Text=" sessões"/>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                            </HorizontalStackLayout>
 
-											<!-- Último Registo -->
-											<HorizontalStackLayout Spacing="4">
-												<Label Text="🕐" FontSize="14"/>
-												<Label Text="{Binding UltimoRegisto, StringFormat='{0:dd/MM/yyyy}'}"
+                                            <!-- Último Registo -->
+                                            <HorizontalStackLayout Spacing="4">
+                                                <Label Text="🕐" FontSize="14"/>
+                                                <Label Text="{Binding UltimoRegisto, StringFormat='{0:dd/MM/yyyy}'}"
                                                        TextColor="#6B7280"
                                                        FontSize="12"/>
-											</HorizontalStackLayout>
+                                            </HorizontalStackLayout>
 
-										</HorizontalStackLayout>
+                                        </HorizontalStackLayout>
 
-										<!-- Seta -->
-										<Label Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
+                                        <!-- Seta -->
+                                        <Label Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
                                                Text="›"
                                                TextColor="#9CA3AF"
                                                FontSize="24"
                                                VerticalOptions="Center"/>
 
-									</Grid>
-								</Border>
+                                    </Grid>
+                                </Border>
 
-							</DataTemplate>
-						</CollectionView.ItemTemplate>
-					</CollectionView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-					<!-- Mensagem Vazia -->
-					<VerticalStackLayout IsVisible="{Binding TemPacientes, Converter={StaticResource InvertedBoolConverter}}"
+                    <!-- Mensagem Vazia -->
+                    <VerticalStackLayout IsVisible="{Binding TemPacientes, Converter={StaticResource InvertedBoolConverter}}"
                                        Spacing="16"
                                        Padding="32"
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center">
-						<Label Text="👥"
+                        <Label Text="👥"
                                FontSize="64"
                                HorizontalOptions="Center"/>
-						<Label Text="Nenhum paciente encontrado"
+                        <Label Text="Nenhum paciente encontrado"
                                TextColor="#6B7280"
                                FontSize="16"
                                FontAttributes="Bold"
                                HorizontalOptions="Center"/>
-						<Label Text="Os seus pacientes aparecerão aqui após a primeira sessão."
+                        <Label Text="Os seus pacientes aparecerão aqui após a primeira sessão."
                                TextColor="#9CA3AF"
                                FontSize="14"
                                HorizontalOptions="Center"
                                HorizontalTextAlignment="Center"/>
-					</VerticalStackLayout>
+                    </VerticalStackLayout>
 
-				</VerticalStackLayout>
-			</ScrollView>
+                </VerticalStackLayout>
+            </ScrollView>
 
-		</RefreshView>
+        </RefreshView>
 
-	</Grid>
+    </Grid>
 
 </ContentPage>

@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:DataType="viewmodel:ChatViewModel"
+             x:Class="MindCarePlus.Mobile.Pages.ChatPage"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             Title="{Binding OutroUtilizadorNome}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Padding="15,10" BackgroundColor="#6C63FF">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#6C63FF" Offset="0.0" />
+                    <GradientStop Color="#8B82FF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 20"
+                        HeightRequest="40" WidthRequest="40" VerticalOptions="Center">
+                    <Label Text="{Binding OutroUtilizadorAvatar}" FontSize="20"
+                           HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+
+                <Label Grid.Column="1" Text="{Binding OutroUtilizadorNome}"
+                       FontSize="18" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+
+                <Button Grid.Column="2" Text="✕" BackgroundColor="Transparent"
+                        TextColor="White" FontSize="24" Command="{Binding FecharChatCommand}"/>
+            </Grid>
+        </Grid>
+
+        <!-- MENSAGENS -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Mensagens}" SelectionMode="None"
+                        x:Name="MensagensCollectionView" Margin="15,10" BackgroundColor="White">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:MensagemDto">
+                    <Grid Padding="0,5">
+
+                        <!-- MENSAGEM RECEBIDA (Esquerda, Cinzento) -->
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Start"
+                                               IsVisible="{Binding EhMinhaMensagem, Converter={StaticResource InvertedBoolConverter}}">
+                            <VerticalStackLayout Spacing="2" MaximumWidthRequest="260">
+                                <Border BackgroundColor="#E5E7EB" Padding="12,8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="15,15,15,2"/>
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding Conteudo}" TextColor="#1F2937" FontSize="15"/>
+                                </Border>
+                                <Label Text="{Binding DataEnvio, StringFormat='{0:HH:mm}'}"
+                                       FontSize="11" TextColor="#9CA3AF" Margin="10,0,0,0"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <!-- MENSAGEM ENVIADA (Direita, Roxo) -->
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="End"
+                                               IsVisible="{Binding EhMinhaMensagem}">
+                            <VerticalStackLayout Spacing="2" MaximumWidthRequest="260">
+                                <Border BackgroundColor="#6C63FF" Padding="12,8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="15,15,2,15"/>
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding Conteudo}" TextColor="White" FontSize="15"/>
+                                </Border>
+                                <!-- Hora + Checkmarks -->
+                                <HorizontalStackLayout Spacing="5" HorizontalOptions="End" Margin="0,0,10,0">
+                                    <Label Text="{Binding DataEnvio, StringFormat='{0:HH:mm}'}"
+                                           FontSize="11" TextColor="#9CA3AF"/>
+                                    <Label Text="{Binding Lida, Converter={StaticResource BoolToCheckMarkConverter}}"
+                                           FontSize="11" TextColor="#9CA3AF"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <!-- Input -->
+        <Grid Grid.Row="2" Padding="15,10" BackgroundColor="#F9FAFB"
+              ColumnDefinitions="*,Auto" ColumnSpacing="10">
+
+            <Border Grid.Column="0" BackgroundColor="White" StrokeThickness="1" Stroke="#E5E7EB"
+                    StrokeShape="RoundRectangle 25" Padding="15,12">
+                <Entry Placeholder="Escreva uma mensagem..." Text="{Binding NovaMensagem}"
+                       Completed="OnEnviarMensagem"
+                       BackgroundColor="Transparent" PlaceholderColor="#9CA3AF" TextColor="#1F2937"/>
+            </Border>
+
+            <Border Grid.Column="1" BackgroundColor="#6C63FF" StrokeShape="RoundRectangle 25"
+                    HeightRequest="50" WidthRequest="50">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EnviarMensagemCommand}"/>
+                </Border.GestureRecognizers>
+                <Label Text="📤" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

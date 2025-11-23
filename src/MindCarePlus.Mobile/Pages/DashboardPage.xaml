@@ -193,7 +193,7 @@
 
             <!-- Ações Rápidas -->
             <Grid ColumnDefinitions="*,*" 
-                  RowDefinitions="Auto,Auto" 
+                  RowDefinitions="Auto,Auto,Auto" 
                   ColumnSpacing="15" 
                   RowSpacing="15">
 
@@ -315,6 +315,62 @@
                                FontAttributes="Bold" 
                                HorizontalOptions="Center"/>
                         <Label Text="Falar com psicólogo" 
+                               FontSize="10" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Row="2" Grid.Column="0" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AbrirMensagensCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <VerticalStackLayout Spacing="10">
+                        <!-- Ícone com Badge -->
+                        <Grid WidthRequest="60" 
+                              HeightRequest="60" 
+                              HorizontalOptions="Center">
+
+                            <!-- Círculo de fundo -->
+                            <Border BackgroundColor="#FF9800" 
+                                    StrokeShape="RoundRectangle 30"
+                                    WidthRequest="60" 
+                                    HeightRequest="60" 
+                                    Padding="0">
+                                <Label Text="💬" 
+                                       FontSize="30" 
+                                       HorizontalOptions="Center" 
+                                       VerticalOptions="Center"/>
+                            </Border>
+
+                            <!-- Badge de mensagens não lidas -->
+                            <Border BackgroundColor="#EF4444"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="6,3"
+                                    IsVisible="{Binding TotalMensagensNaoLidas, Converter={StaticResource IntToBoolConverter}}"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start"
+                                    Margin="0,-5,-5,0">
+                                <Label Text="{Binding TotalMensagensNaoLidas}"
+                                       TextColor="White"
+                                       FontSize="11"
+                                       FontAttributes="Bold"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Título -->
+                        <Label Text="Mensagens" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+
+                        <!-- Subtítulo -->
+                        <Label Text="Ver conversas" 
                                FontSize="10" 
                                TextColor="Gray" 
                                HorizontalOptions="Center"/>

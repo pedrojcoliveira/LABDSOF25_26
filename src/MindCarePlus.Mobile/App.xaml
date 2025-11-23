@@ -30,6 +30,7 @@
             <converters:AlertaToColorConverter x:Key="AlertaToColorConverter"/>
             <converters:CountToBoolConverter x:Key="CountToBoolConverter"/>
             <converters:CountToInvertedBoolConverter x:Key="CountToInvertedBoolConverter"/>
+            <converters:BoolToCheckMarkConverter x:Key="BoolToCheckMarkConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

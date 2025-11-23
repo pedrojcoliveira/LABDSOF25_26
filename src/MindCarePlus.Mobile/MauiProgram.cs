@@ -98,6 +98,14 @@ public static class MauiProgram
         })
         .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>();
 
+        // ===== CHAT SERVICE (SIGNALR) =====
+        builder.Services.AddHttpClient<ChatService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+            client.Timeout = TimeSpan.FromSeconds(30);
+        })
+        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>();
+
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
         // Registar ViewModels
@@ -115,6 +123,8 @@ public static class MauiProgram
         builder.Services.AddTransient<DetalhePacienteViewModel>();
         builder.Services.AddTransient<EvolucaoModelView>();
         builder.Services.AddTransient<ContactarPsicologoViewModel>();
+        builder.Services.AddTransient<ConversasViewModel>();
+        builder.Services.AddTransient<ChatViewModel>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -129,6 +139,8 @@ public static class MauiProgram
         builder.Services.AddTransient<ListaPacientesPage>();
         builder.Services.AddTransient<DetalhePacientePage>();
         builder.Services.AddTransient<ContactarPsicologoPage>();
+        builder.Services.AddTransient<ConversasPage>();
+        builder.Services.AddTransient<ChatPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

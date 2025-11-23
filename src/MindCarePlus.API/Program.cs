@@ -1,7 +1,7 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MindCarePlus.API.Hubs;
 using MindCarePlus.Application.Configuration;
 using MindCarePlus.Application.Interfaces;
 using MindCarePlus.Application.Services;
@@ -9,6 +9,7 @@ using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Domain.Services;
 using MindCarePlus.Infrastructure.Data;
 using MindCarePlus.Infrastructure.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +87,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+// ===== SIGNALR PARA CHAT EM TEMPO REAL =====
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true; // Apenas em desenvolvimento
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+});
 
 var app = builder.Build();
 
@@ -111,6 +119,8 @@ app.UseHttpsRedirection();
 app.UseCors("AllowMobile");
 
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chathub");
 
 app.MapControllers();
 
