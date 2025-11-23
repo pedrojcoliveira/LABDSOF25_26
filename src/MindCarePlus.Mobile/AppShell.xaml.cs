@@ -1,5 +1,7 @@
 ﻿using MindCarePlus.Mobile.Pages;
 
+using MindCarePlus.Mobile.Views;
+
 namespace MindCarePlus.Mobile;
 
 public partial class AppShell : Shell
@@ -14,10 +16,13 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("RegisterPsicologoPage", typeof(RegisterPsicologoPage));
         Routing.RegisterRoute("RegistoHumor", typeof(RegistoHumorPage));
         Routing.RegisterRoute("DesafiosPage", typeof(DesafiosPage));
-        Routing.RegisterRoute("evolucao", typeof(Pages.EvolucaoPage));
+        Routing.RegisterRoute("evolucao", typeof(EvolucaoPage));
         //Routing.RegisterRoute("Dashboard", typeof(DashboardPage));
         Routing.RegisterRoute("ContactarPsicologoPage", typeof(ContactarPsicologoPage));
 
         Routing.RegisterRoute("DetalhePacientePage", typeof(DetalhePacientePage));
+        Routing.RegisterRoute("relatoriodetalhes", typeof(RelatorioDetalhesPage));
+        Routing.RegisterRoute("CriarTarefaPage", typeof(CriarTarefaPage));
+
     }
 }

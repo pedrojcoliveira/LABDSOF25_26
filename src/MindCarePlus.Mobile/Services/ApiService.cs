@@ -1,6 +1,7 @@
 ﻿using MindCarePlus.Shared.DTOs;
 using MindCarePlus.Shared.DTOs.Paciente;
 using MindCarePlus.Shared.DTOs.RegistoDiario;
+using MindCarePlus.Shared.DTOs.TarefaTerapeutica;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -319,6 +320,116 @@ public class ApiService
         }
     }
 
+    // ==================== RELATÓRIOS IA ====================
+
+    public async Task<List<RelatorioIAResumoDto>> GetRelatoriosPacienteAsync(Guid pacienteId)
+    {
+        var response = await _httpClient.GetAsync($"api/RelatorioIA/paciente/{pacienteId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<RelatorioIAResumoDto>>() ?? new();
+    }
+
+    public async Task<RelatorioIAResumoDto?> GerarRelatorioIAAsync(Guid pacienteId)
+    {
+        var response = await _httpClient.PostAsync($"api/RelatorioIA/gerar/{pacienteId}", null);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<RelatorioIAResumoDto>();
+    }
+
+    public async Task<RelatorioIADetalheDto?> GetRelatorioDetalheAsync(Guid relatorioId)
+    {
+        var response = await _httpClient.GetAsync($"api/RelatorioIA/{relatorioId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<RelatorioIADetalheDto>();
+    }
+
+    public async Task MarcarRelatorioLidoAsync(Guid relatorioId)
+    {
+        var response = await _httpClient.PatchAsync($"api/RelatorioIA/{relatorioId}/marcar-lido", null);
+        response.EnsureSuccessStatusCode();
+    }
+
+
+
+    /// <summary>
+    /// Cria uma tarefa terapêutica para um paciente
+    /// User Story: UM.PS.05
+    /// </summary>
+    public async Task<TarefaTerapeuticaDto?> CriarTarefaTerapeuticaAsync(CriarTarefaTerapeuticaDto dto)
+    {
+        await ConfigureAuthHeaderAsync(); // Garante que o token está lá
+
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/TarefaTerapeutica", dto);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await HandleUnauthorizedAsync(); // Lida com token expirado
+                return null;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<TarefaTerapeuticaDto>();
+            }
+
+            // Log de erro se não for sucesso
+            Console.WriteLine($"Erro API: {response.StatusCode}");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao criar tarefa: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Lista tarefas terapêuticas do paciente
+    /// </summary>
+    public async Task<List<TarefaTerapeuticaDto>> ListarTarefasPacienteAsync(Guid pacienteId)
+    {
+        await ConfigureAuthHeaderAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/TarefaTerapeutica/paciente/{pacienteId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var tarefas = await response.Content.ReadFromJsonAsync<List<TarefaTerapeuticaDto>>();
+                return tarefas ?? new List<TarefaTerapeuticaDto>();
+            }
+
+            return new List<TarefaTerapeuticaDto>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao listar tarefas: {ex.Message}");
+            return new List<TarefaTerapeuticaDto>();
+        }
+    }
+
+
+    /// <summary>
+    /// Lista MINHAS tarefas terapêuticas (paciente autenticado)
+    /// </summary>
+    public async Task<List<TarefaTerapeuticaDto>> ListarMinhasTarefasTerapeuticasAsync()
+    {
+        await ConfigureAuthHeaderAsync();
+
+        try
+        {
+            var tarefas = await _httpClient.GetFromJsonAsync<List<TarefaTerapeuticaDto>>("api/TarefaTerapeutica/me");
+            return tarefas ?? new List<TarefaTerapeuticaDto>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao listar minhas tarefas: {ex.Message}");
+            return new List<TarefaTerapeuticaDto>();
+        }
+    }
 }
 
 
