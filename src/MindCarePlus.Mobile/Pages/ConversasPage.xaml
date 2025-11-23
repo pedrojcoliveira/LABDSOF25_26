@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:DataType="viewmodel:ConversasViewModel"
+             x:Class="MindCarePlus.Mobile.Pages.ConversasPage"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             Title="Mensagens">
+
+	<Grid RowDefinitions="Auto,*">
+
+		<!-- Header com Gradiente Roxo -->
+		<Grid Grid.Row="0" Padding="20" BackgroundColor="#6C63FF">
+			<Grid.Background>
+				<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+					<GradientStop Color="#6C63FF" Offset="0.0" />
+					<GradientStop Color="#8B82FF" Offset="1.0" />
+				</LinearGradientBrush>
+			</Grid.Background>
+
+			<VerticalStackLayout Spacing="10">
+				<!-- Título -->
+				<Label Text="💬 Mensagens"
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       TextColor="White"/>
+
+				<Label Text="Conversas ativas"
+                       FontSize="14"
+                       TextColor="White"
+                       Opacity="0.9"/>
+			</VerticalStackLayout>
+		</Grid>
+
+		<!-- Conteúdo Principal -->
+		<RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefrescarConversasCommand}"
+                     RefreshColor="#6C63FF">
+
+			<ScrollView>
+				<VerticalStackLayout Padding="20" Spacing="15">
+
+					<!-- Loading Indicator -->
+					<ActivityIndicator IsRunning="{Binding IsLoading}"
+                                       IsVisible="{Binding IsLoading}"
+                                       Color="#6C63FF"
+                                       HeightRequest="50"
+                                       WidthRequest="50"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+
+					<!-- Lista Vazia -->
+					<VerticalStackLayout IsVisible="{Binding TemConversas, Converter={StaticResource InvertedBoolConverter}}"
+                                         Spacing="10"
+                                         Padding="20"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
+						<Label Text="💬"
+                               FontSize="50"
+                               HorizontalOptions="Center"/>
+						<Label Text="Nenhuma conversa ainda"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#666666"
+                               HorizontalOptions="Center"/>
+						<Label Text="Comece uma conversa com um psicólogo"
+                               FontSize="14"
+                               TextColor="#999999"
+                               HorizontalOptions="Center"/>
+					</VerticalStackLayout>
+
+					<!-- Lista de Conversas -->
+					<CollectionView ItemsSource="{Binding Conversas}"
+                                    IsVisible="{Binding TemConversas}"
+                                    SelectionMode="None">
+						<CollectionView.ItemTemplate>
+							<DataTemplate x:DataType="dto:ConversaDto">
+								<Border Padding="0" Margin="0,5">
+									<Border.GestureRecognizers>
+										<TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ConversasViewModel}}, Path=AbrirChatCommand}"
+                                                              CommandParameter="{Binding .}"/>
+									</Border.GestureRecognizers>
+
+									<Grid Padding="15,12" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+										<!-- Avatar -->
+										<Border Grid.Column="0"
+                                                BackgroundColor="#F3F4F6"
+                                                StrokeShape="RoundRectangle 25"
+                                                HeightRequest="50"
+                                                WidthRequest="50"
+                                                VerticalOptions="Center">
+											<Label Text="{Binding OutroUtilizadorAvatar}"
+                                                   FontSize="24"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+										</Border>
+
+										<!-- Conteúdo -->
+										<VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+											<!-- Nome -->
+											<Label Text="{Binding OutroUtilizadorNome}"
+                                                   FontSize="16"
+                                                   TextColor="#1F2937"/>
+
+											<!-- Última mensagem -->
+											<Label Text="{Binding UltimaMensagem}"
+                                                   FontSize="13"
+                                                   TextColor="#6B7280"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="1"/>
+										</VerticalStackLayout>
+
+										<!-- Hora -->
+										<Label Grid.Column="2"
+                                               Text="{Binding UltimaMensagemData, StringFormat='{0:HH:mm}'}"
+                                               FontSize="12"
+                                               TextColor="#9CA3AF"
+                                               VerticalOptions="Start"/>
+
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</CollectionView.ItemTemplate>
+					</CollectionView>
+
+				</VerticalStackLayout>
+			</ScrollView>
+		</RefreshView>
+	</Grid>
+</ContentPage>
