@@ -293,7 +293,16 @@ namespace MindCarePlus.Mobile.ModelViews
         [RelayCommand]
         private async Task ContactarPsicologo()
         {
-            await Shell.Current.GoToAsync("contactar");
+            try
+            {
+                await Shell.Current.GoToAsync("//ContactarPsicologoPage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao navegar para ContactarPsicologoPage: {ex.Message}");
+                await Shell.Current.DisplayAlert("Erro",
+                    $"Erro ao abrir página de contacto: {ex.Message}", "OK");
+            }
         }
 
         [RelayCommand]

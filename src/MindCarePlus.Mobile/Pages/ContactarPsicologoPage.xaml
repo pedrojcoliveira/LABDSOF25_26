@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:DataType="viewmodel:ContactarPsicologoViewModel"
+             x:Class="MindCarePlus.Mobile.Pages.ContactarPsicologoPage"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             Title="Contactar Psicólogo">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header com Gradiente Roxo -->
+        <Grid Grid.Row="0" Padding="20" BackgroundColor="#6C63FF">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#6C63FF" Offset="0.0" />
+                    <GradientStop Color="#8B82FF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <VerticalStackLayout Spacing="15">
+                <!-- Título -->
+                <Label Text="👨‍⚕️ Encontra o teu Psicólogo" 
+                       FontSize="26" 
+                       FontAttributes="Bold" 
+                       TextColor="White"/>
+
+                <Label Text="Conecta-te com profissionais qualificados" 
+                       FontSize="14" 
+                       TextColor="White" 
+                       Opacity="0.9"/>
+
+                <!-- Barra de Pesquisa -->
+                <Border BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 12"
+                        Padding="0"
+                        HeightRequest="50">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Entry Grid.Column="0"
+                               Placeholder="Pesquisar por nome ou especialidade..."
+                               Text="{Binding TextoPesquisa}"
+                               TextChanged="OnSearchTextChanged"
+                               BackgroundColor="Transparent"
+                               PlaceholderColor="#999999"
+                               TextColor="#333333"
+                               VerticalOptions="Center"
+                               Margin="15,0"/>
+
+                        <Button Grid.Column="1"
+                                Text="❌"
+                                BackgroundColor="Transparent"
+                                TextColor="#666666"
+                                FontSize="16"
+                                Padding="10"
+                                Command="{Binding LimparPesquisaCommand}"
+                                IsVisible="{Binding TextoPesquisa, Converter={StaticResource StringNotEmptyConverter}}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Filtro por Especialidade -->
+                <Border BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 12"
+                        Padding="10,5">
+                    <Picker Title="Filtrar por especialidade"
+                            ItemsSource="{Binding Especialidades}"
+                            SelectedItem="{Binding EspecialidadeSelecionada}"
+                            SelectedIndexChanged="OnEspecialidadeChanged"
+                            TextColor="#333333"
+                            TitleColor="#666666"/>
+                </Border>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Conteúdo Principal -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefrescarPsicologosCommand}"
+                     RefreshColor="#6C63FF">
+
+            <ScrollView>
+                <VerticalStackLayout Padding="20" Spacing="15">
+
+                    <!-- Loading Indicator -->
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                       IsVisible="{Binding IsLoading}"
+                                       Color="#6C63FF"
+                                       HeightRequest="50"
+                                       WidthRequest="50"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                    <!-- Mensagem de Erro -->
+                    <Label Text="{Binding MensagemErro}"
+                           IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                           TextColor="Red"
+                           FontSize="14"
+                           HorizontalOptions="Center"
+                           Margin="0,10"/>
+
+                    <!-- Lista Vazia -->
+                    <VerticalStackLayout IsVisible="{Binding TemPsicologos, Converter={StaticResource InvertedBoolConverter}}"
+                                         Spacing="10"
+                                         Padding="20"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
+                        <Label Text="🔍"
+                               FontSize="50"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Nenhum psicólogo encontrado"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#666666"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Tente ajustar os filtros de pesquisa"
+                               FontSize="14"
+                               TextColor="#999999"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+
+                    <!-- Lista de Psicólogos -->
+                    <CollectionView ItemsSource="{Binding PsicologosFiltrados}"
+                                    IsVisible="{Binding TemPsicologos}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:PsicologoContactoDto">
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="0"
+                                        Padding="15"
+                                        Margin="0,5">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12"/>
+                                    </Border.StrokeShape>
+                                    <Border.Shadow>
+                                        <Shadow Brush="Black"
+                                                Opacity="0.1"
+                                                Radius="8"
+                                                Offset="0,2"/>
+                                    </Border.Shadow>
+
+                                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="60,*" RowSpacing="10" ColumnSpacing="15">
+
+                                        <!-- Avatar -->
+                                        <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                                BackgroundColor="#F3F4F6"
+                                                StrokeShape="RoundRectangle 30"
+                                                HeightRequest="60"
+                                                WidthRequest="60"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Start">
+                                            <Label Text="{Binding Avatar}"
+                                                   FontSize="30"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+
+                                        <!-- Informações do Psicólogo -->
+                                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
+                                            <Label Text="{Binding Nome}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#333333"/>
+
+                                            <Label FontSize="13" TextColor="#666666">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="🎓 " FontSize="12"/>
+                                                        <Span Text="{Binding Especialidade}"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+
+                                            <Label FontSize="13" TextColor="#666666">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="📋 " FontSize="12"/>
+                                                        <Span Text="{Binding NumeroCedulaProfissional}"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                        <!-- Estatísticas -->
+                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="15">
+                                            <Border BackgroundColor="#FEF3C7"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    Padding="8,4">
+                                                <Label TextColor="#92400E" FontSize="12">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="⭐ "/>
+                                                            <Span Text="{Binding AvaliacaoMedia, StringFormat='{0:F1}'}"/>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                            </Border>
+
+                                            <Border BackgroundColor="#DBEAFE"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    Padding="8,4">
+                                                <Label TextColor="#1E40AF" FontSize="12">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="👥 "/>
+                                                            <Span Text="{Binding TotalPacientes}"/>
+                                                            <Span Text=" pacientes"/>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                            </Border>
+
+                                            <Border BackgroundColor="#D1FAE5"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    Padding="8,4"
+                                                    IsVisible="{Binding Disponivel}">
+                                                <Label Text="✓ Disponível"
+                                                       TextColor="#065F46"
+                                                       FontSize="12"/>
+                                            </Border>
+                                        </HorizontalStackLayout>
+
+                                        <!-- Botões de Ação -->
+                                        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                              ColumnDefinitions="*,*,*"
+                                              ColumnSpacing="10"
+                                              Margin="0,5,0,0">
+
+                                            <!-- Ver Perfil -->
+                                            <Button Grid.Column="0"
+                                                    Text="👤 Perfil"
+                                                    BackgroundColor="#E5E7EB"
+                                                    TextColor="#374151"
+                                                    FontSize="13"
+                                                    FontAttributes="Bold"
+                                                    Padding="10,8"
+                                                    CornerRadius="8"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ContactarPsicologoViewModel}}, Path=VerPerfilCommand}"
+                                                    CommandParameter="{Binding .}"/>
+
+                                            <!-- Agendar -->
+                                            <Button Grid.Column="1"
+                                                    Text="📅 Agendar"
+                                                    BackgroundColor="#6C63FF"
+                                                    TextColor="White"
+                                                    FontSize="13"
+                                                    FontAttributes="Bold"
+                                                    Padding="10,8"
+                                                    CornerRadius="8"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ContactarPsicologoViewModel}}, Path=AgendarConsultaCommand}"
+                                                    CommandParameter="{Binding .}"/>
+
+                                            <!-- Chat -->
+                                            <Button Grid.Column="2"
+                                                    Text="💬 Chat"
+                                                    BackgroundColor="#10B981"
+                                                    TextColor="White"
+                                                    FontSize="13"
+                                                    FontAttributes="Bold"
+                                                    Padding="10,8"
+                                                    CornerRadius="8"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ContactarPsicologoViewModel}}, Path=IniciarChatCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
