@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MindCarePlus.API.Services;
 using MindCarePlus.Domain.Interfaces;
+using System.Security.Claims;
 
 namespace MindCarePlus.API.Controllers
 {
@@ -138,6 +140,68 @@ namespace MindCarePlus.API.Controllers
             await _unitOfWork.SaveChangesAsync();
 
             return Ok(new { mensagem = "Relatório marcado como lido" });
+        }
+
+
+        /// <summary>
+        /// Paciente gera seu próprio relatório semanal com IA
+        /// </summary>
+        [HttpPost("gerar-meu-relatorio")]
+        public async Task<ActionResult> GerarMeuRelatorio([FromQuery] int dias = 30)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid pacienteId))
+                    return Unauthorized("Token inválido");
+
+                var relatorio = await _relatorioService.GerarRelatorioSemanalAsync(pacienteId);
+
+                return Ok(new
+                {
+                    id = relatorio.Id,
+                    dataGeracao = relatorio.DataGeracao,
+                    periodo = $"{relatorio.PeriodoInicio:dd/MM/yyyy} - {relatorio.PeriodoFim:dd/MM/yyyy}",
+                    mediaHumor = relatorio.MediaHumor,
+                    mediaEnergia = relatorio.MediaEnergia,
+                    mediaStress = relatorio.MediaStress,
+                    tendenciasHumor = relatorio.TendenciasHumor,
+                    tendenciasEnergia = relatorio.TendenciasEnergia,
+                    tendenciasStress = relatorio.TendenciasStress,
+                    recomendacoes = relatorio.Recomendacoes,
+                    relatorioCompleto = relatorio.RelatorioCompleto,
+                    mensagem = "Relatório gerado com sucesso!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { erro = ex.Message });
+            }
+        }
+
+        // GET: api/RelatorioIA/meus-relatorios
+        [HttpGet("meus-relatorios")]
+        [Authorize(Roles = "Paciente")]
+        public async Task<ActionResult> GetMeusRelatorios()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid pacienteId))
+                return Unauthorized("Token inválido");
+
+            var relatorios = await _unitOfWork.RelatoriosIA.GetRelatoriosByPacienteIdAsync(pacienteId);
+
+            var lista = relatorios.Select(r => new
+            {
+                id = r.Id,
+                dataGeracao = r.DataGeracao,
+                periodo = $"{r.PeriodoInicio:dd/MM/yyyy} - {r.PeriodoFim:dd/MM/yyyy}",
+                mediaHumor = r.MediaHumor,
+                mediaEnergia = r.MediaEnergia,
+                mediaStress = r.MediaStress,
+                lido = r.Lido
+            });
+
+            return Ok(lista);
         }
     }
 }
