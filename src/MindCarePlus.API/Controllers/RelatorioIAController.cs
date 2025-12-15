@@ -12,11 +12,13 @@ namespace MindCarePlus.API.Controllers
     {
         private readonly IRelatorioIAService _relatorioService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPdfRelatorioService _pdfService;
 
-        public RelatorioIAController(IRelatorioIAService relatorioService, IUnitOfWork unitOfWork)
+        public RelatorioIAController(IRelatorioIAService relatorioService, IUnitOfWork unitOfWork, IPdfRelatorioService pdfService)
         {
             _relatorioService = relatorioService;
             _unitOfWork = unitOfWork;
+            _pdfService = pdfService;
         }
 
         /// <summary>
@@ -202,6 +204,46 @@ namespace MindCarePlus.API.Controllers
             });
 
             return Ok(lista);
+        }
+
+        // GET: api/RelatorioIA/{id}/exportar-pdf
+        [HttpGet("{id}/exportar-pdf")]
+        [Authorize(Roles = "Paciente,Psicologo")]
+        public async Task<IActionResult> ExportarPdf(Guid id)
+        {
+            try
+            {
+                var relatorio = await _unitOfWork.RelatoriosIA.GetByIdAsync(id);
+
+                if (relatorio == null)
+                    return NotFound("Relatório não encontrado");
+
+                // Verificar se o utilizador tem acesso a este relatório
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized("Token inválido");
+
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                // Paciente só pode ver seus próprios relatórios
+                if (userRole == "Paciente" && relatorio.PacienteId != userId)
+                    return Forbid("Acesso negado a este relatório");
+
+                // Buscar nome do paciente
+                var paciente = await _unitOfWork.Pacientes.GetByIdAsync(relatorio.PacienteId);
+                var nomePaciente = paciente?.Nome ?? "Paciente";
+
+                // Gerar PDF
+                var pdfBytes = _pdfService.GerarPdfRelatorio(relatorio, nomePaciente);
+
+                // Retornar arquivo
+                var fileName = $"relatorio_{relatorio.PeriodoInicio:yyyyMMdd}_{relatorio.PeriodoFim:yyyyMMdd}.pdf";
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { erro = ex.Message });
+            }
         }
     }
 }
