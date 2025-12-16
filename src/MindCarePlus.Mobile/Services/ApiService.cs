@@ -430,6 +430,21 @@ public class ApiService
             return new List<TarefaTerapeuticaDto>();
         }
     }
+
+    // Relatórios IA para Paciente
+    public async Task<RelatorioIAPacienteDto?> GerarMeuRelatorioAsync(int dias = 30)
+    {
+        var response = await _httpClient.PostAsync($"api/RelatorioIA/gerar-meu-relatorio?dias={dias}", null);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<RelatorioIAPacienteDto>();
+    }
+
+    public async Task<List<RelatorioIAResumoDto>> GetMeusRelatoriosAsync()
+    {
+        var response = await _httpClient.GetAsync("api/RelatorioIA/meus-relatorios");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<RelatorioIAResumoDto>>() ?? new();
+    }
 }
 
 

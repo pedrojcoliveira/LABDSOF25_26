@@ -77,6 +77,43 @@ namespace MindCarePlus.Mobile.ModelViews
 
         private Guid _pacienteId;
 
+        #region Propriedades - Relatório IA
+
+        [ObservableProperty]
+        private bool isGerarRelatorio;
+
+        [ObservableProperty]
+        private bool mostrarRelatorio;
+
+        [ObservableProperty]
+        private string relatorioPeriodo = string.Empty;
+
+        [ObservableProperty]
+        private decimal relatorioMediaHumor;
+
+        [ObservableProperty]
+        private decimal relatorioMediaEnergia;
+
+        [ObservableProperty]
+        private decimal relatorioMediaStress;
+
+        [ObservableProperty]
+        private string relatorioTendenciasHumor = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioTendenciasEnergia = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioTendenciasStress = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioRecomendacoes = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioCompleto = string.Empty;
+
+        #endregion
+
         public int PontosParaProximoNivel
         {
             get
@@ -356,6 +393,70 @@ namespace MindCarePlus.Mobile.ModelViews
         private async Task Refresh()
         {
             await LoadDashboardAsync();
+        }
+
+        [RelayCommand]
+        public async Task GerarRelatorioIAAsync()
+        {
+            if (IsGerarRelatorio) return;
+
+            bool confirmar = await Shell.Current.DisplayAlert(
+                "Gerar Relatório com IA",
+                "Deseja gerar um relatório personalizado dos últimos 30 dias com análise de IA?\n\nIsto pode demorar alguns segundos.",
+                "Sim", "Não");
+
+            if (!confirmar) return;
+
+            try
+            {
+                IsGerarRelatorio = true;
+
+                var relatorio = await _apiService.GerarMeuRelatorioAsync(30);
+
+                if (relatorio != null)
+                {
+                    RelatorioPeriodo = relatorio.Periodo;
+                    RelatorioMediaHumor = relatorio.MediaHumor;
+                    RelatorioMediaEnergia = relatorio.MediaEnergia;
+                    RelatorioMediaStress = relatorio.MediaStress;
+                    RelatorioTendenciasHumor = relatorio.TendenciasHumor;
+                    RelatorioTendenciasEnergia = relatorio.TendenciasEnergia;
+                    RelatorioTendenciasStress = relatorio.TendenciasStress;
+                    RelatorioRecomendacoes = relatorio.Recomendacoes;
+                    RelatorioCompleto = relatorio.RelatorioCompleto;
+
+                    MostrarRelatorio = true;
+
+                    await Shell.Current.DisplayAlert(
+                        "Sucesso",
+                        relatorio.Mensagem,
+                        "OK");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Erro de Conexão",
+                    "Não foi possível conectar ao servidor. Verifique sua conexão com a internet.",
+                    "OK");
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Erro",
+                    $"Não foi possível gerar o relatório: {ex.Message}",
+                    "OK");
+            }
+            finally
+            {
+                IsGerarRelatorio = false;
+            }
+        }
+
+        [RelayCommand]
+        public void FecharRelatorio()
+        {
+            MostrarRelatorio = false;
         }
     }
 }
