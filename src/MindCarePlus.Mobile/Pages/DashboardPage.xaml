@@ -8,6 +8,13 @@
              xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              Title="Dashboard">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+                    Text="Exportar PDF"
+                    Command="{Binding ExportarRelatorioPdfCommand}"
+                    IconImageSource="share.png"/>
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#6C63FF">
 
@@ -534,6 +541,7 @@
                                HorizontalOptions="Center"/>
                     </VerticalStackLayout>
                 </Border>
+
             </Grid>
 
         </VerticalStackLayout>

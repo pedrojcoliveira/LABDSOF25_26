@@ -7,6 +7,10 @@ using CommunityToolkit.Mvvm.Messaging;
 using MindCarePlus.Mobile.Messages;
 using Microcharts;
 using SkiaSharp;
+using MindCarePlus.Shared.DTOs.Paciente;
+
+
+
 
 namespace MindCarePlus.Mobile.ModelViews
 {
@@ -84,6 +88,9 @@ namespace MindCarePlus.Mobile.ModelViews
 
         [ObservableProperty]
         private bool mostrarRelatorio;
+
+        [ObservableProperty]
+        private Guid relatorioIdAtual;
 
         [ObservableProperty]
         private string relatorioPeriodo = string.Empty;
@@ -415,6 +422,7 @@ namespace MindCarePlus.Mobile.ModelViews
 
                 if (relatorio != null)
                 {
+                    RelatorioIdAtual = relatorio.Id;
                     RelatorioPeriodo = relatorio.Periodo;
                     RelatorioMediaHumor = relatorio.MediaHumor;
                     RelatorioMediaEnergia = relatorio.MediaEnergia;
@@ -457,6 +465,54 @@ namespace MindCarePlus.Mobile.ModelViews
         public void FecharRelatorio()
         {
             MostrarRelatorio = false;
+        }
+
+        [RelayCommand]
+        public async Task ExportarRelatorioPdfAsync()
+        {
+            if (RelatorioIdAtual == Guid.Empty) // ← USA O ID GUARDADO
+            {
+                await Shell.Current.DisplayAlert("Aviso", "Nenhum relatório disponível para exportar.", "OK");
+                return;
+            }
+
+            try
+            {
+                IsGerarRelatorio = true; // ← USA IsGerandoRelatorio em vez de IsBusy
+
+                var pdfBytes = await _apiService.ExportarRelatorioPdfAsync(RelatorioIdAtual);
+
+                if (pdfBytes != null && pdfBytes.Length > 0)
+                {
+                    // Salvar o PDF
+                    var fileName = $"relatorio_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                    var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+                    await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                    // Abrir o PDF
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(filePath)
+                    });
+
+                    await Shell.Current.DisplayAlert(
+                        "Sucesso",
+                        "Relatório exportado com sucesso!",
+                        "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Erro",
+                    $"Não foi possível exportar o relatório: {ex.Message}",
+                    "OK");
+            }
+            finally
+            {
+                IsGerarRelatorio = false;
+            }
         }
     }
 }

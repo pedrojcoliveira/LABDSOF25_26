@@ -445,6 +445,13 @@ public class ApiService
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<List<RelatorioIAResumoDto>>() ?? new();
     }
+
+    public async Task<byte[]?> ExportarRelatorioPdfAsync(Guid relatorioId)
+    {
+        var response = await _httpClient.GetAsync($"api/RelatorioIA/{relatorioId}/exportar-pdf");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsByteArrayAsync();
+    }
 }
 
 
