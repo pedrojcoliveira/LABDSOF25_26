@@ -6,6 +6,35 @@
     xmlns:local="clr-namespace:MindCarePlus.Mobile.Pages"
     Shell.FlyoutBehavior="Disabled">
 
+    <!--<Shell.ToolbarItems>
+        <ToolbarItem Text="Perfil"
+                     IconImageSource="profile_icon.png"
+                     Command="{Binding GoToProfileCommand}"
+                     Priority="0"
+                     Order="Primary"/>
+
+        <ToolbarItem Text="Sair"
+                     IconImageSource="logout_icon.png"
+                     Command="{Binding LogoutCommand}"
+                     Priority="1"
+                     Order="Secondary"/>
+    </Shell.ToolbarItems>-->
+
+    <Shell.ToolbarItems>
+        <!-- Estes itens aparecem no menu overflow (3 pontos) no Android -->
+        <ToolbarItem Text="Meu Perfil"
+                     IconImageSource="profile_icon.png"
+                     Clicked="OnProfileClicked"
+                     Order="Secondary"
+                     Priority="0"/>
+
+        <ToolbarItem Text="Sair"
+                     IconImageSource="logout_icon.png"
+                     Clicked="OnLogoutClicked"
+                     Order="Secondary"
+                     Priority="2"/>
+    </Shell.ToolbarItems>
+
     <!-- ============================================ -->
     <!-- PÁGINAS DE AUTENTICAÇÃO (sem tabs) -->
     <!-- ============================================ -->

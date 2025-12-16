@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microcharts;
+using MindCarePlus.Mobile.Messages;
 using MindCarePlus.Mobile.Services;
 using MindCarePlus.Shared.DTOs;
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.Messaging;
-using MindCarePlus.Mobile.Messages;
-using Microcharts;
 using SkiaSharp;
+using System.Collections.ObjectModel;
 
 namespace MindCarePlus.Mobile.ModelViews
 {
@@ -356,6 +356,12 @@ namespace MindCarePlus.Mobile.ModelViews
         private async Task Refresh()
         {
             await LoadDashboardAsync();
+        }
+
+        [RelayCommand]
+        private async Task GoToProfile()
+        {
+            await Shell.Current.GoToAsync("ProfilePage");
         }
     }
 }
