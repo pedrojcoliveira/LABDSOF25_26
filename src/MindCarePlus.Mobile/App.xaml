@@ -34,6 +34,7 @@
             <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
             <converters:BoolToLidoConverter x:Key="BoolToLidoConverter" />
             <converters:DesafioTypeFilterConverter x:Key="DesafioTypeFilterConverter" />
+            <converters:StringEqualConverter x:Key="StringEqualConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

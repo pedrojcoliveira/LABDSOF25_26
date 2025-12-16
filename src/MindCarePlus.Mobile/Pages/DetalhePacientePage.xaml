@@ -6,7 +6,12 @@
              xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs.Paciente;assembly=MindCarePlus.Shared"
              x:Class="MindCarePlus.Mobile.Pages.DetalhePacientePage"
              x:DataType="vm:DetalhePacienteViewModel"
-             Title="{Binding Nome}">
+             Title="{Binding Nome}"
+             Shell.TabBarIsVisible="False">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding VoltarCommand}" />
+    </Shell.BackButtonBehavior>
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="0">
 
