@@ -66,10 +66,19 @@
     <!-- ============================================ -->
 
     <TabBar Route="PsicologoFlow">
+        <!-- Adicionar na AppShell.xaml -->
+        <ShellContent
+            Title="Dashboard"
+            ContentTemplate="{DataTemplate local:DashboardPsicologoPage}"
+            Route="DashboardPsicologoPage" />
+        
+        
         <ShellContent
             Title="Pacientes"
             ContentTemplate="{DataTemplate local:ListaPacientesPage}"
             Route="ListaPacientesPage" />
+
+
 
     </TabBar>
 
