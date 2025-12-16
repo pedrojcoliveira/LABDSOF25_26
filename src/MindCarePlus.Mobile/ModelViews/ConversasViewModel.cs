@@ -119,4 +119,35 @@ public partial class ConversasViewModel : ObservableObject
             await CarregarConversasAsync();
         });
     }
+
+    /// <summary>
+    /// Abre o perfil completo de um paciente
+    /// UM.PS.05 - Navegação a partir de mensagens
+    /// </summary>
+    [RelayCommand]
+    public async Task AbrirPerfilPacienteAsync(ConversaDto conversa)
+    {
+        if (conversa == null) return;
+
+        try
+        {
+            // Verifica se o outro utilizador é um Paciente
+            if (conversa.OutroUtilizadorTipo == "Paciente")
+            {
+                await Shell.Current.GoToAsync($"DetalhePacientePage?pacienteId={conversa.OutroUtilizadorId}");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert(
+                    "Info",
+                    "Apenas é possível visualizar perfis de pacientes.",
+                    "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Erro ao abrir perfil: {ex.Message}");
+            await Shell.Current.DisplayAlert("Erro", $"Erro ao abrir perfil: {ex.Message}", "OK");
+        }
+    }
 }
