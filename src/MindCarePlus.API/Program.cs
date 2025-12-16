@@ -57,6 +57,7 @@ builder.Services.AddAuthorization();
 // ===== SERVIÇOS =====
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IRelatorioIAService, RelatorioIAService>();
+builder.Services.AddScoped<IPdfRelatorioService, PdfRelatorioService>();
 
 // ===== CONFIGURAR UNIT OF WORK =====
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

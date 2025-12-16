@@ -7,6 +7,14 @@ using MindCarePlus.Mobile.Services;
 using MindCarePlus.Shared.DTOs;
 using SkiaSharp;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Messaging;
+using MindCarePlus.Mobile.Messages;
+using Microcharts;
+using SkiaSharp;
+using MindCarePlus.Shared.DTOs.Paciente;
+
+
+
 
 namespace MindCarePlus.Mobile.ModelViews
 {
@@ -76,6 +84,46 @@ namespace MindCarePlus.Mobile.ModelViews
         private int totalMensagensNaoLidas;
 
         private Guid _pacienteId;
+
+        #region Propriedades - Relatório IA
+
+        [ObservableProperty]
+        private bool isGerarRelatorio;
+
+        [ObservableProperty]
+        private bool mostrarRelatorio;
+
+        [ObservableProperty]
+        private Guid relatorioIdAtual;
+
+        [ObservableProperty]
+        private string relatorioPeriodo = string.Empty;
+
+        [ObservableProperty]
+        private decimal relatorioMediaHumor;
+
+        [ObservableProperty]
+        private decimal relatorioMediaEnergia;
+
+        [ObservableProperty]
+        private decimal relatorioMediaStress;
+
+        [ObservableProperty]
+        private string relatorioTendenciasHumor = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioTendenciasEnergia = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioTendenciasStress = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioRecomendacoes = string.Empty;
+
+        [ObservableProperty]
+        private string relatorioCompleto = string.Empty;
+
+        #endregion
 
         public int PontosParaProximoNivel
         {
@@ -359,9 +407,116 @@ namespace MindCarePlus.Mobile.ModelViews
         }
 
         [RelayCommand]
-        private async Task GoToProfile()
+        public async Task GerarRelatorioIAAsync()
         {
-            await Shell.Current.GoToAsync("ProfilePage");
+            if (IsGerarRelatorio) return;
+
+            bool confirmar = await Shell.Current.DisplayAlert(
+                "Gerar Relatório com IA",
+                "Deseja gerar um relatório personalizado dos últimos 30 dias com análise de IA?\n\nIsto pode demorar alguns segundos.",
+                "Sim", "Não");
+
+            if (!confirmar) return;
+
+            try
+            {
+                IsGerarRelatorio = true;
+
+                var relatorio = await _apiService.GerarMeuRelatorioAsync(30);
+
+                if (relatorio != null)
+                {
+                    RelatorioIdAtual = relatorio.Id;
+                    RelatorioPeriodo = relatorio.Periodo;
+                    RelatorioMediaHumor = relatorio.MediaHumor;
+                    RelatorioMediaEnergia = relatorio.MediaEnergia;
+                    RelatorioMediaStress = relatorio.MediaStress;
+                    RelatorioTendenciasHumor = relatorio.TendenciasHumor;
+                    RelatorioTendenciasEnergia = relatorio.TendenciasEnergia;
+                    RelatorioTendenciasStress = relatorio.TendenciasStress;
+                    RelatorioRecomendacoes = relatorio.Recomendacoes;
+                    RelatorioCompleto = relatorio.RelatorioCompleto;
+
+                    MostrarRelatorio = true;
+
+                    await Shell.Current.DisplayAlert(
+                        "Sucesso",
+                        relatorio.Mensagem,
+                        "OK");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Erro de Conexão",
+                    "Não foi possível conectar ao servidor. Verifique sua conexão com a internet.",
+                    "OK");
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Erro",
+                    $"Não foi possível gerar o relatório: {ex.Message}",
+                    "OK");
+            }
+            finally
+            {
+                IsGerarRelatorio = false;
+            }
+        }
+
+        [RelayCommand]
+        public void FecharRelatorio()
+        {
+            MostrarRelatorio = false;
+        }
+
+        [RelayCommand]
+        public async Task ExportarRelatorioPdfAsync()
+        {
+            if (RelatorioIdAtual == Guid.Empty) // ← USA O ID GUARDADO
+            {
+                await Shell.Current.DisplayAlert("Aviso", "Nenhum relatório disponível para exportar.", "OK");
+                return;
+            }
+
+            try
+            {
+                IsGerarRelatorio = true; // ← USA IsGerandoRelatorio em vez de IsBusy
+
+                var pdfBytes = await _apiService.ExportarRelatorioPdfAsync(RelatorioIdAtual);
+
+                if (pdfBytes != null && pdfBytes.Length > 0)
+                {
+                    // Salvar o PDF
+                    var fileName = $"relatorio_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                    var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+                    await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                    // Abrir o PDF
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(filePath)
+                    });
+
+                    await Shell.Current.DisplayAlert(
+                        "Sucesso",
+                        "Relatório exportado com sucesso!",
+                        "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert(
+                    "Erro",
+                    $"Não foi possível exportar o relatório: {ex.Message}",
+                    "OK");
+            }
+            finally
+            {
+                IsGerarRelatorio = false;
+            }
         }
     }
 }
