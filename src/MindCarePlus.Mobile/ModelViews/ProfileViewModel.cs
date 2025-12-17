@@ -10,97 +10,88 @@ public partial class ProfileViewModel : ObservableObject
     private readonly ApiService _apiService;
     private readonly AuthService _authService;
 
-    [ObservableProperty]
-    private string nome = string.Empty;
-
-    [ObservableProperty]
-    private string email = string.Empty;
-
-    [ObservableProperty]
-    private int idade;
-
-    [ObservableProperty]
-    private string? objectivo;
-
-    [ObservableProperty]
-    private string? especialidade;
-
-    [ObservableProperty]
-    private int? nivelGamificacao;
-
-    [ObservableProperty]
-    private int? pontos;
-
-    [ObservableProperty]
-    private string tipoUtilizador = string.Empty;
-
-    [ObservableProperty]
-    private bool isLoading;
-
-    [ObservableProperty]
-    private bool isEditing;
-
-    [ObservableProperty]
-    private string errorMessage = string.Empty;
-
-    [ObservableProperty]
-    private bool isPaciente;
-
-    [ObservableProperty]
-    private bool isPsicologo;
-
-    private Guid _userId;
-
     public ProfileViewModel(ApiService apiService, AuthService authService)
     {
         _apiService = apiService;
         _authService = authService;
     }
 
+    [ObservableProperty]
+    private ProfileDto? _profile;
+
+    [ObservableProperty]
+    private bool _isLoading;
+
+    [ObservableProperty]
+    private bool _isDeleting;
+
+    [ObservableProperty]
+    private string _errorMessage = string.Empty;
+
+    [ObservableProperty]
+    private string _deletePassword = string.Empty;
+
+    [ObservableProperty]
+    private bool _showDeleteConfirmation;
+
+    /// <summary>
+    /// Indica se o utilizador é Paciente
+    /// </summary>
+    public bool IsPaciente => Profile?.TipoUtilizador == "Paciente";
+
+    /// <summary>
+    /// Indica se o utilizador é Psicólogo
+    /// </summary>
+    public bool IsPsicologo => Profile?.TipoUtilizador == "Psicologo";
+
+    /// <summary>
+    /// Iniciais do nome para o avatar
+    /// </summary>
+    public string Initials
+    {
+        get
+        {
+            if (Profile == null || string.IsNullOrEmpty(Profile.Nome)) return "?";
+            var parts = Profile.Nome.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 2)
+                return $"{parts[0][0]}{parts[^1][0]}".ToUpper();
+            return Profile.Nome.Length >= 2 ? Profile.Nome[..2].ToUpper() : Profile.Nome.ToUpper();
+        }
+    }
+
+    /// <summary>
+    /// Notificar mudanças quando Profile muda
+    /// </summary>
+    partial void OnProfileChanged(ProfileDto? value)
+    {
+        OnPropertyChanged(nameof(IsPaciente));
+        OnPropertyChanged(nameof(IsPsicologo));
+        OnPropertyChanged(nameof(Initials));
+    }
+
+    /// <summary>
+    /// Carregar perfil do utilizador
+    /// </summary>
     [RelayCommand]
-    private async Task LoadProfile()
+    public async Task LoadProfileAsync()
     {
         if (IsLoading) return;
 
-        IsLoading = true;
-        ErrorMessage = string.Empty;
-
         try
         {
-            var profile = await _apiService.GetMyProfileAsync();
+            IsLoading = true;
+            ErrorMessage = string.Empty;
 
-            if (profile != null)
+            Profile = await _apiService.GetMyProfileAsync();
+
+            if (Profile == null)
             {
-                _userId = profile.Id;
-                Nome = profile.Nome;
-                Email = profile.Email;
-                Idade = profile.Idade;
-                TipoUtilizador = profile.TipoUtilizador;
-
-                IsPaciente = profile.TipoUtilizador == "Paciente";
-                IsPsicologo = profile.TipoUtilizador == "Psicologo";
-
-                if (IsPaciente)
-                {
-                    Objectivo = profile.Objectivo;
-                    NivelGamificacao = profile.NivelGamificacao;
-                    Pontos = profile.Pontos;
-                }
-                else if (IsPsicologo)
-                {
-                    Especialidade = profile.Especialidade;
-                }
-            }
-            else
-            {
-                ErrorMessage = "Erro ao carregar perfil";
-                await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
+                ErrorMessage = "Não foi possível carregar o perfil";
             }
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Erro ao carregar perfil: {ex.Message}";
-            await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
+            ErrorMessage = $"Erro: {ex.Message}";
         }
         finally
         {
@@ -108,114 +99,139 @@ public partial class ProfileViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Navegar para página de edição de perfil
+    /// User Story: UM.P.03 e UM.PS.19
+    /// </summary>
     [RelayCommand]
-    private void ToggleEdit()
+    public async Task EditProfileAsync()
     {
-        IsEditing = !IsEditing;
+        await Shell.Current.GoToAsync("EditProfilePage");
     }
 
+    /// <summary>
+    /// Mostrar diálogo de confirmação de eliminação
+    /// User Story: UM.P.05 e UM.PS.20
+    /// </summary>
     [RelayCommand]
-    private async Task SaveProfile()
+    public void ShowDeleteConfirmationDialog()
     {
-        if (IsLoading) return;
+        ShowDeleteConfirmation = true;
+        DeletePassword = string.Empty;
+    }
 
-        // Validações
-        if (string.IsNullOrWhiteSpace(Nome))
+    /// <summary>
+    /// Cancelar eliminação
+    /// </summary>
+    [RelayCommand]
+    public void CancelDelete()
+    {
+        ShowDeleteConfirmation = false;
+        DeletePassword = string.Empty;
+    }
+
+    /// <summary>
+    /// Confirmar e executar eliminação de conta
+    /// User Story: UM.P.05 e UM.PS.20
+    /// </summary>
+    [RelayCommand]
+    public async Task ConfirmDeleteAccountAsync()
+    {
+        if (string.IsNullOrEmpty(DeletePassword))
         {
-            ErrorMessage = "O nome é obrigatório";
-            await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
+            await Shell.Current.DisplayAlert(
+                "Erro",
+                "Por favor, introduza a sua password para confirmar a eliminação.",
+                "OK");
             return;
         }
 
-        if (Idade < 13 || Idade > 120)
-        {
-            ErrorMessage = "A idade deve estar entre 13 e 120 anos";
-            await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
-            return;
-        }
-
-        IsLoading = true;
-        ErrorMessage = string.Empty;
-
-        try
-        {
-            var dto = new UpdateProfileDto
-            {
-                Nome = Nome.Trim(),
-                Idade = Idade,
-                Objectivo = IsPaciente ? Objectivo : null,
-                Especialidade = IsPsicologo ? Especialidade : null
-            };
-
-            var success = await _apiService.UpdateMyProfileAsync(dto);
-
-            if (success)
-            {
-                await Shell.Current.DisplayAlert("Sucesso", "Perfil atualizado com sucesso!", "OK");
-                IsEditing = false;
-
-                // Recarregar perfil
-                await LoadProfile();
-            }
-            else
-            {
-                ErrorMessage = "Erro ao atualizar perfil";
-                await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
-            }
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Erro ao atualizar perfil: {ex.Message}";
-            await Shell.Current.DisplayAlert("Erro", ErrorMessage, "OK");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    [RelayCommand]
-    private void CancelEdit()
-    {
-        IsEditing = false;
-        // Recarregar dados originais
-        _ = LoadProfile();
-    }
-
-    [RelayCommand]
-    private async Task Logout()
-    {
+        // Confirmação adicional
         var confirm = await Shell.Current.DisplayAlert(
-            "Confirmar Logout",
-            "Tem a certeza que deseja sair?",
-            "Sim",
-            "Não");
+            "⚠️ Confirmação Final",
+            "Esta ação é IRREVERSÍVEL!\n\n" +
+            "Todos os seus dados serão permanentemente eliminados:\n" +
+            "• Perfil e informações pessoais\n" +
+            "• Registos diários de humor\n" +
+            "• Mensagens e conversas\n" +
+            "• Sessões e avaliações\n" +
+            "• Desafios e conquistas\n\n" +
+            "Tem a certeza que deseja continuar?",
+            "Sim, eliminar tudo",
+            "Cancelar");
 
-        if (!confirm) return;
-
-        IsLoading = true;
+        if (!confirm)
+        {
+            return;
+        }
 
         try
         {
-            var success = await _authService.LogoutAsync();
+            IsDeleting = true;
+            ErrorMessage = string.Empty;
 
-            if (success)
+            var result = await _apiService.DeleteMyAccountAsync(DeletePassword);
+
+            if (result == null)
             {
-                // Navegar para a página de login
+                await Shell.Current.DisplayAlert(
+                    "Erro",
+                    "Erro de comunicação com o servidor.",
+                    "OK");
+                return;
+            }
+
+            if (result.Success)
+            {
+                ShowDeleteConfirmation = false;
+                await _authService.LogoutAsync();
+
+                await Shell.Current.DisplayAlert(
+                    "Conta Eliminada",
+                    "A sua conta e todos os dados associados foram permanentemente eliminados.",
+                    "OK");
+
                 await Shell.Current.GoToAsync("//LoginPage");
             }
             else
             {
-                await Shell.Current.DisplayAlert("Erro", "Erro ao fazer logout", "OK");
+                await Shell.Current.DisplayAlert(
+                    "Erro",
+                    result.Message,
+                    "OK");
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Erro", $"Erro ao fazer logout: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert(
+                "Erro",
+                $"Erro ao eliminar conta: {ex.Message}",
+                "OK");
         }
         finally
         {
-            IsLoading = false;
+            IsDeleting = false;
+            DeletePassword = string.Empty;
+        }
+    }
+
+    /// <summary>
+    /// Logout do utilizador
+    /// User Story: UM.P.07 e UM.PS.18
+    /// </summary>
+    [RelayCommand]
+    public async Task LogoutAsync()
+    {
+        var confirm = await Shell.Current.DisplayAlert(
+            "Logout",
+            "Tem a certeza que deseja sair?",
+            "Sim",
+            "Não");
+
+        if (confirm)
+        {
+            await _authService.LogoutAsync();
+            await Shell.Current.GoToAsync("//LoginPage");
         }
     }
 }

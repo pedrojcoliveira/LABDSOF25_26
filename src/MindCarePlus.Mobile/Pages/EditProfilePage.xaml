@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:Class="MindCarePlus.Mobile.Pages.EditProfilePage"
+             x:DataType="viewmodels:EditProfileViewModel"
+             Title="Editar Perfil"
+             BackgroundColor="#F8FAFC"
+             Shell.TabBarIsVisible="False"
+             Shell.NavBarIsVisible="True">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="PrimaryColor">#6366F1</Color>
+            <Color x:Key="BackgroundColor">#F8FAFC</Color>
+            <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
+            <Color x:Key="TextPrimaryColor">#1E293B</Color>
+            <Color x:Key="TextSecondaryColor">#64748B</Color>
+            <Color x:Key="BorderColor">#E2E8F0</Color>
+            <Color x:Key="ErrorColor">#EF4444</Color>
+            <Color x:Key="SuccessColor">#22C55E</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Header com Avatar -->
+                <Frame BackgroundColor="{StaticResource PrimaryColor}"
+                       WidthRequest="100"
+                       HeightRequest="100"
+                       CornerRadius="50"
+                       HorizontalOptions="Center"
+                       Padding="0"
+                       HasShadow="False">
+                    <Label Text="{Binding Initials}"
+                           FontSize="40"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Frame>
+
+                <!-- Formulário -->
+                <Frame BackgroundColor="{StaticResource CardBackgroundColor}"
+                       BorderColor="{StaticResource BorderColor}"
+                       CornerRadius="16"
+                       Padding="20"
+                       HasShadow="True">
+                    
+                    <VerticalStackLayout Spacing="16">
+                        
+                        <!-- Nome -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Nome"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                            <Entry Text="{Binding Nome}"
+                                   Placeholder="O seu nome"
+                                   BackgroundColor="{StaticResource BackgroundColor}"
+                                   PlaceholderColor="{StaticResource TextSecondaryColor}"
+                                   FontSize="16" />
+                        </VerticalStackLayout>
+
+                        <!-- Email (readonly) -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Email"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                            <Entry Text="{Binding Email}"
+                                   IsReadOnly="True"
+                                   BackgroundColor="#F1F5F9"
+                                   TextColor="{StaticResource TextSecondaryColor}"
+                                   FontSize="16" />
+                            <Label Text="O email não pode ser alterado"
+                                   FontSize="12"
+                                   TextColor="{StaticResource TextSecondaryColor}" />
+                        </VerticalStackLayout>
+
+                        <!-- Idade -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Idade"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                            <Entry Text="{Binding IdadeText}"
+                                   Placeholder="A sua idade"
+                                   Keyboard="Numeric"
+                                   BackgroundColor="{StaticResource BackgroundColor}"
+                                   PlaceholderColor="{StaticResource TextSecondaryColor}"
+                                   FontSize="16" />
+                        </VerticalStackLayout>
+
+                        <!-- Objectivo (só para Paciente) -->
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsPaciente}">
+                            <Label Text="Objectivo de Bem-estar"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                            <Editor Text="{Binding Objectivo}"
+                                    Placeholder="Descreva o seu objectivo..."
+                                    BackgroundColor="{StaticResource BackgroundColor}"
+                                    PlaceholderColor="{StaticResource TextSecondaryColor}"
+                                    HeightRequest="100"
+                                    FontSize="16" />
+                        </VerticalStackLayout>
+
+                        <!-- Especialidade (só para Psicólogo) -->
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsPsicologo}">
+                            <Label Text="Especialidade"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                            <Entry Text="{Binding Especialidade}"
+                                   Placeholder="A sua especialidade"
+                                   BackgroundColor="{StaticResource BackgroundColor}"
+                                   PlaceholderColor="{StaticResource TextSecondaryColor}"
+                                   FontSize="16" />
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Mensagem de Erro -->
+                <Label Text="{Binding ErrorMessage}"
+                       IsVisible="{Binding HasError}"
+                       TextColor="{StaticResource ErrorColor}"
+                       HorizontalTextAlignment="Center"
+                       FontSize="14" />
+
+                <!-- Botões -->
+                <VerticalStackLayout Spacing="12">
+                    <!-- Guardar -->
+                    <Button Text="💾 Guardar Alterações"
+                            BackgroundColor="{StaticResource PrimaryColor}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="50"
+                            FontAttributes="Bold"
+                            IsEnabled="{Binding IsNotSaving}"
+                            Command="{Binding SaveCommand}" />
+
+                    <!-- Cancelar -->
+                    <Button Text="Cancelar"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource TextSecondaryColor}"
+                            BorderColor="{StaticResource BorderColor}"
+                            BorderWidth="1"
+                            CornerRadius="12"
+                            HeightRequest="50"
+                            Command="{Binding CancelCommand}" />
+                </VerticalStackLayout>
+
+                <!-- Loading -->
+                <ActivityIndicator IsRunning="{Binding IsSaving}"
+                                   IsVisible="{Binding IsSaving}"
+                                   Color="{StaticResource PrimaryColor}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
