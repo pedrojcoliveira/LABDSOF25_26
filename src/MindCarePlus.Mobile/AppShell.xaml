@@ -9,22 +9,18 @@
     <!-- ============================================ -->
     <!-- PÁGINAS DE AUTENTICAÇÃO (sem tabs) -->
     <!-- ============================================ -->
-
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
         Route="LoginPage" />
-
     <ShellContent
         Title="Tipo de Utilizador"
         ContentTemplate="{DataTemplate local:SelectUserTypePage}"
         Route="SelectUserTypePage" />
-
     <ShellContent
         Title="Registar Paciente"
         ContentTemplate="{DataTemplate local:RegisterPacientePage}"
         Route="RegisterPacientePage" />
-
     <ShellContent
         Title="Registar Psicólogo"
         ContentTemplate="{DataTemplate local:RegisterPsicologoPage}"
@@ -33,18 +29,15 @@
     <!-- ============================================ -->
     <!-- TABS DE PACIENTE -->
     <!-- ============================================ -->
-
     <TabBar Route="MainFlow">
         <ShellContent
             Title="Início"
             ContentTemplate="{DataTemplate local:DashboardPage}"
             Route="DashboardPage" />
-
         <ShellContent
             Title="Humor"
             ContentTemplate="{DataTemplate local:RegistoHumorPage}"
             Route="RegistoHumorPage" />
-
         <ShellContent
             Title="Desafios"
             ContentTemplate="{DataTemplate local:DesafiosPage}"
@@ -62,16 +55,16 @@
     </TabBar>
 
     <!-- ============================================ -->
-    <!-- TABS DE PSICÓLOGO (NOVO) -->
+    <!-- TABS DE PSICÓLOGO -->
     <!-- ============================================ -->
-
     <TabBar Route="PsicologoFlow">
         <ShellContent
             Title="Pacientes"
             ContentTemplate="{DataTemplate local:ListaPacientesPage}"
             Route="ListaPacientesPage" />
-
+        <ShellContent
+            Title="Calendário"
+            ContentTemplate="{DataTemplate local:CalendarioPage}"
+            Route="CalendarioPage" />
     </TabBar>
-
-
 </Shell>
