@@ -210,24 +210,36 @@
                                     <!-- Botões -->
                                     <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Spacing="8" Margin="0,8,0,0">
                                         <Button Text="Detalhes"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=VerDetalhesSessaoCommand}"
-                                CommandParameter="{Binding .}"
-                                BackgroundColor="#E5E7EB"
-                                TextColor="#1F2937"
-                                FontSize="12"
-                                CornerRadius="6"
-                                HeightRequest="32"
-                                Padding="12,0"/>
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=VerDetalhesSessaoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#E5E7EB"
+                                                TextColor="#1F2937"
+                                                FontSize="12"
+                                                CornerRadius="6"
+                                                HeightRequest="32"
+                                                Padding="12,0"/>
 
-                                        <Button Text="Alterar Estado"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=AlterarEstadoSessaoCommand}"
-                                CommandParameter="{Binding .}"
-                                BackgroundColor="#3B82F6"
-                                TextColor="White"
-                                FontSize="12"
-                                CornerRadius="6"
-                                HeightRequest="32"
-                                Padding="12,0"/>
+                                        <Button Text="Editar"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=EditarSessaoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#3B82F6"
+                                                TextColor="White"
+                                                FontSize="12"
+                                                CornerRadius="6"
+                                                HeightRequest="32"
+                                                Padding="12,0"
+                                                IsVisible="{Binding Estado, Converter={StaticResource EstadoEditavelConverter}}"/>
+
+                                        <Button Text="Cancelar"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=CancelarSessaoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#EF4444"
+                                                TextColor="White"
+                                                FontSize="12"
+                                                CornerRadius="6"
+                                                HeightRequest="32"
+                                                Padding="12,0"
+                                                IsVisible="{Binding Estado, Converter={StaticResource EstadoCancelavelConverter}}"/>            
                                     </HorizontalStackLayout>
 
                                 </Grid>

@@ -134,9 +134,114 @@ public class SessaoController : ControllerBase
 
         return Ok(new { mensagem = "Estado atualizado com sucesso" });
     }
+
+    /// <summary>
+    /// Edita uma sessão (data, hora, duração)
+    /// </summary>
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Psicologo")]
+    public async Task<ActionResult> EditarSessao(Guid id, [FromBody] EditarSessaoDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid psicologoId))
+            return Unauthorized("Token inválido");
+
+        var sessao = await _unitOfWork.Sessoes.GetByIdAsync(id);
+
+        if (sessao == null)
+            return NotFound("Sessão não encontrada");
+
+        if (sessao.PsicologoId != psicologoId)
+            return Forbid("Acesso negado a esta sessão");
+
+        // ✅ CONVERTER PARA UTC
+        var dataMarcadaUtc = dto.DataMarcada.Kind == DateTimeKind.Utc
+            ? dto.DataMarcada
+            : DateTime.SpecifyKind(dto.DataMarcada, DateTimeKind.Utc);
+
+        // Validar data
+        if (dataMarcadaUtc < DateTime.UtcNow)
+            return BadRequest("Não é possível agendar sessão no passado");
+
+        // Guardar valores antigos
+        var dataAnterior = sessao.DataMarcada;
+        var duracaoAnterior = sessao.Duracao;
+
+        // Atualizar sessão
+        sessao.DataMarcada = dataMarcadaUtc; 
+        sessao.Duracao = dto.Duracao;
+
+        if (!string.IsNullOrEmpty(dto.LinkSessao))
+            sessao.LinkSessao = dto.LinkSessao;
+
+        if (!string.IsNullOrEmpty(dto.NotasPsicologo))
+            sessao.NotasPsicologo = dto.NotasPsicologo;
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return Ok(new
+        {
+            mensagem = "Sessão atualizada com sucesso",
+            id = sessao.Id,
+            dataMarcada = sessao.DataMarcada,
+            duracao = sessao.Duracao
+        });
+    }
+
+    /// <summary>
+    /// Cancela uma sessão
+    /// </summary>
+    [HttpPost("{id}/cancelar")]
+    [Authorize(Roles = "Psicologo")]
+    public async Task<ActionResult> CancelarSessao(Guid id, [FromBody] CancelarSessaoDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid psicologoId))
+            return Unauthorized("Token inválido");
+
+        var sessao = await _unitOfWork.Sessoes.GetByIdAsync(id);
+
+        if (sessao == null)
+            return NotFound("Sessão não encontrada");
+
+        if (sessao.PsicologoId != psicologoId)
+            return Forbid("Acesso negado a esta sessão");
+
+        if (sessao.Estado == "Cancelada")
+            return BadRequest("Sessão já está cancelada");
+
+        if (sessao.Estado == "Realizada")
+            return BadRequest("Não é possível cancelar sessão já realizada");
+
+        // Atualizar estado
+        sessao.Estado = "Cancelada";
+
+        if (!string.IsNullOrEmpty(dto.MotivoCancel))
+            sessao.NotasPsicologo = $"[CANCELADA] {dto.MotivoCancel}";
+
+        await _unitOfWork.SaveChangesAsync();
+
+        // TODO: Enviar notificação ao paciente sobre o cancelamento
+        // await _notificationService.NotificarCancelamentoSessao(sessao, dto.MotivoCancel);
+
+        return Ok(new { mensagem = "Sessão cancelada com sucesso" });
+    }
 }
 
 public class AtualizarEstadoDto
 {
     public string Estado { get; set; } = string.Empty;
+}
+
+public class EditarSessaoDto
+{
+    public DateTime DataMarcada { get; set; }
+    public TimeSpan Duracao { get; set; }
+    public string? LinkSessao { get; set; }
+    public string? NotasPsicologo { get; set; }
+}
+
+public class CancelarSessaoDto
+{
+    public string MotivoCancel { get; set; } = string.Empty;
 }

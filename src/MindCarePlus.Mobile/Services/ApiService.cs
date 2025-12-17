@@ -496,6 +496,33 @@ public class ApiService
         var response = await _httpClient.PatchAsJsonAsync($"api/Sessao/{sessaoId}/estado", dto);
         response.EnsureSuccessStatusCode();
     }
+
+    // Editar sessão
+    public async Task EditarSessaoAsync(Guid sessaoId, DateTime dataMarcada, TimeSpan duracao, string? linkSessao = null, string? notas = null)
+    {
+        var dto = new
+        {
+            DataMarcada = dataMarcada,
+            Duracao = duracao,
+            LinkSessao = linkSessao,
+            NotasPsicologo = notas
+        };
+
+        var response = await _httpClient.PutAsJsonAsync($"api/Sessao/{sessaoId}", dto);
+        response.EnsureSuccessStatusCode();
+    }
+
+    // Cancelar sessão
+    public async Task CancelarSessaoAsync(Guid sessaoId, string motivoCancel)
+    {
+        var dto = new { MotivoCancel = motivoCancel };
+        var response = await _httpClient.PostAsJsonAsync($"api/Sessao/{sessaoId}/cancelar", dto);
+        response.EnsureSuccessStatusCode();
+    }
+
+
+
+
     #region Perfil
 
     /// <summary>
