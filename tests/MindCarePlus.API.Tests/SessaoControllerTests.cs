@@ -110,4 +110,223 @@ public class SessaoControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.NotNull(okResult.Value);
     }
+
+    [Fact]
+    public async Task EditarSessao_ComSucesso_RetornaOk()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            PacienteId = Guid.NewGuid(),
+            DataMarcada = DateTime.UtcNow.AddDays(1),
+            Estado = "Agendada",
+            Duracao = TimeSpan.FromHours(1),
+            LinkSessao = "https://meet.google.com/test",
+            NotasPsicologo = "Teste",
+            DataCriacao = DateTime.UtcNow
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        _mockUnitOfWork.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        var dto = new EditarSessaoDto
+        {
+            DataMarcada = DateTime.UtcNow.AddDays(2),
+            Duracao = TimeSpan.FromHours(2)
+        };
+
+        // Act
+        var result = await _controller.EditarSessao(sessaoId, dto);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.NotNull(okResult.Value);
+    }
+
+    [Fact]
+    public async Task EditarSessao_SessaoNaoEncontrada_RetornaNotFound()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync((Sessao?)null);
+
+        var dto = new EditarSessaoDto
+        {
+            DataMarcada = DateTime.UtcNow.AddDays(1),
+            Duracao = TimeSpan.FromHours(1)
+        };
+
+        // Act
+        var result = await _controller.EditarSessao(sessaoId, dto);
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Sessão não encontrada", notFoundResult.Value);
+    }
+
+    [Fact]
+    public async Task EditarSessao_DataNoPassado_RetornaBadRequest()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            PacienteId = Guid.NewGuid(),
+            DataMarcada = DateTime.UtcNow.AddDays(1),
+            Estado = "Agendada",
+            Duracao = TimeSpan.FromHours(1),
+            LinkSessao = "test",
+            NotasPsicologo = "test",
+            DataCriacao = DateTime.UtcNow
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        var dto = new EditarSessaoDto
+        {
+            DataMarcada = DateTime.UtcNow.AddDays(-1), // Data no passado
+            Duracao = TimeSpan.FromHours(1)
+        };
+
+        // Act
+        var result = await _controller.EditarSessao(sessaoId, dto);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Não é possível agendar sessão no passado", badRequestResult.Value);
+    }
+
+    [Fact]
+    public async Task CancelarSessao_ComSucesso_RetornaOk()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            PacienteId = Guid.NewGuid(),
+            DataMarcada = DateTime.UtcNow.AddDays(1),
+            Estado = "Agendada",
+            Duracao = TimeSpan.FromHours(1),
+            LinkSessao = "test",
+            NotasPsicologo = "test",
+            DataCriacao = DateTime.UtcNow
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        _mockUnitOfWork.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        var dto = new CancelarSessaoDto
+        {
+            MotivoCancel = "Emergência pessoal"
+        };
+
+        // Act
+        var result = await _controller.CancelarSessao(sessaoId, dto);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.NotNull(okResult.Value);
+        Assert.Equal("Cancelada", sessao.Estado);
+    }
+
+    [Fact]
+    public async Task CancelarSessao_SessaoJaCancelada_RetornaBadRequest()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            PacienteId = Guid.NewGuid(),
+            DataMarcada = DateTime.UtcNow.AddDays(1),
+            Estado = "Cancelada", // Já cancelada
+            Duracao = TimeSpan.FromHours(1),
+            LinkSessao = "test",
+            NotasPsicologo = "test",
+            DataCriacao = DateTime.UtcNow
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        var dto = new CancelarSessaoDto
+        {
+            MotivoCancel = "Teste"
+        };
+
+        // Act
+        var result = await _controller.CancelarSessao(sessaoId, dto);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Sessão já está cancelada", badRequestResult.Value);
+    }
+
+    [Fact]
+    public async Task CancelarSessao_SessaoRealizada_RetornaBadRequest()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            PacienteId = Guid.NewGuid(),
+            DataMarcada = DateTime.UtcNow.AddDays(-1),
+            Estado = "Realizada", // Já realizada
+            Duracao = TimeSpan.FromHours(1),
+            LinkSessao = "test",
+            NotasPsicologo = "test",
+            DataCriacao = DateTime.UtcNow
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        var dto = new CancelarSessaoDto
+        {
+            MotivoCancel = "Teste"
+        };
+
+        // Act
+        var result = await _controller.CancelarSessao(sessaoId, dto);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Não é possível cancelar sessão já realizada", badRequestResult.Value);
+    }
 }

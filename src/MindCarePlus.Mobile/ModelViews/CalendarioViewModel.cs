@@ -170,4 +170,91 @@ public partial class CalendarioViewModel : ObservableObject
                 "OK");
         }
     }
+
+
+    [RelayCommand]
+    public async Task EditarSessaoAsync(SessaoCalendarioDto sessao)
+    {
+        if (sessao == null) return;
+
+        // TODO: Navegar para página de edição ou mostrar popup
+        // Por agora, vamos mostrar um popup simples para alterar a data
+
+        var novaData = await Shell.Current.DisplayPromptAsync(
+            "Editar Sessão",
+            $"Nova data (atual: {sessao.DataFormatada}):",
+            placeholder: "dd/MM/yyyy HH:mm");
+
+        if (string.IsNullOrEmpty(novaData)) return;
+
+        try
+        {
+            if (DateTime.TryParseExact(novaData, "dd/MM/yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dataMarcada))
+            {
+                IsLoading = true;
+
+                await _apiService.EditarSessaoAsync(
+                    sessao.Id,
+                    dataMarcada,
+                    sessao.Duracao);
+
+                sessao.DataMarcada = dataMarcada;
+
+                await Shell.Current.DisplayAlert("Sucesso", "Sessão editada com sucesso!", "OK");
+                await CarregarSessoesAsync();
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Erro", "Data inválida. Use o formato dd/MM/yyyy HH:mm", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task CancelarSessaoAsync(SessaoCalendarioDto sessao)
+    {
+        if (sessao == null) return;
+
+        var confirmar = await Shell.Current.DisplayAlert(
+            "Cancelar Sessão",
+            $"Tem certeza que deseja cancelar a sessão com {sessao.PacienteNome}?",
+            "Sim", "Não");
+
+        if (!confirmar) return;
+
+        var motivo = await Shell.Current.DisplayPromptAsync(
+            "Motivo do Cancelamento",
+            "Por favor, indique o motivo:",
+            placeholder: "Ex: Emergência pessoal");
+
+        if (string.IsNullOrEmpty(motivo)) return;
+
+        try
+        {
+            IsLoading = true;
+
+            await _apiService.CancelarSessaoAsync(sessao.Id, motivo);
+
+            sessao.Estado = "Cancelada";
+
+            await Shell.Current.DisplayAlert("Sucesso", "Sessão cancelada. O paciente será notificado.", "OK");
+            await CarregarSessoesAsync();
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 }
