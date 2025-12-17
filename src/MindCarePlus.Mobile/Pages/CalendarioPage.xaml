@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             x:Class="MindCarePlus.Mobile.Pages.CalendarioPage"
+             x:DataType="vm:CalendarioViewModel"
+             Title="Calendário de Sessões"
+             BackgroundColor="#F5F5F5">
+
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="0">
+
+        <!-- Header com Estatísticas -->
+        <Border Grid.Row="0"
+                BackgroundColor="#3B82F6"
+                StrokeThickness="0"
+                Padding="16">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+
+                <VerticalStackLayout>
+                    <Label Text="{Binding TotalSessoes}"
+                           TextColor="White"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Total"
+                           TextColor="White"
+                           FontSize="12"
+                           Opacity="0.9"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="{Binding SessoesConfirmadas}"
+                           TextColor="White"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Confirmadas"
+                           TextColor="White"
+                           FontSize="12"
+                           Opacity="0.9"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2">
+                    <Label Text="{Binding SessoesAgendadas}"
+                           TextColor="White"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Agendadas"
+                           TextColor="White"
+                           FontSize="12"
+                           Opacity="0.9"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+
+        <!-- Filtros -->
+        <Border Grid.Row="1"
+                BackgroundColor="White"
+                StrokeThickness="0"
+                Padding="16"
+                Margin="0,8,0,0">
+            <VerticalStackLayout Spacing="12">
+
+                <Label Text="Filtros" FontAttributes="Bold" FontSize="14"/>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <VerticalStackLayout>
+                        <Label Text="De:" FontSize="12" TextColor="Gray"/>
+                        <DatePicker Date="{Binding DataInicio}"
+                                    BackgroundColor="#F3F4F6"
+                                    TextColor="#1F2937"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Até:" FontSize="12" TextColor="Gray"/>
+                        <DatePicker Date="{Binding DataFim}"
+                                    BackgroundColor="#F3F4F6"
+                                    TextColor="#1F2937"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <VerticalStackLayout>
+                    <Label Text="Estado:" FontSize="12" TextColor="Gray"/>
+                    <Picker SelectedItem="{Binding FiltroEstado}"
+                            BackgroundColor="#F3F4F6"
+                            TextColor="#1F2937">
+                        <Picker.Items>
+                            <x:String>Todas</x:String>
+                            <x:String>Agendada</x:String>
+                            <x:String>Confirmada</x:String>
+                            <x:String>Realizada</x:String>
+                            <x:String>Cancelada</x:String>
+                            <x:String>Faltou</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </VerticalStackLayout>
+
+                <Button Text="Aplicar Filtros"
+                        Command="{Binding AplicarFiltrosCommand}"
+                        BackgroundColor="#3B82F6"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="44"/>
+
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Lista de Sessões -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Padding="16" Spacing="12">
+
+                <!-- Loading -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                   IsVisible="{Binding IsLoading}"
+                                   Color="#3B82F6"
+                                   HeightRequest="50"/>
+
+                <!-- Erro -->
+                <Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                        BackgroundColor="#FEE2E2"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="12">
+                    <Label Text="{Binding MensagemErro}"
+                           TextColor="#991B1B"
+                           FontSize="13"/>
+                </Border>
+
+                <!-- Sessões -->
+                <CollectionView ItemsSource="{Binding Sessoes}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:SessaoCalendarioDto">
+                            <Border BackgroundColor="White"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="16"
+                    Margin="0,0,0,12">
+
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto">
+
+                                    <!-- Indicador de cor (estado) -->
+                                    <BoxView Grid.RowSpan="4"
+                             WidthRequest="4"
+                             Color="{Binding Estado, Converter={StaticResource EstadoToColorConverter}}"
+                             CornerRadius="2"
+                             Margin="0,0,12,0"/>
+
+                                    <!-- Paciente e Data -->
+                                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                        <Label Text="{Binding PacienteNome}"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"/>
+                                        <Label TextColor="#6B7280" FontSize="13">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding DataFormatada}"/>
+                                                    <Span Text=" às "/>
+                                                    <Span Text="{Binding HoraFormatada}"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <!-- Badge Estado -->
+                                    <Border Grid.Column="2"
+                            BackgroundColor="{Binding Estado, Converter={StaticResource EstadoToColorConverter}}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="8,4"
+                            VerticalOptions="Start">
+                                        <Label Text="{Binding Estado}"
+                               TextColor="White"
+                               FontSize="11"
+                               FontAttributes="Bold"/>
+                                    </Border>
+
+                                    <!-- Duração -->
+                                    <Label Grid.Row="1" Grid.Column="1"
+                           Text="{Binding DuracaoFormatada}"
+                           TextColor="#6B7280"
+                           FontSize="12"
+                           Margin="0,4,0,0"/>
+
+                                    <!-- Link da Sessão -->
+                                    <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" 
+                                          Spacing="8" 
+                                          Margin="0,4,0,0"
+                                          IsVisible="{Binding LinkSessao, Converter={StaticResource StringNotEmptyConverter}}">
+                                        <Label Text="🔗" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Text="{Binding LinkSessao}"
+                               TextColor="#3B82F6"
+                               FontSize="12"
+                               TextDecorations="Underline"
+                               VerticalOptions="Center">
+                                            <Label.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=AbrirLinkSessaoCommand}"
+                                                     CommandParameter="{Binding LinkSessao}"/>
+                                            </Label.GestureRecognizers>
+                                        </Label>
+                                    </HorizontalStackLayout>
+
+                                    <!-- Botões -->
+                                    <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Spacing="8" Margin="0,8,0,0">
+                                        <Button Text="Detalhes"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=VerDetalhesSessaoCommand}"
+                                CommandParameter="{Binding .}"
+                                BackgroundColor="#E5E7EB"
+                                TextColor="#1F2937"
+                                FontSize="12"
+                                CornerRadius="6"
+                                HeightRequest="32"
+                                Padding="12,0"/>
+
+                                        <Button Text="Alterar Estado"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=AlterarEstadoSessaoCommand}"
+                                CommandParameter="{Binding .}"
+                                BackgroundColor="#3B82F6"
+                                TextColor="White"
+                                FontSize="12"
+                                CornerRadius="6"
+                                HeightRequest="32"
+                                Padding="12,0"/>
+                                    </HorizontalStackLayout>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Mensagem vazia -->
+                <Label IsVisible="{Binding Sessoes.Count, Converter={StaticResource IntToBoolConverter}, ConverterParameter=0}"
+                       Text="Nenhuma sessão encontrada no período selecionado."
+                       TextColor="#9CA3AF"
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       Margin="0,32,0,0"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

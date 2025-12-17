@@ -454,6 +454,48 @@ public class ApiService
         return await response.Content.ReadAsByteArrayAsync();
     }
 
+    // Sessões - Calendário
+    public async Task<List<SessaoCalendarioDto>> GetMinhasSessoesAsync(
+      DateTime? dataInicio = null,
+      DateTime? dataFim = null,
+      Guid? pacienteId = null,
+      string? estado = null)
+    {
+        // FORÇA O TOKEN
+        var token = await SecureStorage.GetAsync("auth_token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
+        var queryParams = new List<string>();
+
+        if (dataInicio.HasValue)
+            queryParams.Add($"dataInicio={dataInicio.Value:yyyy-MM-dd}");
+
+        if (dataFim.HasValue)
+            queryParams.Add($"dataFim={dataFim.Value:yyyy-MM-dd}");
+
+        if (pacienteId.HasValue)
+            queryParams.Add($"pacienteId={pacienteId.Value}");
+
+        if (!string.IsNullOrEmpty(estado))
+            queryParams.Add($"estado={estado}");
+
+        var query = queryParams.Any() ? "?" + string.Join("&", queryParams) : "";
+
+        var response = await _httpClient.GetAsync($"api/Sessao/minhas-sessoes{query}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<SessaoCalendarioDto>>() ?? new();
+    }
+
+    public async Task AtualizarEstadoSessaoAsync(Guid sessaoId, string estado)
+    {
+        var dto = new { Estado = estado };
+        var response = await _httpClient.PatchAsJsonAsync($"api/Sessao/{sessaoId}/estado", dto);
+        response.EnsureSuccessStatusCode();
+    }
     #region Perfil
 
     /// <summary>

@@ -124,6 +124,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CriarTarefaViewModel>();
         builder.Services.AddTransient<ConversasViewModel>();
         builder.Services.AddTransient<ChatViewModel>();
+        builder.Services.AddTransient<CalendarioViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
 
         // Registar Pages
@@ -142,6 +143,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CriarTarefaPage>();
         builder.Services.AddTransient<ConversasPage>();
         builder.Services.AddTransient<ChatPage>();
+        builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<ProfilePage>();
 
 
