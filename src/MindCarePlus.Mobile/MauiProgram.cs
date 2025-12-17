@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Maui;
+using Microcharts.Maui;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MindCarePlus.Mobile.ModelViews;
 using MindCarePlus.Mobile.Pages;
@@ -9,8 +9,6 @@ using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
-using SkiaSharp.Views.Maui.Controls.Hosting;
-using Microcharts.Maui;
 
 namespace MindCarePlus.Mobile;
 
@@ -127,6 +125,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ConversasViewModel>();
         builder.Services.AddTransient<ChatViewModel>();
         builder.Services.AddTransient<CalendarioViewModel>();
+        builder.Services.AddTransient<ProfileViewModel>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -145,6 +144,8 @@ public static class MauiProgram
         builder.Services.AddTransient<ConversasPage>();
         builder.Services.AddTransient<ChatPage>();
         builder.Services.AddTransient<CalendarioPage>();
+        builder.Services.AddTransient<ProfilePage>();
+
 
 #if DEBUG
         builder.Logging.AddDebug();

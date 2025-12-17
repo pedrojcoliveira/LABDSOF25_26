@@ -36,6 +36,7 @@
             <converters:DesafioTypeFilterConverter x:Key="DesafioTypeFilterConverter" />
             <converters:StringEqualConverter x:Key="StringEqualConverter" />
             <converters:EstadoToColorConverter x:Key="EstadoToColorConverter"/>
+            <converters:InitialsConverter x:Key="InitialsConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
