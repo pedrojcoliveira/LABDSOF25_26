@@ -1,5 +1,6 @@
 ﻿using MindCarePlus.Shared.DTOs;
 using MindCarePlus.Shared.DTOs.Paciente;
+using MindCarePlus.Shared.DTOs.Profile;
 using MindCarePlus.Shared.DTOs.RegistoDiario;
 using MindCarePlus.Shared.DTOs.TarefaTerapeutica;
 using System.Net.Http.Headers;
@@ -452,6 +453,84 @@ public class ApiService
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsByteArrayAsync();
     }
+
+    #region Perfil
+
+    /// <summary>
+    /// Obter perfil do utilizador autenticado
+    /// User Story: UM.P.03 e UM.PS.19
+    /// </summary>
+    public async Task<ProfileDto?> GetMyProfileAsync()
+    {
+        await ConfigureAuthHeaderAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync("api/profile");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await HandleUnauthorizedAsync();
+                return null;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                var profile = await response.Content.ReadFromJsonAsync<ProfileDto>();
+                Console.WriteLine("✅ Perfil carregado com sucesso!");
+                return profile;
+            }
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"❌ Erro ao obter perfil: {errorContent}");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Exceção ao obter perfil: {ex.Message}");
+            await HandleUnauthorizedAsync();
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Atualizar perfil do utilizador autenticado
+    /// User Story: UM.P.03 e UM.PS.19
+    /// </summary>
+    public async Task<bool> UpdateMyProfileAsync(UpdateProfileDto dto)
+    {
+        await ConfigureAuthHeaderAsync();
+
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync("api/profile", dto);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await HandleUnauthorizedAsync();
+                return false;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("✅ Perfil atualizado com sucesso!");
+                return true;
+            }
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"❌ Erro ao atualizar perfil: {errorContent}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Exceção ao atualizar perfil: {ex.Message}");
+            await HandleUnauthorizedAsync();
+            return false;
+        }
+    }
+
+    #endregion
+
 }
 
 

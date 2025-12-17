@@ -1,9 +1,7 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using MindCarePlus.Shared.DTOs.Auth;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
 using System.Security.Claims;
-using MindCarePlus.Shared.DTOs.Auth;
-using System.Buffers.Text;
-using System.Net.Http.Json;
 
 namespace MindCarePlus.Mobile.Services;
 
@@ -23,7 +21,7 @@ public class AuthService
             Console.WriteLine($"Tentando login para: {dto.Email}");
             Console.WriteLine($"BaseAddress: {_httpClient.BaseAddress}");
 
-         
+
             var response = await _httpClient.PostAsJsonAsync("api/auth/login", dto);
 
             Console.WriteLine($"Status Code: {response.StatusCode}");
@@ -192,7 +190,7 @@ public class AuthService
     {
         try
         {
-            
+
             var response = await _httpClient.PostAsJsonAsync("api/auth/register/paciente", dto);
 
             if (response.IsSuccessStatusCode)
@@ -222,7 +220,7 @@ public class AuthService
     {
         try
         {
-            
+
             var response = await _httpClient.PostAsJsonAsync("api/auth/register/psicologo", dto);
 
             if (response.IsSuccessStatusCode)
@@ -252,7 +250,7 @@ public class AuthService
     {
         try
         {
-            
+
             var response = await _httpClient.GetAsync($"api/auth/check-email/{Uri.EscapeDataString(email)}");
 
             if (response.IsSuccessStatusCode)
@@ -286,40 +284,25 @@ public class AuthService
         return !string.IsNullOrEmpty(token);
     }
 
+    /// <summary>
+    /// Logout - Remove tokens do SecureStorage
+    /// User Story: UM.P.07 e UM.PS.18
+    /// </summary>
     public async Task<bool> LogoutAsync()
     {
         try
         {
-            // 1. Obter o token atual
-            var token = await SecureStorage.GetAsync("auth_token");
-
-            if (string.IsNullOrEmpty(token))
-            {
-                // Já não está logado
-                return true;
-            }
-
-            // 2. Chamar a API (opcional, se quiseres registar o logout no servidor)
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-            var response = await _httpClient.PostAsync($"/auth/logout", null);
-
-            // 3. Limpar o token do SecureStorage (SEMPRE, mesmo se a API falhar)
             SecureStorage.Remove("auth_token");
+            SecureStorage.Remove("user_role");
+            SecureStorage.Remove("user_email");
 
-            // 4. Limpar o header de autorização
-            _httpClient.DefaultRequestHeaders.Authorization = null;
-
+            Console.WriteLine("✅ Logout efetuado com sucesso!");
             return true;
         }
         catch (Exception ex)
         {
-            // Mesmo com erro, remove o token localmente
-            SecureStorage.Remove("auth_token");
-
-            System.Diagnostics.Debug.WriteLine($"Erro no logout: {ex.Message}");
-            return true; // Retorna true porque o token foi removido localmente
+            Console.WriteLine($"❌ Erro ao fazer logout: {ex.Message}");
+            return false;
         }
     }
 }
