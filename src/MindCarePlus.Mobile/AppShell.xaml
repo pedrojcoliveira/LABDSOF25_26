@@ -6,25 +6,50 @@
     xmlns:local="clr-namespace:MindCarePlus.Mobile.Pages"
     Shell.FlyoutBehavior="Disabled">
 
+    <!--<Shell.ToolbarItems>
+        <ToolbarItem Text="Perfil"
+                     IconImageSource="profile_icon.png"
+                     Command="{Binding GoToProfileCommand}"
+                     Priority="0"
+                     Order="Primary"/>
+
+        <ToolbarItem Text="Sair"
+                     IconImageSource="logout_icon.png"
+                     Command="{Binding LogoutCommand}"
+                     Priority="1"
+                     Order="Secondary"/>
+    </Shell.ToolbarItems>-->
+
+    <Shell.ToolbarItems>
+        <!-- Estes itens aparecem no menu overflow (3 pontos) no Android -->
+        <ToolbarItem Text="Meu Perfil"
+                     IconImageSource="profile_icon.png"
+                     Clicked="OnProfileClicked"
+                     Order="Secondary"
+                     Priority="0"/>
+
+        <ToolbarItem Text="Sair"
+                     IconImageSource="logout_icon.png"
+                     Clicked="OnLogoutClicked"
+                     Order="Secondary"
+                     Priority="2"/>
+    </Shell.ToolbarItems>
+
     <!-- ============================================ -->
     <!-- PÁGINAS DE AUTENTICAÇÃO (sem tabs) -->
     <!-- ============================================ -->
-
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
         Route="LoginPage" />
-
     <ShellContent
         Title="Tipo de Utilizador"
         ContentTemplate="{DataTemplate local:SelectUserTypePage}"
         Route="SelectUserTypePage" />
-
     <ShellContent
         Title="Registar Paciente"
         ContentTemplate="{DataTemplate local:RegisterPacientePage}"
         Route="RegisterPacientePage" />
-
     <ShellContent
         Title="Registar Psicólogo"
         ContentTemplate="{DataTemplate local:RegisterPsicologoPage}"
@@ -33,18 +58,15 @@
     <!-- ============================================ -->
     <!-- TABS DE PACIENTE -->
     <!-- ============================================ -->
-
     <TabBar Route="MainFlow">
         <ShellContent
             Title="Início"
             ContentTemplate="{DataTemplate local:DashboardPage}"
             Route="DashboardPage" />
-
         <ShellContent
             Title="Humor"
             ContentTemplate="{DataTemplate local:RegistoHumorPage}"
             Route="RegistoHumorPage" />
-
         <ShellContent
             Title="Desafios"
             ContentTemplate="{DataTemplate local:DesafiosPage}"
@@ -62,9 +84,8 @@
     </TabBar>
 
     <!-- ============================================ -->
-    <!-- TABS DE PSICÓLOGO (NOVO) -->
+    <!-- TABS DE PSICÓLOGO -->
     <!-- ============================================ -->
-
     <TabBar Route="PsicologoFlow">
         <!-- Adicionar na AppShell.xaml -->
         <ShellContent
@@ -77,10 +98,9 @@
             Title="Pacientes"
             ContentTemplate="{DataTemplate local:ListaPacientesPage}"
             Route="ListaPacientesPage" />
-
-
-
+        <ShellContent
+            Title="Calendário"
+            ContentTemplate="{DataTemplate local:CalendarioPage}"
+            Route="CalendarioPage" />
     </TabBar>
-
-
 </Shell>

@@ -35,6 +35,10 @@
             <converters:BoolToLidoConverter x:Key="BoolToLidoConverter" />
             <converters:DesafioTypeFilterConverter x:Key="DesafioTypeFilterConverter" />
             <converters:StringEqualConverter x:Key="StringEqualConverter" />
+            <converters:EstadoToColorConverter x:Key="EstadoToColorConverter"/>
+            <converters:InitialsConverter x:Key="InitialsConverter"/>
+            <converters:EstadoEditavelConverter x:Key="EstadoEditavelConverter"/>
+            <converters:EstadoCancelavelConverter x:Key="EstadoCancelavelConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

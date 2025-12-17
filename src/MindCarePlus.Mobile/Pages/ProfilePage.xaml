@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:Class="MindCarePlus.Mobile.Pages.ProfilePage"
+             x:DataType="vm:ProfileViewModel"
+             Title="Meu Perfil"
+             Shell.NavBarIsVisible="False">
+    <Grid RowDefinitions="Auto,*" 
+          Padding="0">
+
+        <!-- Header customizado -->
+        <Grid Grid.Row="0"
+              BackgroundColor="{StaticResource Primary}"
+              Padding="20,50,20,20">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Botão Voltar -->
+            <ImageButton Grid.Column="0"
+                         Source="back_icon.png"
+                         WidthRequest="24"
+                         HeightRequest="24"
+                         BackgroundColor="Transparent"
+                         Clicked="OnBackClicked"
+                         VerticalOptions="Center"/>
+
+            <!-- Título -->
+            <Label Grid.Column="1"
+                   Text="Meu Perfil"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+
+            <!-- Botão Logout -->
+            <Button Grid.Column="2"
+                    Text="Sair"
+                    FontSize="14"
+                    BackgroundColor="#FF4444"
+                    TextColor="White"
+                    CornerRadius="20"
+                    Padding="15,8"
+                    Command="{Binding LogoutCommand}"
+                    VerticalOptions="Center"/>
+        </Grid>
+
+        <!-- Conteúdo principal -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Padding="20" Spacing="20">
+
+                <!-- Loading Indicator -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                 IsVisible="{Binding IsLoading}"
+                                 Color="{StaticResource Primary}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 HeightRequest="50"/>
+
+                <!-- Conteúdo do Perfil -->
+                <StackLayout IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                            Spacing="15">
+
+                    <!-- Avatar Placeholder -->
+                    <Frame CornerRadius="60"
+                           WidthRequest="120"
+                           HeightRequest="120"
+                           Padding="0"
+                           HorizontalOptions="Center"
+                           HasShadow="True"
+                           BackgroundColor="{StaticResource Primary}">
+                        <Label Text="{Binding Nome, Converter={StaticResource InitialsConverter}}"
+                               FontSize="48"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Frame>
+
+                    <!-- Tipo de Utilizador Badge -->
+                    <Frame BackgroundColor="{StaticResource Primary}"
+                           CornerRadius="15"
+                           Padding="10,5"
+                           HorizontalOptions="Center"
+                           HasShadow="False">
+                        <Label Text="{Binding TipoUtilizador}"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="White"/>
+                    </Frame>
+
+                    <!-- Informações Básicas -->
+                    <Frame BackgroundColor="White"
+                           CornerRadius="15"
+                           Padding="20"
+                           HasShadow="True">
+                        <StackLayout Spacing="15">
+                            <Label Text="Informações Básicas"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}"/>
+
+                            <!-- Nome -->
+                            <StackLayout Spacing="5">
+                                <Label Text="Nome"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                                <Entry Text="{Binding Nome}"
+                                       IsEnabled="{Binding IsEditing}"
+                                       Placeholder="Seu nome"
+                                       FontSize="16"/>
+                            </StackLayout>
+
+                            <!-- Email (não editável) -->
+                            <StackLayout Spacing="5">
+                                <Label Text="Email"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                                <Entry Text="{Binding Email}"
+                                       IsEnabled="False"
+                                       FontSize="16"
+                                       TextColor="Gray"/>
+                            </StackLayout>
+
+                            <!-- Idade -->
+                            <StackLayout Spacing="5">
+                                <Label Text="Idade"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                                <Entry Text="{Binding Idade}"
+                                       IsEnabled="{Binding IsEditing}"
+                                       Keyboard="Numeric"
+                                       Placeholder="Sua idade"
+                                       FontSize="16"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+
+                    <!-- Informações Específicas do Paciente -->
+                    <Frame BackgroundColor="White"
+                           CornerRadius="15"
+                           Padding="20"
+                           HasShadow="True"
+                           IsVisible="{Binding IsPaciente}">
+                        <StackLayout Spacing="15">
+                            <Label Text="Informações do Paciente"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}"/>
+
+                            <!-- Objetivo -->
+                            <StackLayout Spacing="5">
+                                <Label Text="Objetivo/Meta"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                                <Editor Text="{Binding Objectivo}"
+                                        IsEnabled="{Binding IsEditing}"
+                                        Placeholder="Descreva seus objetivos..."
+                                        FontSize="16"
+                                        HeightRequest="100"/>
+                            </StackLayout>
+
+                            <!-- Gamificação -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <StackLayout Grid.Column="0" Spacing="5">
+                                    <Label Text="Nível"
+                                           FontSize="12"
+                                           TextColor="Gray"/>
+                                    <Frame BackgroundColor="#E8F5E9"
+                                           CornerRadius="10"
+                                           Padding="10"
+                                           HasShadow="False">
+                                        <Label Text="{Binding NivelGamificacao, StringFormat='🎯 {0}'}"
+                                               FontSize="20"
+                                               FontAttributes="Bold"
+                                               TextColor="#4CAF50"
+                                               HorizontalOptions="Center"/>
+                                    </Frame>
+                                </StackLayout>
+
+                                <StackLayout Grid.Column="1" Spacing="5">
+                                    <Label Text="Pontos"
+                                           FontSize="12"
+                                           TextColor="Gray"/>
+                                    <Frame BackgroundColor="#FFF3E0"
+                                           CornerRadius="10"
+                                           Padding="10"
+                                           HasShadow="False">
+                                        <Label Text="{Binding Pontos, StringFormat='⭐ {0}'}"
+                                               FontSize="20"
+                                               FontAttributes="Bold"
+                                               TextColor="#FF9800"
+                                               HorizontalOptions="Center"/>
+                                    </Frame>
+                                </StackLayout>
+                            </Grid>
+                        </StackLayout>
+                    </Frame>
+
+                    <!-- Informações Específicas do Psicólogo -->
+                    <Frame BackgroundColor="White"
+                           CornerRadius="15"
+                           Padding="20"
+                           HasShadow="True"
+                           IsVisible="{Binding IsPsicologo}">
+                        <StackLayout Spacing="15">
+                            <Label Text="Informações Profissionais"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}"/>
+
+                            <!-- Especialidade -->
+                            <StackLayout Spacing="5">
+                                <Label Text="Especialidade"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                                <Entry Text="{Binding Especialidade}"
+                                       IsEnabled="{Binding IsEditing}"
+                                       Placeholder="Sua especialidade"
+                                       FontSize="16"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+
+                    <!-- Botões de Ação -->
+                    <StackLayout Spacing="10" Margin="0,20,0,30">
+
+                        <!-- Modo Visualização -->
+                        <Button Text="Editar Perfil"
+                                Command="{Binding ToggleEditCommand}"
+                                BackgroundColor="{StaticResource Primary}"
+                                TextColor="White"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                CornerRadius="25"
+                                HeightRequest="50"
+                                IsVisible="{Binding IsEditing, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                        <!-- Modo Edição -->
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="10"
+                              IsVisible="{Binding IsEditing}">
+
+                            <Button Grid.Column="0"
+                                    Text="Cancelar"
+                                    Command="{Binding CancelEditCommand}"
+                                    BackgroundColor="LightGray"
+                                    TextColor="Black"
+                                    FontSize="16"
+                                    CornerRadius="25"
+                                    HeightRequest="50"/>
+
+                            <Button Grid.Column="1"
+                                    Text="Guardar"
+                                    Command="{Binding SaveProfileCommand}"
+                                    BackgroundColor="{StaticResource Primary}"
+                                    TextColor="White"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    CornerRadius="25"
+                                    HeightRequest="50"/>
+                        </Grid>
+                    </StackLayout>
+
+                </StackLayout>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

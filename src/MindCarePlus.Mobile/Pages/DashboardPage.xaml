@@ -8,6 +8,13 @@
              xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              Title="Dashboard">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+                    Text="Exportar PDF"
+                    Command="{Binding ExportarRelatorioPdfCommand}"
+                    IconImageSource="share.png"/>
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#6C63FF">
 
@@ -259,6 +266,164 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Relatório IA -->
+                <Border BackgroundColor="White"
+                        StrokeThickness="1"
+                        Stroke="#E5E7EB"
+                        StrokeShape="RoundRectangle 16"
+                        Padding="20"
+                        Margin="0,0,0,16">
+
+                    <VerticalStackLayout Spacing="16">
+
+                        <!-- Header -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                <Label Text="🤖" FontSize="24"/>
+                                <Label Text="Relatório com IA"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="#1F2937"
+                                       VerticalOptions="Center"/>   
+                            </HorizontalStackLayout>
+
+                            <Button Grid.Column="1"
+                                    Text="Gerar"
+                                    Command="{Binding GerarRelatorioIACommand}"
+                                    IsVisible="{Binding IsGerarRelatorio, Converter={StaticResource InvertedBoolConverter}}"
+                                    BackgroundColor="#3B82F6"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    CornerRadius="8"
+                                    HeightRequest="36"
+                                    Padding="16,0"/>
+
+                            <ActivityIndicator Grid.Column="1"
+                                               IsRunning="True"
+                                               IsVisible="{Binding IsGerarRelatorio}"
+                                               Color="#3B82F6"
+                                               HeightRequest="30"
+                                               WidthRequest="30"/>  
+                        </Grid>
+
+                        <!-- Loading -->
+                        <Border IsVisible="{Binding IsGerarRelatorio}"
+                                BackgroundColor="#EFF6FF"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="12">       
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                                <ActivityIndicator IsRunning="True" Color="#3B82F6" HeightRequest="20" WidthRequest="20"/>
+                                <Label Text="A gerar relatório com IA..." TextColor="#1E40AF" FontSize="13"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Descrição -->
+                        <Label IsVisible="{Binding MostrarRelatorio, Converter={StaticResource InvertedBoolConverter}}"
+                               Text="Obtenha insights personalizados sobre o seu estado emocional dos últimos 30 dias."
+                               TextColor="#6B7280"
+                               FontSize="13"
+                               LineBreakMode="WordWrap"/>   
+
+                        <!-- Relatório Expandido -->
+                        <VerticalStackLayout IsVisible="{Binding MostrarRelatorio}" Spacing="12">
+
+                            <!-- Header do relatório -->
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                                <Label Text="{Binding RelatorioPeriodo}"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#1F2937"
+                                       VerticalOptions="Center"/>
+                                <Button Grid.Column="1"
+                                        Text="✕"
+                                        Command="{Binding FecharRelatorioCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="#6B7280"
+                                        FontSize="16"
+                                        WidthRequest="32"
+                                        HeightRequest="32"/>    
+                            </Grid>
+
+                            <!-- Médias -->
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                <Border BackgroundColor="#DBEAFE" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="😊" FontSize="18" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding RelatorioMediaHumor, StringFormat='{0:F1}'}"
+                               FontSize="16" FontAttributes="Bold" TextColor="#1E40AF" HorizontalOptions="Center"/>
+                                        <Label Text="Humor" FontSize="9" TextColor="#1E40AF" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border Grid.Column="1" BackgroundColor="#FEF3C7" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="⚡" FontSize="18" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding RelatorioMediaEnergia, StringFormat='{0:F1}'}"
+                               FontSize="16" FontAttributes="Bold" TextColor="#92400E" HorizontalOptions="Center"/>
+                                        <Label Text="Energia" FontSize="9" TextColor="#92400E" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border Grid.Column="2" BackgroundColor="#FCE7F3" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="😰" FontSize="18" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding RelatorioMediaStress, StringFormat='{0:F1}'}"
+                               FontSize="16" FontAttributes="Bold" TextColor="#BE185D" HorizontalOptions="Center"/>
+                                        <Label Text="Stress" FontSize="9" TextColor="#BE185D" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+
+                            <!-- Análise Completa -->
+                            <Border BackgroundColor="#F9FAFB" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                <VerticalStackLayout Spacing="8">
+                                    <Label Text="📊 Análise do Período"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="#1F2937"/>    
+                                    <Label Text="{Binding RelatorioCompleto}"
+                                           FontSize="12"
+                                           TextColor="#374151"
+                                           LineBreakMode="WordWrap"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Tendências -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="😊 Humor" FontSize="12" FontAttributes="Bold" TextColor="#1E40AF"/>
+                                <Label Text="{Binding RelatorioTendenciasHumor}" FontSize="11" TextColor="#374151" LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="⚡ Energia" FontSize="12" FontAttributes="Bold" TextColor="#92400E"/>
+                                <Label Text="{Binding RelatorioTendenciasEnergia}" FontSize="11" TextColor="#374151" LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="😰 Stress" FontSize="12" FontAttributes="Bold" TextColor="#BE185D"/>
+                                <Label Text="{Binding RelatorioTendenciasStress}" FontSize="11" TextColor="#374151" LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+
+                            <!-- Recomendações -->
+                            <Border BackgroundColor="#F0FDF4" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12">
+                                <VerticalStackLayout Spacing="8">
+                                    <Label Text="💡 Sugestões para si"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="#166534"/>
+                                    <Label Text="{Binding RelatorioRecomendacoes}"
+                                           FontSize="11"
+                                           TextColor="#374151"
+                                           LineBreakMode="WordWrap"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
                 <Border Grid.Row="1" Grid.Column="0" 
                         BackgroundColor="White" 
                         StrokeShape="RoundRectangle 15"
@@ -376,6 +541,7 @@
                                HorizontalOptions="Center"/>
                     </VerticalStackLayout>
                 </Border>
+
             </Grid>
 
         </VerticalStackLayout>
