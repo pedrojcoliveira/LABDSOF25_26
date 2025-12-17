@@ -102,5 +102,10 @@
             Title="Calendário"
             ContentTemplate="{DataTemplate local:CalendarioPage}"
             Route="CalendarioPage" />
+        <ShellContent
+            Title="Mensagens"
+            ContentTemplate="{DataTemplate local:ConversasPage}"
+            Route="ConversasPsicologo"
+            Icon="mensagens_icon.png" />
     </TabBar>
 </Shell>
