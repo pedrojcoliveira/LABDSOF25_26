@@ -91,6 +91,12 @@
 	  <Compile Update="Pages\ListaPacientesPage.xaml.cs">
 	    <DependentUpon>ListaPacientesPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\.xaml.cs">
+	    <DependentUpon>.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\SolicitarSessaoPage.xaml.cs">
+	    <DependentUpon>SolicitarSessaoPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -122,6 +128,12 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\RegisterPsicologoPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\SolicitarSessaoPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\SelectUserTypePage.xaml">

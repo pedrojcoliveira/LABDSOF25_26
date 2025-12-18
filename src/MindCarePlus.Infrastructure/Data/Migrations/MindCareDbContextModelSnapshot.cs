@@ -176,7 +176,7 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Counteudo")
+                    b.Property<string>("Conteudo")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -301,6 +301,9 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("DataCriacao")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -317,6 +320,10 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("LinkSessao")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NotasPaciente")
                         .IsRequired()
                         .HasColumnType("text");
 
