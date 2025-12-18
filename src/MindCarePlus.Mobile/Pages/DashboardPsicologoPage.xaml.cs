@@ -17,6 +17,6 @@ public partial class DashboardPsicologoPage : ContentPage
     {
         base.OnAppearing();
         Console.WriteLine("📄 DashboardPsicologoPage.OnAppearing - A carregar o dashboard...");
-        await _viewModel.LoadDashboardCommand.ExecuteAsync(null);
+        await _viewModel.RefreshCommand.ExecuteAsync(null);
     }
 }

@@ -81,8 +81,10 @@ public partial class DashboardPsicologoViewModel : ObservableObject
     /// Carrega todos os dados do dashboard
     /// </summary>
     [RelayCommand]
-    public async Task LoadDashboardAsync()
+    public async Task RefreshAsync()
     {
+        if (IsLoading) return;
+
         IsLoading = true;
         MensagemErro = string.Empty;
         TemDados = true;
@@ -219,7 +221,7 @@ public partial class DashboardPsicologoViewModel : ObservableObject
     [RelayCommand]
     private async Task IrParaMensagensAsync()
     {
-        await Shell.Current.GoToAsync("//ConversasPage");
+        await Shell.Current.GoToAsync("//ConversasPsicologo");
     }
 
     /// <summary>

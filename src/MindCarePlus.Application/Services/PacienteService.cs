@@ -73,8 +73,10 @@ public class PacienteService : IPacienteService
             {
                 Id = r.Id,
                 DataGeracao = r.DataGeracao,
-                //Conteudo = r.ConteudoGeradoIA,
-                //TipoRelatorio = r.TipoRelatorio,
+                RelatorioCompleto = r.RelatorioCompleto,
+                MediaHumor = r.MediaHumor,     
+                MediaEnergia = r.MediaEnergia, 
+                MediaStress = r.MediaStress,   
                 //NivelAlerta = r.NivelAlerta
             })
             .ToList();

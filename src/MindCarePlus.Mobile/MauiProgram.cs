@@ -127,8 +127,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CalendarioViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<DashboardPsicologoViewModel>();
-
-
+        builder.Services.AddTransient<DetalhesSessaoViewModel>();
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
         builder.Services.AddTransient<RegisterPacientePage>();
@@ -148,6 +147,7 @@ public static class MauiProgram
         builder.Services.AddTransient<DashboardPsicologoPage>();
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<DetalhesSessaoPage>();
 
 
 #if DEBUG
