@@ -132,6 +132,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ConversasViewModel>();
         builder.Services.AddTransient<ChatViewModel>();
         builder.Services.AddTransient<SolicitarSessaoViewModel>();
+        builder.Services.AddTransient<MinhasSessoesViewModel>();
 
         builder.Services.AddTransient<CalendarioViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
@@ -154,6 +155,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ConversasPage>();
         builder.Services.AddTransient<ChatPage>();
         builder.Services.AddTransient<SolicitarSessaoPage>();
+        builder.Services.AddTransient<MinhasSessoesPage>();
         builder.Services.AddTransient<DashboardPsicologoPage>();
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<ProfilePage>();

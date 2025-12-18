@@ -46,5 +46,16 @@ namespace MindCarePlus.Shared.DTOs
             "NaoCompareceu" => "Não Compareceu",
             _ => Estado
         };
+
+        public string EstadoCor => Estado switch
+        {
+            "Pendente" => "#FFA500",
+            "Agendada" => "#4CAF50",
+            "Rejeitada" => "#F44336",
+            "Cancelada" => "#9E9E9E",
+            "Concluida" => "#2196F3",
+            "NaoCompareceu" => "#FF5722",
+            _ => "#9E9E9E"
+        };
     }
 }

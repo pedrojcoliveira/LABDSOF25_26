@@ -83,7 +83,7 @@ namespace MindCarePlus.Mobile.ViewModels
 
                 if (resultado != null)
                 {
-                    await Shell.Current.GoToAsync("..");
+                    await Shell.Current.GoToAsync("//minhassessoes");
                 }
             }
             catch (HttpRequestException ex)

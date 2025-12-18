@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MindCarePlus.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             xmlns:converters="clr-namespace:MindCarePlus.Mobile.Converters"
+             x:Class="MindCarePlus.Mobile.Pages.MinhasSessoesPage"
+             x:DataType="viewmodels:MinhasSessoesViewModel"
+             Title="Minhas Sessões">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+
+            <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#6C63FF" Offset="0.0" />
+                <GradientStop Color="#5A52D5" Offset="1.0" />
+            </LinearGradientBrush>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Padding="20" Background="{StaticResource HeaderGradient}">
+            <VerticalStackLayout Spacing="15">
+                <Label Text="📅 Minhas Sessões"
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       TextColor="White"/>
+
+                <Label Text="Acompanhe suas consultas agendadas"
+                       FontSize="14"
+                       TextColor="White"
+                       Opacity="0.9"/>
+
+                <!-- Estatísticas -->
+                <HorizontalStackLayout Spacing="10" Margin="0,10,0,0">
+                    <Border BackgroundColor="#FFA500"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,6">
+                        <Label TextColor="White" FontSize="13" FontAttributes="Bold">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="⏳ "/>
+                                    <Span Text="{Binding TotalPendentes}"/>
+                                    <Span Text=" Pendentes"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Border>
+
+                    <Border BackgroundColor="#4CAF50"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,6">
+                        <Label TextColor="White" FontSize="13" FontAttributes="Bold">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="✅ "/>
+                                    <Span Text="{Binding TotalAgendadas}"/>
+                                    <Span Text=" Agendadas"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Border>
+
+                    <Border BackgroundColor="#2196F3"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,6">
+                        <Label TextColor="White" FontSize="13" FontAttributes="Bold">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="✔️ "/>
+                                    <Span Text="{Binding TotalConcluidas}"/>
+                                    <Span Text=" Concluídas"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Border>
+                </HorizontalStackLayout>
+
+                <!-- Filtros -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Todas"
+                                Command="{Binding FiltrarPorEstadoCommand}"
+                                CommandParameter="Todas"
+                                BackgroundColor="{Binding FiltroEstado, Converter={StaticResource FilterButtonColorConverter}, ConverterParameter='Todas'}"
+                                TextColor="White"
+                                FontSize="12"
+                                Padding="15,8"
+                                CornerRadius="15"/>
+                        <Button Text="Pendente"
+                                Command="{Binding FiltrarPorEstadoCommand}"
+                                CommandParameter="Pendente"
+                                BackgroundColor="#FFA500"
+                                TextColor="White"
+                                FontSize="12"
+                                Padding="15,8"
+                                CornerRadius="15"/>
+                        <Button Text="Agendada"
+                                Command="{Binding FiltrarPorEstadoCommand}"
+                                CommandParameter="Agendada"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                FontSize="12"
+                                Padding="15,8"
+                                CornerRadius="15"/>
+                        <Button Text="Concluída"
+                                Command="{Binding FiltrarPorEstadoCommand}"
+                                CommandParameter="Concluida"
+                                TextColor="White"
+                                FontSize="12"
+                                Padding="15,8"
+                                CornerRadius="15"/>
+                    </HorizontalStackLayout>
+                </ScrollView>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Content -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefrescarSessoesCommand}"
+                     RefreshColor="#6C63FF">
+            <ScrollView>
+                <VerticalStackLayout Padding="20" Spacing="15">
+
+                    <!-- Loading -->
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                       IsVisible="{Binding IsLoading}"
+                                       Color="#6C63FF"
+                                       HeightRequest="50"/>
+
+                    <!-- Mensagem de Erro -->
+                    <Label Text="{Binding MensagemErro}"
+                           TextColor="Red"
+                           FontSize="14"
+                           HorizontalOptions="Center"
+                           Margin="0,10"/>
+
+                    <!-- Lista Vazia -->
+                    <VerticalStackLayout Spacing="10"
+                             Padding="20"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             Margin="0,50,0,0"
+                             IsVisible="{Binding TemSessoes, Converter={StaticResource InvertedBoolConverter}}">
+                        <Label Text="📅"
+                               FontSize="50"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Nenhuma sessão encontrada"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#666666"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Solicite uma sessão com um psicólogo"
+                               FontSize="14"
+                               TextColor="#999999"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+
+                    <!-- Lista de Sessões -->
+                    <CollectionView ItemsSource="{Binding SessoesFiltradas}"
+                            SelectionMode="None"
+                            IsVisible="{Binding TemSessoes}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:SessaoDto">
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="0"
+                                        Padding="15"
+                                        Margin="0,5">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12"/>
+                                    </Border.StrokeShape>
+                                    <Border.Shadow>
+                                        <Shadow Brush="Black" Opacity="0.1" Radius="8" Offset="0,2"/>
+                                    </Border.Shadow>
+
+                                    <VerticalStackLayout Spacing="12">
+                                        <!-- Data e Hora -->
+                                        <Label FontSize="18" FontAttributes="Bold" TextColor="#333">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="📅 "/>
+                                                    <Span Text="{Binding DataHoraFormatada}"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+
+                                        <!-- Psicólogo -->
+                                        <Label Text="{Binding NomePsicologo}"
+                                               FontSize="16"
+                                               TextColor="#666"/>
+
+                                        <Label Text="{Binding EspecialidadePsicologo}"
+                                               FontSize="14"
+                                               TextColor="#999"/>
+
+                                        <!-- Estado -->
+                                        <Border BackgroundColor="{Binding EstadoCor}"
+                                                StrokeShape="RoundRectangle 8"
+                                                Padding="10,5"
+                                                HorizontalOptions="Start">
+                                            <Label Text="{Binding EstadoTexto}"
+                                                   TextColor="White"
+                                                   FontSize="13"
+                                                   FontAttributes="Bold"/>
+                                        </Border>
+
+                                        <!-- Duração -->
+                                        <Label TextColor="#666" FontSize="13">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="⏱️ Duração: "/>
+                                                    <Span Text="{Binding Duracao.TotalMinutes, StringFormat='{0:F0} minutos'}"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+
+                                        <!-- Botões -->
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,5,0,0">
+                                            <Button Grid.Column="0"
+                                                    Text="Ver Detalhes"
+                                                    BackgroundColor="#E5E7EB"
+                                                    TextColor="#374151"
+                                                    FontSize="13"
+                                                    Padding="10,8"
+                                                    CornerRadius="8"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MinhasSessoesViewModel}}, Path=VerDetalhesSessaoCommand}"
+                                                    CommandParameter="{Binding .}"/>
+
+                                            <Button Grid.Column="1"
+                                                    Text="Entrar"
+                                                    BackgroundColor="#10B981"
+                                                    TextColor="White"
+                                                    FontSize="13"
+                                                    Padding="10,8"
+                                                    CornerRadius="8"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MinhasSessoesViewModel}}, Path=EntrarNaSessaoCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

@@ -94,6 +94,9 @@
 	  <Compile Update="Pages\.xaml.cs">
 	    <DependentUpon>.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\MinhasSessoesPage.xaml.cs">
+	    <DependentUpon>MinhasSessoesPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\SolicitarSessaoPage.xaml.cs">
 	    <DependentUpon>SolicitarSessaoPage.xaml</DependentUpon>
 	  </Compile>
@@ -131,6 +134,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\MinhasSessoesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\SolicitarSessaoPage.xaml">
