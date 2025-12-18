@@ -15,12 +15,14 @@ namespace MindCarePlus.Mobile.ModelViews
         private readonly ApiService _apiService;
         private readonly AuthService _authService;
         private readonly ChatService _chatService;
+        private readonly SessaoService _sessaoService;
 
-        public DashboardViewModel(ApiService apiService, AuthService authService, ChatService chatService)
+        public DashboardViewModel(ApiService apiService, AuthService authService, ChatService chatService, SessaoService sessaoService)
         {
             _apiService = apiService;
             _authService = authService;
             _chatService = chatService;
+            _sessaoService = sessaoService;
 
             BadgesConquistadas = new ObservableCollection<BadgeConquistadaDto>();
             EvolucaoHumor = new ObservableCollection<DiaHumorDto>();
@@ -330,6 +332,22 @@ namespace MindCarePlus.Mobile.ModelViews
                 Console.WriteLine($"❌ Erro ao navegar para ConversasPage: {ex.Message}");
                 await Shell.Current.DisplayAlert("Erro",
                     $"Erro ao abrir mensagens: {ex.Message}", "OK");
+            }
+        }
+
+        [ObservableProperty]
+        private int totalSessoesPendentes;
+
+        [RelayCommand]
+        private async Task IrParaSessoes()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("minhassessoes");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erro ao navegar: {ex.Message}");
             }
         }
 

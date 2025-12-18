@@ -197,6 +197,7 @@
                   ColumnSpacing="15" 
                   RowSpacing="15">
 
+                <!-- Registar Humor -->
                 <Border Grid.Row="0" Grid.Column="0" 
                         BackgroundColor="White" 
                         StrokeShape="RoundRectangle 15"
@@ -228,6 +229,7 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Desafios Diários -->
                 <Border Grid.Row="0" Grid.Column="1" 
                         BackgroundColor="White" 
                         StrokeShape="RoundRectangle 15"
@@ -259,6 +261,7 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Ver Evolução -->
                 <Border Grid.Row="1" Grid.Column="0" 
                         BackgroundColor="White" 
                         StrokeShape="RoundRectangle 15"
@@ -290,7 +293,61 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- 🆕 MINHAS SESSÕES -->
                 <Border Grid.Row="1" Grid.Column="1" 
+                        BackgroundColor="White" 
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20" 
+                        Shadow="True">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding IrParaSessoesCommand}"/>
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="10">
+                        <!-- Ícone com Badge -->
+                        <Grid WidthRequest="60" 
+                              HeightRequest="60" 
+                              HorizontalOptions="Center">
+
+                            <!-- Círculo de fundo -->
+                            <Border BackgroundColor="#E8F5E9" 
+                                    StrokeShape="RoundRectangle 30"
+                                    WidthRequest="60" 
+                                    HeightRequest="60" 
+                                    Padding="0">
+                                <Label Text="📅" 
+                                       FontSize="30" 
+                                       HorizontalOptions="Center" 
+                                       VerticalOptions="Center"/>
+                            </Border>
+
+                            <!-- Badge de sessões pendentes -->
+                            <Border BackgroundColor="#FFA500"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="6,3"
+                                    IsVisible="{Binding TotalSessoesPendentes, Converter={StaticResource IntToBoolConverter}}"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start"
+                                    Margin="0,-5,-5,0">
+                                <Label Text="{Binding TotalSessoesPendentes}"
+                                       TextColor="White"
+                                       FontSize="11"
+                                       FontAttributes="Bold"/>
+                            </Border>
+                        </Grid>
+
+                        <Label Text="Minhas Sessões" 
+                               FontSize="14" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="Ver agendamentos" 
+                               FontSize="10" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Contactar Psicólogo -->
+                <Border Grid.Row="2" Grid.Column="0" 
                         BackgroundColor="White" 
                         StrokeShape="RoundRectangle 15"
                         Padding="20" 
@@ -321,7 +378,8 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Grid.Row="2" Grid.Column="0" 
+                <!-- Mensagens -->
+                <Border Grid.Row="2" Grid.Column="1" 
                         BackgroundColor="White" 
                         StrokeShape="RoundRectangle 15"
                         Padding="20" 
@@ -334,7 +392,7 @@
                         <!-- Ícone com Badge -->
                         <Grid WidthRequest="60" 
                               HeightRequest="60" 
-                              HorizontalOptions="Center">
+                              HorizontalOptions="Center">       
 
                             <!-- Círculo de fundo -->
                             <Border BackgroundColor="#FF9800" 
