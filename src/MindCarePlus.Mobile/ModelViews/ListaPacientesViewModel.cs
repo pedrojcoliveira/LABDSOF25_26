@@ -206,11 +206,11 @@ public partial class ListaPacientesViewModel : ObservableObject
     {
         try
         {
-            await Shell.Current.GoToAsync("//ConversasPage");
+            await Shell.Current.GoToAsync("//ConversasPsicologo");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Erro ao navegar para ConversasPage: {ex.Message}");
+            Console.WriteLine($"❌ Erro ao navegar para mensagens do psicologo: {ex.Message}");
             await Shell.Current.DisplayAlert("Erro",
                 $"Erro ao abrir mensagens: {ex.Message}", "OK");
         }
