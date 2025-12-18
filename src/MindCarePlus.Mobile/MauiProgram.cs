@@ -8,6 +8,7 @@ using MindCarePlus.Mobile.Services;
 using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 using System.Reflection;
 
 namespace MindCarePlus.Mobile;
@@ -104,8 +105,14 @@ public static class MauiProgram
         })
         .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>();
 
-        builder.Services.AddSingleton<IDialogService, MauiDialogService>();
+        builder.Services.AddHttpClient<SessaoService>(client =>
+        {
+            client.BaseAddress = new Uri("https://gmsnhdqq-7291.uks1.devtunnels.ms/");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
+        builder.Services.AddSingleton<IDialogService, MauiDialogService>();
+        
         // Registar ViewModels
         builder.Services.AddTransient<SelectUserTypeViewModel>();
         builder.Services.AddTransient<RegisterPacienteViewModel>();
@@ -124,8 +131,13 @@ public static class MauiProgram
         builder.Services.AddTransient<CriarTarefaViewModel>();
         builder.Services.AddTransient<ConversasViewModel>();
         builder.Services.AddTransient<ChatViewModel>();
+        builder.Services.AddTransient<SolicitarSessaoViewModel>();
+        builder.Services.AddTransient<MinhasSessoesViewModel>();
+
         builder.Services.AddTransient<CalendarioViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
+        builder.Services.AddTransient<DashboardPsicologoViewModel>();
+        builder.Services.AddTransient<DetalhesSessaoViewModel>();
         builder.Services.AddTransient<EditProfileViewModel>();
 
         // Registar Pages
@@ -144,9 +156,13 @@ public static class MauiProgram
         builder.Services.AddTransient<CriarTarefaPage>();
         builder.Services.AddTransient<ConversasPage>();
         builder.Services.AddTransient<ChatPage>();
+        builder.Services.AddTransient<SolicitarSessaoPage>();
+        builder.Services.AddTransient<MinhasSessoesPage>();
+        builder.Services.AddTransient<DashboardPsicologoPage>();
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<ProfilePage>();
         builder.Services.AddTransient<EditProfilePage>();
+        builder.Services.AddTransient<DetalhesSessaoPage>();
 
 
 #if DEBUG

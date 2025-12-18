@@ -106,14 +106,14 @@ public partial class CalendarioViewModel : ObservableObject
     {
         if (sessao == null) return;
 
-        await Shell.Current.DisplayAlert(
-            "Detalhes da Sessão",
-            $"Paciente: {sessao.PacienteNome}\n" +
-            $"Data: {sessao.DataFormatada} às {sessao.HoraFormatada}\n" +
-            $"Duração: {sessao.DuracaoFormatada}\n" +
-            $"Estado: {sessao.Estado}\n" +
-            $"Notas: {sessao.Notas}",
-            "Fechar");
+        // CÓDIGO NOVO: Navegar para a página de detalhes em vez de mostrar alerta
+        var navigationParameter = new Dictionary<string, object>
+    {
+        { "Sessao", sessao }
+    };
+
+        // Certifica-te que o nome "DetalhesSessaoPage" corresponde à rota registada abaixo
+        await Shell.Current.GoToAsync("DetalhesSessaoPage", navigationParameter);
     }
 
     [RelayCommand]

@@ -87,6 +87,13 @@
     <!-- TABS DE PSICÓLOGO -->
     <!-- ============================================ -->
     <TabBar Route="PsicologoFlow">
+        <!-- Adicionar na AppShell.xaml -->
+        <ShellContent
+            Title="Dashboard"
+            ContentTemplate="{DataTemplate local:DashboardPsicologoPage}"
+            Route="DashboardPsicologoPage" />
+        
+        
         <ShellContent
             Title="Pacientes"
             ContentTemplate="{DataTemplate local:ListaPacientesPage}"
@@ -95,5 +102,10 @@
             Title="Calendário"
             ContentTemplate="{DataTemplate local:CalendarioPage}"
             Route="CalendarioPage" />
+        <ShellContent
+            Title="Mensagens"
+            ContentTemplate="{DataTemplate local:ConversasPage}"
+            Route="ConversasPsicologo"
+            Icon="mensagens_icon.png" />
     </TabBar>
 </Shell>

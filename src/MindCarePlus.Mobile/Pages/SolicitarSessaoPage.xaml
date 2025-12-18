@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MindCarePlus.Mobile.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="MindCarePlus.Mobile.Pages.SolicitarSessaoPage"
+             x:DataType="viewmodels:SolicitarSessaoViewModel"
+             Title="Solicitar Sessão">
+
+    <ContentPage.Resources>
+        <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#6C63FF" Offset="0.0" />
+            <GradientStop Color="#5A52D5" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Informações do Psicólogo -->
+            <Frame Background="{StaticResource HeaderGradient}"
+                   CornerRadius="15"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Marcar sessão com:"
+                           TextColor="White"
+                           FontSize="14"
+                           Opacity="0.9"/>
+                    <Label Text="{Binding NomePsicologo}"
+                           TextColor="White"
+                           FontSize="20"
+                           FontAttributes="Bold"/>
+                    <Label Text="{Binding EspecialidadePsicologo}"
+                           TextColor="White"
+                           FontSize="14"
+                           Opacity="0.9"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Seleção de Data -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Data pretendida"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333"/>
+                <Border StrokeThickness="1"
+                        Stroke="#E0E0E0"
+                        BackgroundColor="White"
+                        Padding="10"
+                        StrokeShape="RoundRectangle 10">
+                    <DatePicker Date="{Binding DataSelecionada}"
+                                MinimumDate="{x:Static sys:DateTime.Today}"
+                                Format="dd/MM/yyyy"
+                                FontSize="16"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Seleção de Hora -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Hora pretendida"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333"/>
+                <Border StrokeThickness="1"
+                        Stroke="#E0E0E0"
+                        BackgroundColor="White"
+                        Padding="10"
+                        StrokeShape="RoundRectangle 10">
+                    <TimePicker Time="{Binding HoraSelecionada}"
+                                Format="HH:mm"
+                                FontSize="16"/>
+                </Border>
+                <Label Text="Nota: O psicólogo confirmará a disponibilidade"
+                       FontSize="12"
+                       TextColor="#666"
+                       Opacity="0.8"/>
+            </VerticalStackLayout>
+
+            <!-- Notas do Paciente -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Notas (opcional)"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333"/>
+                <Border StrokeThickness="1"
+                        Stroke="#E0E0E0"
+                        BackgroundColor="White"
+                        Padding="10"
+                        StrokeShape="RoundRectangle 10">
+                    <Editor Text="{Binding NotasPaciente}"
+                            Placeholder="Ex: Preferência por videochamada, temas a abordar..."
+                            HeightRequest="120"
+                            FontSize="14"
+                            MaxLength="500"/>
+                </Border>
+                <Label Text="{Binding NotasPaciente.Length, StringFormat='{0}/500 caracteres'}"
+                       FontSize="12"
+                       TextColor="#666"
+                       HorizontalOptions="End"/>
+            </VerticalStackLayout>
+
+            <!-- Mensagem de Erro -->
+            <Label Text="{Binding MensagemErro}"
+                   TextColor="Red"
+                   FontSize="14"
+                   IsVisible="False"
+                   HorizontalTextAlignment="Center"
+                   x:Name="LabelErro"/>
+
+            <!-- Botões -->
+            <VerticalStackLayout Spacing="10">
+                <Button Text="Enviar Pedido"
+                        Command="{Binding SolicitarSessaoCommand}"
+                        BackgroundColor="#6C63FF"
+                        TextColor="White"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="25"
+                        HeightRequest="50"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                    <Button.Shadow>
+                        <Shadow Brush="#6C63FF" Opacity="0.3" Radius="10" Offset="0,4"/>
+                    </Button.Shadow>
+                </Button>
+
+                <Button Text="Cancelar"
+                        Command="{Binding CancelarCommand}"
+                        BackgroundColor="White"
+                        TextColor="#6C63FF"
+                        BorderColor="#6C63FF"
+                        BorderWidth="2"
+                        FontSize="16"
+                        CornerRadius="25"
+                        HeightRequest="50"
+                        IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"/>
+            </VerticalStackLayout>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                              IsVisible="{Binding IsLoading}"
+                              Color="#6C63FF"
+                              HeightRequest="50"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
