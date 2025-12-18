@@ -88,6 +88,9 @@
 	  <Compile Update="Pages\DetalhePacientePage.xaml.cs">
 	    <DependentUpon>DetalhePacientePage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Pages\EditProfilePage.xaml.cs">
+	    <DependentUpon>EditProfilePage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Pages\ListaPacientesPage.xaml.cs">
 	    <DependentUpon>ListaPacientesPage.xaml</DependentUpon>
 	  </Compile>
@@ -116,6 +119,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\DetalhesSessaoPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EditProfilePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ListaPacientesPage.xaml">

@@ -600,6 +600,63 @@ public class ApiService
         }
     }
 
+    /// <summary>
+    /// Eliminar conta do utilizador autenticado
+    /// User Story: UM.P.05 e UM.PS.20
+    /// </summary>
+    /// <param name="confirmPassword">Password para confirmar eliminação</param>
+    /// <returns>Resultado da eliminação</returns>
+    public async Task<DeleteAccountResultDto?> DeleteMyAccountAsync(string confirmPassword)
+    {
+        await ConfigureAuthHeaderAsync();
+
+        try
+        {
+            var request = new DeleteAccountRequestDto
+            {
+                ConfirmPassword = confirmPassword,
+                ConfirmIrreversible = true
+            };
+
+            var response = await _httpClient.DeleteAsJsonAsync("api/profile", request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await HandleUnauthorizedAsync();
+                return new DeleteAccountResultDto
+                {
+                    Success = false,
+                    Message = "Sessão expirada. Por favor, faça login novamente."
+                };
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<DeleteAccountResultDto>();
+                Console.WriteLine("✅ Conta eliminada com sucesso!");
+                return result;
+            }
+
+            // Tentar ler mensagem de erro
+            var errorResult = await response.Content.ReadFromJsonAsync<DeleteAccountResultDto>();
+            Console.WriteLine($"❌ Erro ao eliminar conta: {errorResult?.Message}");
+            return errorResult ?? new DeleteAccountResultDto
+            {
+                Success = false,
+                Message = "Erro ao eliminar conta"
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Exceção ao eliminar conta: {ex.Message}");
+            return new DeleteAccountResultDto
+            {
+                Success = false,
+                Message = $"Erro de conexão: {ex.Message}"
+            };
+        }
+    }
+
     #endregion
 
 
@@ -738,6 +795,22 @@ public class ApiService
             Console.WriteLine($"❌ Erro ao verificar autenticação: {ex.Message}");
             return false;
         }
+    }
+}
+
+public static class HttpClientExtensions
+{
+    public static async Task<HttpResponseMessage> DeleteAsJsonAsync<T>(
+        this HttpClient httpClient,
+        string requestUri,
+        T value)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Delete, requestUri)
+        {
+            Content = JsonContent.Create(value)
+        };
+
+        return await httpClient.SendAsync(request);
     }
 }
 
