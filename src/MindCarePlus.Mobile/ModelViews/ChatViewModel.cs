@@ -212,4 +212,22 @@ public partial class ChatViewModel : ObservableObject
             IsConnected = ligado;
         });
     }
+
+    /// <summary>
+    /// Abre o perfil do paciente com quem está a conversar
+    /// UM.PS.05 - Navegação a partir do chat ativo
+    /// </summary>
+    [RelayCommand]
+    public async Task AbrirPerfilAsync()
+    {
+        try
+        {
+            await Shell.Current.GoToAsync($"DetalhePacientePage?pacienteId={OutroUtilizadorId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Erro ao abrir perfil: {ex.Message}");
+            await Shell.Current.DisplayAlert("Erro", $"Erro ao abrir perfil: {ex.Message}", "OK");
+        }
+    }
 }

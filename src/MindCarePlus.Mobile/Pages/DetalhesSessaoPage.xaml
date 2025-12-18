@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs;assembly=MindCarePlus.Shared"
+             x:Class="MindCarePlus.Mobile.Pages.DetalhesSessaoPage"
+             x:DataType="vm:DetalhesSessaoViewModel"
+             Title="Detalhes da Marcação"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="16">
+
+            <Border BackgroundColor="White" StrokeShape="RoundRectangle 12" StrokeThickness="0" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Paciente" FontSize="12" TextColor="Gray"/>
+                            <Label Text="{Binding Sessao.PacienteNome}" FontSize="18" FontAttributes="Bold" TextColor="#1F2937"/>
+                        </VerticalStackLayout>
+
+                        <Border Grid.Column="1" 
+                                BackgroundColor="{Binding Sessao.Estado, Converter={StaticResource EstadoToColorConverter}}"
+                                StrokeShape="RoundRectangle 8" 
+                                StrokeThickness="0"
+                                Padding="12,6"
+                                VerticalOptions="Start">
+                            <Label Text="{Binding Sessao.Estado}" TextColor="White" FontSize="12" FontAttributes="Bold"/>
+                        </Border>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="#E5E7EB"/>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="12">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Data" FontSize="12" TextColor="Gray"/>
+                            <Label Text="{Binding Sessao.DataFormatada}" FontSize="16" TextColor="#1F2937"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Horário" FontSize="12" TextColor="Gray"/>
+                            <Label Text="{Binding Sessao.HoraFormatada}" FontSize="16" TextColor="#1F2937"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                            <Label Text="Duração" FontSize="12" TextColor="Gray"/>
+                            <Label Text="{Binding Sessao.DuracaoFormatada}" FontSize="16" TextColor="#1F2937"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Button Text="Ver Perfil Completo"
+                            Command="{Binding IrParaPerfilCompletoCommand}"
+                            BackgroundColor="#EFF6FF"
+                            TextColor="#3B82F6"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            Margin="0,8,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#3B82F6"/>
+
+            <Label Text="Resumo Clínico Recente" FontAttributes="Bold" FontSize="16" TextColor="#374151" Margin="0,8,0,0"/>
+
+            <Border BackgroundColor="White" StrokeShape="RoundRectangle 12" StrokeThickness="0" Padding="16">
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding VerRelatorioCompletoCommand}"/>
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="🤖 Última Análise IA" FontAttributes="Bold" TextColor="#7C3AED" VerticalOptions="Center"/>
+
+                        <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label Text="{Binding UltimoRelatorio.DataGeracao, StringFormat='{0:dd/MM}'}" FontSize="12" TextColor="Gray"/>
+                            <Label Text="›" FontSize="18" TextColor="#3B82F6" FontAttributes="Bold" TranslationY="-2"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <Label Text="Nenhum relatório disponível." IsVisible="{Binding TemRelatorios, Converter={StaticResource InvertedBoolConverter}}" TextColor="Gray" FontSize="12"/>
+
+                    <VerticalStackLayout IsVisible="{Binding TemRelatorios}" Spacing="8">
+                        <Label Text="{Binding UltimoRelatorio.RelatorioCompleto}" TextColor="#4B5563" FontSize="13" MaxLines="3" LineBreakMode="TailTruncation"/>
+
+                        <Label Text="Toque para ver análise completa" FontSize="10" TextColor="#3B82F6" HorizontalOptions="End"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Últimos Registos de Humor" FontSize="14" TextColor="Gray" Margin="0,4,0,0"/>
+
+            <Border BackgroundColor="White" 
+                    StrokeShape="RoundRectangle 12" 
+                    StrokeThickness="0" 
+                    Padding="16">
+
+                <VerticalStackLayout>
+                    <Grid IsVisible="{Binding TemRelatorios}" ColumnDefinitions="*,*,*">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4" HorizontalOptions="Center">
+                            <Label Text="😊" FontSize="24" HorizontalOptions="Center"/>
+                            <Label Text="{Binding UltimoRelatorio.MediaHumor, StringFormat='{0:F1}'}" 
+                                   FontSize="20" FontAttributes="Bold" TextColor="#10B981" HorizontalOptions="Center"/>
+                            <Label Text="Humor" FontSize="11" TextColor="Gray" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="Center">
+                            <Label Text="⚡" FontSize="24" HorizontalOptions="Center"/>
+                            <Label Text="{Binding UltimoRelatorio.MediaEnergia, StringFormat='{0:F1}'}" 
+                                   FontSize="20" FontAttributes="Bold" TextColor="#F59E0B" HorizontalOptions="Center"/>
+                            <Label Text="Energia" FontSize="11" TextColor="Gray" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="Center">
+                            <Label Text="🤯" FontSize="24" HorizontalOptions="Center"/>
+                            <Label Text="{Binding UltimoRelatorio.MediaStress, StringFormat='{0:F1}'}" 
+                                   FontSize="20" FontAttributes="Bold" TextColor="#EF4444" HorizontalOptions="Center"/>
+                            <Label Text="Stress" FontSize="11" TextColor="Gray" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label IsVisible="{Binding TemRelatorios, Converter={StaticResource InvertedBoolConverter}}"
+                           Text="Sem dados de análise disponíveis."
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"
+                           Margin="0,8,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

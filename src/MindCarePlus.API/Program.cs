@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MindCarePlus.API.Hubs;
+using MindCarePlus.API.Services;
 using MindCarePlus.Application.Configuration;
 using MindCarePlus.Application.Interfaces;
 using MindCarePlus.Application.Services;
-using MindCarePlus.API.Services;
 using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Domain.Services;
 using MindCarePlus.Infrastructure.Data;
@@ -57,12 +57,14 @@ builder.Services.AddAuthorization();
 // ===== SERVIÇOS =====
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IRelatorioIAService, RelatorioIAService>();
+builder.Services.AddScoped<IPdfRelatorioService, PdfRelatorioService>();
 
 // ===== CONFIGURAR UNIT OF WORK =====
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPacienteService, PacienteService>();
 builder.Services.AddScoped<IDesafioService, DesafioService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 
 

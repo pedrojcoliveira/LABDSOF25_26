@@ -1,14 +1,13 @@
 ﻿using MindCarePlus.Mobile.Pages;
-
 using MindCarePlus.Mobile.Views;
 
 namespace MindCarePlus.Mobile;
 
 public partial class AppShell : Shell
 {
-	public AppShell()
-	{
-		InitializeComponent();
+    public AppShell()
+    {
+        InitializeComponent();
 
         // Registar rotas para navegação
         //Routing.RegisterRoute("SelectUserTypePage", typeof(SelectUserTypePage));
@@ -24,6 +23,33 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("relatoriodetalhes", typeof(RelatorioDetalhesPage));
         Routing.RegisterRoute("CriarTarefaPage", typeof(CriarTarefaPage));
         Routing.RegisterRoute("solicitarsessao", typeof(SolicitarSessaoPage));
+        Routing.RegisterRoute("ProfilePage", typeof(ProfilePage));
+        Routing.RegisterRoute("DetalhesSessaoPage", typeof(DetalhesSessaoPage));
+
+    }
+
+
+    private async void OnProfileClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("ProfilePage");
+    }
+
+    private async void OnLogoutClicked(object? sender, EventArgs e)
+    {
+        var confirm = await DisplayAlert(
+            "Confirmar Logout",
+            "Tem a certeza que deseja sair?",
+            "Sim",
+            "Não");
+
+        if (!confirm) return;
+
+        SecureStorage.Remove("auth_token");
+        SecureStorage.Remove("user_role");
+        SecureStorage.Remove("user_email");
+
+
+        await Shell.Current.GoToAsync("//LoginPage");
 
     }
 }
