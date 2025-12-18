@@ -186,23 +186,16 @@ public partial class ContactarPsicologoViewModel : ObservableObject
 
         try
         {
-            bool confirmacao = await Shell.Current.DisplayAlert(
-                "Agendar Consulta",
-                $"Deseja agendar uma consulta com {psicologo.Nome}?",
-                "Sim",
-                "Não");
-
-            if (confirmacao)
-            {
-                await Shell.Current.DisplayAlert(
-                    "Sucesso",
-                    "Funcionalidade de agendamento em desenvolvimento. Em breve você poderá agendar consultas!",
-                    "OK");
-            }
+            // Navegar para a página de solicitar sessão
+            await Shell.Current.GoToAsync("solicitarsessao", new Dictionary<string, object>
+        {
+            { "psicologo", psicologo }
+        });
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Erro", $"Erro ao agendar: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert("Erro", $"Erro ao abrir agendamento: {ex.Message}", "OK");
+            Console.WriteLine($"❌ Erro ao navegar para solicitarsessao: {ex}");
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Microcharts.Maui;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,9 +9,8 @@ using MindCarePlus.Mobile.Services;
 using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
-using System.Reflection;
 using SkiaSharp.Views.Maui.Controls.Hosting;
-using Microcharts.Maui;
+using System.Reflection;
 
 namespace MindCarePlus.Mobile;
 
@@ -106,8 +106,14 @@ public static class MauiProgram
         })
         .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>();
 
-        builder.Services.AddSingleton<IDialogService, MauiDialogService>();
+        builder.Services.AddHttpClient<SessaoService>(client =>
+        {
+            client.BaseAddress = new Uri("https://gmsnhdqq-7291.uks1.devtunnels.ms/");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
 
+        builder.Services.AddSingleton<IDialogService, MauiDialogService>();
+        
         // Registar ViewModels
         builder.Services.AddTransient<SelectUserTypeViewModel>();
         builder.Services.AddTransient<RegisterPacienteViewModel>();
@@ -126,6 +132,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CriarTarefaViewModel>();
         builder.Services.AddTransient<ConversasViewModel>();
         builder.Services.AddTransient<ChatViewModel>();
+        builder.Services.AddTransient<SolicitarSessaoViewModel>();
 
         // Registar Pages
         builder.Services.AddTransient<SelectUserTypePage>();
@@ -143,6 +150,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CriarTarefaPage>();
         builder.Services.AddTransient<ConversasPage>();
         builder.Services.AddTransient<ChatPage>();
+        builder.Services.AddTransient<SolicitarSessaoPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
