@@ -74,56 +74,84 @@
 					<CollectionView ItemsSource="{Binding Conversas}"
                                     IsVisible="{Binding TemConversas}"
                                     SelectionMode="None">
-						<CollectionView.ItemTemplate>
-							<DataTemplate x:DataType="dto:ConversaDto">
-								<Border Padding="0" Margin="0,5">
-									<Border.GestureRecognizers>
-										<TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ConversasViewModel}}, Path=AbrirChatCommand}"
-                                                              CommandParameter="{Binding .}"/>
-									</Border.GestureRecognizers>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:ConversaDto">
+                                <Border Padding="0" Margin="0,5">
+                                    <Grid Padding="15,12" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
 
-									<Grid Padding="15,12" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-
-										<!-- Avatar -->
-										<Border Grid.Column="0"
+                                        <!-- Avatar -->
+                                        <Border Grid.Column="0"
                                                 BackgroundColor="#F3F4F6"
                                                 StrokeShape="RoundRectangle 25"
                                                 HeightRequest="50"
                                                 WidthRequest="50"
                                                 VerticalOptions="Center">
-											<Label Text="{Binding OutroUtilizadorAvatar}"
+                                            <Label Text="{Binding OutroUtilizadorAvatar}"
                                                    FontSize="24"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"/>
-										</Border>
+                                        </Border>
 
-										<!-- Conteúdo -->
-										<VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-											<!-- Nome -->
-											<Label Text="{Binding OutroUtilizadorNome}"
+                                        <!-- Conteúdo -->
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                            <!-- Nome -->
+                                            <Label Text="{Binding OutroUtilizadorNome}"
                                                    FontSize="16"
                                                    TextColor="#1F2937"/>
 
-											<!-- Última mensagem -->
-											<Label Text="{Binding UltimaMensagem}"
+                                            <!-- Última mensagem -->
+                                            <Label Text="{Binding UltimaMensagem}"
                                                    FontSize="13"
                                                    TextColor="#6B7280"
                                                    LineBreakMode="TailTruncation"
                                                    MaxLines="1"/>
-										</VerticalStackLayout>
 
-										<!-- Hora -->
-										<Label Grid.Column="2"
+                                            <!-- NOVO: Botões de Ação -->
+                                            <HorizontalStackLayout Spacing="10" Margin="0,5,0,0"
+                                                                   IsVisible="{Binding OutroUtilizadorTipo, Converter={StaticResource StringEqualConverter}, ConverterParameter='Paciente'}">
+
+                                                <!-- Botão Abrir Chat -->
+                                                <Border BackgroundColor="#6C63FF" 
+                                                        StrokeShape="RoundRectangle 8"
+                                                        Padding="8,4">
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ConversasViewModel}}, Path=AbrirChatCommand}"
+                                                                            CommandParameter="{Binding .}"/>
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="💬 Chat" 
+                                                           TextColor="White" 
+                                                           FontSize="12"
+                                                           FontAttributes="Bold"/>
+                                                </Border>
+
+                                                <!-- NOVO: Botão Ver Perfil -->
+                                                <Border BackgroundColor="#10B981" 
+                                                        StrokeShape="RoundRectangle 8"
+                                                        Padding="8,4">
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ConversasViewModel}}, Path=AbrirPerfilPacienteCommand}"
+                                                      CommandParameter="{Binding .}"/>
+                                                    </Border.GestureRecognizers>
+                                                    <Label Text="👤 Perfil" 
+                                                       TextColor="White" 
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"/>
+                                                </Border>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                        <!-- Hora -->
+                                            <Label Grid.Column="2"
                                                Text="{Binding UltimaMensagemData, StringFormat='{0:HH:mm}'}"
                                                FontSize="12"
                                                TextColor="#9CA3AF"
                                                VerticalOptions="Start"/>
 
-									</Grid>
-								</Border>
-							</DataTemplate>
-						</CollectionView.ItemTemplate>
-					</CollectionView>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
 				</VerticalStackLayout>
 			</ScrollView>

@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:MindCarePlus.Mobile.ModelViews"
+             x:DataType="viewmodel:DashboardPsicologoViewModel"
+             x:Class="MindCarePlus.Mobile.Pages.DashboardPsicologoPage"
+             xmlns:dto="clr-namespace:MindCarePlus.Shared.DTOs.Psicologo;assembly=MindCarePlus.Shared"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             Title="Dashboard Clínico"
+             BackgroundColor="#F9FAFB">
+
+    <RefreshView IsRefreshing="{Binding IsLoading}"
+                 Command="{Binding RefreshCommand}"
+                 RefreshColor="#10B981">
+
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="20" BackgroundColor="#F9FAFB">
+
+                <!-- HEADER COM GRADIENTE -->
+                <Border BackgroundColor="#10B981" 
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#10B981" Offset="0.0" />
+                            <GradientStop Color="#059669" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="👨‍⚕️ Dashboard Clínico"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               TextColor="White"/>
+                        <Label Text="Visão geral do seu trabalho clínico"
+                               FontSize="14"
+                               TextColor="White"
+                               Opacity="0.9"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ESTATÍSTICAS PRINCIPAIS (Grid 2x3) -->
+                <Grid RowDefinitions="Auto,Auto" 
+                      ColumnDefinitions="*,*,*" 
+                      RowSpacing="15" 
+                      ColumnSpacing="15">
+
+                    <!-- Pacientes Ativos -->
+                    <Border Grid.Row="0" Grid.Column="0"
+                            BackgroundColor="White"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16"
+                            Shadow="True">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding IrParaPacientesCommand}"/>
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="👥" FontSize="32" HorizontalOptions="Center"/>
+                            <Label Text="{Binding TotalPacientesAtivos}"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="#10B981"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Pacientes Ativos"
+                                   FontSize="12"
+                                   TextColor="#6B7280"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Sessões Este Mês -->
+                    <Border Grid.Row="0" Grid.Column="1"
+                            BackgroundColor="White"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16"
+                            Shadow="True">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="📅" FontSize="32" HorizontalOptions="Center"/>
+                            <Label Text="{Binding SessoesEsteMes}"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="#3B82F6"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Este Mês"
+                                   FontSize="12"
+                                   TextColor="#6B7280"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Sessões Esta Semana -->
+                    <Border Grid.Row="0" Grid.Column="2"
+                            BackgroundColor="White"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16"
+                            Shadow="True">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="📊" FontSize="32" HorizontalOptions="Center"/>
+                            <Label Text="{Binding SessoesEstaSemana}"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="#F59E0B"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Esta Semana"
+                                   FontSize="12"
+                                   TextColor="#6B7280"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Mensagens Não Lidas -->
+                    <Border Grid.Row="1" Grid.Column="0"
+                            BackgroundColor="White"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16"
+                            Shadow="True">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding IrParaMensagensCommand}"/>
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="💬" FontSize="32" HorizontalOptions="Center"/>
+                            <Label Text="{Binding MensagensNaoLidas}"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="#8B5CF6"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Mensagens"
+                                   FontSize="12"
+                                   TextColor="#6B7280"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Relatórios Não Lidos -->
+                    <Border Grid.Row="1" Grid.Column="1"
+                            BackgroundColor="White"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16"
+                            Shadow="True">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="📋" FontSize="32" HorizontalOptions="Center"/>
+                            <Label Text="{Binding RelatoriosNaoLidos}"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="#EF4444"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Relatórios"
+                                   FontSize="12"
+                                   TextColor="#6B7280"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Tarefas Pendentes -->
+                    <Border Grid.Row="1" Grid.Column="2"
+                            BackgroundColor="White"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="16"
+                            Shadow="True">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="✅" FontSize="32" HorizontalOptions="Center"/>
+                            <Label Text="{Binding TarefasPendentes}"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   TextColor="#EC4899"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Tarefas"
+                                   FontSize="12"
+                                   TextColor="#6B7280"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- GRÁFICO DE SESSÕES -->
+                <Border BackgroundColor="White"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 15"
+                        Padding="20"
+                        Shadow="True">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="📈 Sessões - Últimos 7 Dias"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"/>
+
+                        <microcharts:ChartView Chart="{Binding GraficoSessoes}"
+                                               HeightRequest="250"/>
+
+                        <Label Text="Gráfico de sessões realizadas por dia"
+                               FontSize="12"
+                               TextColor="#6B7280"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ALERTAS -->
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding TemAlertas}">
+                    <Label Text="⚠️ Alertas"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1F2937"/>
+
+                    <CollectionView ItemsSource="{Binding Alertas}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:AlertaDto">
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="1"
+                                        Stroke="{Binding Cor}"
+                                        StrokeShape="RoundRectangle 12"
+                                        Padding="15"
+                                        Margin="0,0,0,10">
+
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <!-- Ícone -->
+                                        <Border Grid.Column="0"
+                                                BackgroundColor="{Binding Cor}"
+                                                StrokeShape="RoundRectangle 25"
+                                                HeightRequest="50"
+                                                WidthRequest="50"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding Icone}"
+                                                   FontSize="24"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+
+                                        <!-- Mensagem -->
+                                        <VerticalStackLayout Grid.Column="1"
+                                                           Spacing="4"
+                                                           VerticalOptions="Center">
+                                            <Label Text="{Binding Tipo}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#1F2937"/>
+                                            <Label Text="{Binding Mensagem}"
+                                                   FontSize="13"
+                                                   TextColor="#6B7280"
+                                                   LineBreakMode="WordWrap"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- PACIENTES RECENTES -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="👥 Pacientes Recentes"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1F2937"/>
+
+                    <CollectionView ItemsSource="{Binding PacientesRecentes}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:PacienteRecenteDto">
+                                <Border BackgroundColor="White"
+                                        StrokeThickness="1"
+                                        Stroke="#E5E7EB"
+                                        StrokeShape="RoundRectangle 12"
+                                        Padding="15"
+                                        Margin="0,0,0,10">
+
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:DashboardPsicologoViewModel}}, Path=AbrirPerfilPacienteCommand}"
+                                                              CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <!-- Avatar -->
+                                        <Border Grid.Column="0"
+                                                BackgroundColor="#E5E7EB"
+                                                StrokeShape="RoundRectangle 25"
+                                                HeightRequest="50"
+                                                WidthRequest="50"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding Nome, Converter={StaticResource InicialNomeConverter}}"
+                                                   FontSize="20"
+                                                   TextColor="#10B981"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"/>
+                                        </Border>
+
+                                        <!-- Info -->
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                            <Label Text="{Binding Nome}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#1F2937"/>
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label FontSize="12" TextColor="#6B7280">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="📅 "/>
+                                                            <Span Text="{Binding UltimaSessao, StringFormat='{0:dd/MM/yyyy}'}"/>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                                <Label FontSize="12" TextColor="#6B7280">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="📝 "/>
+                                                            <Span Text="{Binding DiasDesdeUltimoRegisto, StringFormat='{0}d'}"/>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                        <!-- Nível Alerta (Badge) -->
+                                        <Border Grid.Column="2"
+                                                BackgroundColor="{Binding NivelAlerta, Converter={StaticResource AlertaToColorConverter}}"
+                                                StrokeShape="RoundRectangle 8"
+                                                Padding="8,4"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding NivelAlerta}"
+                                                   TextColor="White"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- LOADING -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                  IsVisible="{Binding IsLoading}"
+                                  Color="#10B981"
+                                  HeightRequest="50"/>
+
+                <!-- ERRO -->
+                <Border IsVisible="{Binding MensagemErro, Converter={StaticResource StringNotEmptyConverter}}"
+                        BackgroundColor="#FEE2E2"
+                        StrokeThickness="1"
+                        Stroke="#EF5350"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="16">
+                    <Label Text="{Binding MensagemErro}"
+                           TextColor="#C62828"
+                           FontSize="14"/>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

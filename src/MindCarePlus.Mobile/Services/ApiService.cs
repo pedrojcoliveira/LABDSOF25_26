@@ -1,9 +1,12 @@
 ﻿using MindCarePlus.Shared.DTOs;
 using MindCarePlus.Shared.DTOs.Paciente;
+using MindCarePlus.Shared.DTOs.Psicologo;
+using MindCarePlus.Shared.DTOs.Profile;
 using MindCarePlus.Shared.DTOs.RegistoDiario;
 using MindCarePlus.Shared.DTOs.TarefaTerapeutica;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace MindCarePlus.Mobile.Services;
 
@@ -428,6 +431,312 @@ public class ApiService
         {
             Console.WriteLine($"Erro ao listar minhas tarefas: {ex.Message}");
             return new List<TarefaTerapeuticaDto>();
+        }
+    }
+
+    // Relatórios IA para Paciente
+    public async Task<RelatorioIAPacienteDto?> GerarMeuRelatorioAsync(int dias = 30)
+    {
+        var response = await _httpClient.PostAsync($"api/RelatorioIA/gerar-meu-relatorio?dias={dias}", null);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<RelatorioIAPacienteDto>();
+    }
+
+    public async Task<List<RelatorioIAResumoDto>> GetMeusRelatoriosAsync()
+    {
+        var response = await _httpClient.GetAsync("api/RelatorioIA/meus-relatorios");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<RelatorioIAResumoDto>>() ?? new();
+    }
+
+    public async Task<byte[]?> ExportarRelatorioPdfAsync(Guid relatorioId)
+    {
+        var response = await _httpClient.GetAsync($"api/RelatorioIA/{relatorioId}/exportar-pdf");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsByteArrayAsync();
+    }
+
+    // Sessões - Calendário
+    public async Task<List<SessaoCalendarioDto>> GetMinhasSessoesAsync(
+      DateTime? dataInicio = null,
+      DateTime? dataFim = null,
+      Guid? pacienteId = null,
+      string? estado = null)
+    {
+        // FORÇA O TOKEN
+        var token = await SecureStorage.GetAsync("auth_token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
+        var queryParams = new List<string>();
+
+        if (dataInicio.HasValue)
+            queryParams.Add($"dataInicio={dataInicio.Value:yyyy-MM-dd}");
+
+        if (dataFim.HasValue)
+            queryParams.Add($"dataFim={dataFim.Value:yyyy-MM-dd}");
+
+        if (pacienteId.HasValue)
+            queryParams.Add($"pacienteId={pacienteId.Value}");
+
+        if (!string.IsNullOrEmpty(estado))
+            queryParams.Add($"estado={estado}");
+
+        var query = queryParams.Any() ? "?" + string.Join("&", queryParams) : "";
+
+        var response = await _httpClient.GetAsync($"api/Sessao/minhas-sessoes{query}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<SessaoCalendarioDto>>() ?? new();
+    }
+
+    public async Task AtualizarEstadoSessaoAsync(Guid sessaoId, string estado)
+    {
+        var dto = new { Estado = estado };
+        var response = await _httpClient.PatchAsJsonAsync($"api/Sessao/{sessaoId}/estado", dto);
+        response.EnsureSuccessStatusCode();
+    }
+
+    // Editar sessão
+    public async Task EditarSessaoAsync(Guid sessaoId, DateTime dataMarcada, TimeSpan duracao, string? linkSessao = null, string? notas = null)
+    {
+        var dto = new
+        {
+            DataMarcada = dataMarcada,
+            Duracao = duracao,
+            LinkSessao = linkSessao,
+            NotasPsicologo = notas
+        };
+
+        var response = await _httpClient.PutAsJsonAsync($"api/Sessao/{sessaoId}", dto);
+        response.EnsureSuccessStatusCode();
+    }
+
+    // Cancelar sessão
+    public async Task CancelarSessaoAsync(Guid sessaoId, string motivoCancel)
+    {
+        var dto = new { MotivoCancel = motivoCancel };
+        var response = await _httpClient.PostAsJsonAsync($"api/Sessao/{sessaoId}/cancelar", dto);
+        response.EnsureSuccessStatusCode();
+    }
+
+
+
+
+    #region Perfil
+
+    /// <summary>
+    /// Obter perfil do utilizador autenticado
+    /// User Story: UM.P.03 e UM.PS.19
+    /// </summary>
+    public async Task<ProfileDto?> GetMyProfileAsync()
+    {
+        await ConfigureAuthHeaderAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync("api/profile");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await HandleUnauthorizedAsync();
+                return null;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                var profile = await response.Content.ReadFromJsonAsync<ProfileDto>();
+                Console.WriteLine("✅ Perfil carregado com sucesso!");
+                return profile;
+            }
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"❌ Erro ao obter perfil: {errorContent}");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Exceção ao obter perfil: {ex.Message}");
+            await HandleUnauthorizedAsync();
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Atualizar perfil do utilizador autenticado
+    /// User Story: UM.P.03 e UM.PS.19
+    /// </summary>
+    public async Task<bool> UpdateMyProfileAsync(UpdateProfileDto dto)
+    {
+        await ConfigureAuthHeaderAsync();
+
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync("api/profile", dto);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await HandleUnauthorizedAsync();
+                return false;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("✅ Perfil atualizado com sucesso!");
+                return true;
+            }
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"❌ Erro ao atualizar perfil: {errorContent}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Exceção ao atualizar perfil: {ex.Message}");
+            await HandleUnauthorizedAsync();
+            return false;
+        }
+    }
+
+    #endregion
+
+
+
+    /// <summary>
+    /// GET: Dashboard do Psicólogo
+    /// UM.PS.06
+    /// </summary>
+    public async Task<DashboardPsicologoDto?> GetDashboardPsicologoAsync()
+    {
+        try
+        {
+            // 1. Verificar autenticação e token
+            if (!await IsAuthenticatedAsync())
+            {
+                Console.WriteLine("❌ Não autenticado");
+                await HandleUnauthorizedAsync();
+                return null;
+            }
+
+            // 2. Configurar headers com token
+            await ConfigureAuthHeaderAsync();
+
+            Console.WriteLine("🔍 A carregar dashboard do psicólogo...");
+            Console.WriteLine($"📍 URL: api/DashboardPsicologo");
+            Console.WriteLine($"🔐 Authorization: Bearer [token]");
+
+            // 3. Fazer request
+            var response = await _httpClient.GetAsync("api/DashboardPsicologo");
+
+            // 4. Log do status
+            Console.WriteLine($"📊 Status Code: {response.StatusCode}");
+
+            // 5. Tratamento de erros HTTP
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                Console.WriteLine("❌ Token expirado ou inválido");
+                await HandleUnauthorizedAsync();
+                return null;
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                Console.WriteLine("❌ Acesso negado - role não permitido");
+                await Shell.Current.DisplayAlert(
+                    "Acesso Negado",
+                    "Apenas psicólogos podem aceder a este dashboard",
+                    "OK");
+                await HandleUnauthorizedAsync();
+                return null;
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"❌ Erro HTTP {response.StatusCode}");
+                Console.WriteLine($"   Resposta: {errorContent}");
+
+                await Shell.Current.DisplayAlert(
+                    "Erro ao carregar",
+                    $"Erro {response.StatusCode}: {errorContent}",
+                    "OK");
+                return null;
+            }
+
+            // 6. Desserializar resposta
+            var dashboard = await response.Content.ReadFromJsonAsync<DashboardPsicologoDto>();
+
+            if (dashboard == null)
+            {
+                Console.WriteLine("❌ Dashboard nulo após desserialização");
+                return null;
+            }
+
+            Console.WriteLine("✅ Dashboard carregado com sucesso");
+            Console.WriteLine($"   - Pacientes Ativos: {dashboard.TotalPacientesAtivos}");
+            Console.WriteLine($"   - Sessões Este Mês: {dashboard.SessoesEsteMes}");
+            Console.WriteLine($"   - Mensagens Não Lidas: {dashboard.MensagensNaoLidas}");
+            Console.WriteLine($"   - Alertas: {dashboard.Alertas?.Count ?? 0}");
+            Console.WriteLine($"   - Pacientes Recentes: {dashboard.PacientesRecentes?.Count ?? 0}");
+
+            return dashboard;
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"❌ HttpRequestException: {ex.Message}");
+            Console.WriteLine($"   StatusCode: {ex.StatusCode}");
+            Console.WriteLine($"   Inner: {ex.InnerException?.Message}");
+
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await HandleUnauthorizedAsync();
+            }
+
+            return null;
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"❌ Erro ao desserializar JSON: {ex.Message}");
+            Console.WriteLine($"   Path: {ex.Path}");
+            Console.WriteLine($"   LineNumber: {ex.LineNumber}");
+            return null;
+        }
+        catch (TaskCanceledException ex)
+        {
+            Console.WriteLine($"❌ Timeout na requisição: {ex.Message}");
+            await Shell.Current.DisplayAlert(
+                "Timeout",
+                "A requisição demorou muito tempo. Tente novamente.",
+                "OK");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Erro inesperado: {ex.GetType().Name}");
+            Console.WriteLine($"   Message: {ex.Message}");
+            Console.WriteLine($"   StackTrace: {ex.StackTrace}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Verifica se o utilizador está autenticado
+    /// </summary>
+    private async Task<bool> IsAuthenticatedAsync()
+    {
+        try
+        {
+            var token = await SecureStorage.GetAsync("auth_token");
+            var isAuthenticated = !string.IsNullOrEmpty(token);
+            Console.WriteLine($"🔐 Autenticado: {isAuthenticated}");
+            return isAuthenticated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Erro ao verificar autenticação: {ex.Message}");
+            return false;
         }
     }
 }

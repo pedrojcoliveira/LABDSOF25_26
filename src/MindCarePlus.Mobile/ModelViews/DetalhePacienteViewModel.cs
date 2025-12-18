@@ -11,12 +11,43 @@ using System.Threading.Tasks;
 
 namespace MindCarePlus.Mobile.ModelViews;
 
-[QueryProperty(nameof(PacienteId), "pacienteId")]
-public partial class DetalhePacienteViewModel : ObservableObject
+public partial class DetalhePacienteViewModel : ObservableObject, IQueryAttributable
 {
     private readonly ApiService _apiService;
     private readonly AuthService _authService;
 
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        // 1. Ler o ID do Paciente
+        if (query.ContainsKey("pacienteId"))
+        {
+            var novoId = query["pacienteId"].ToString();
+
+            // Só carrega se o ID for diferente (evita recarregar se já lá estivermos)
+            if (PacienteId != novoId)
+            {
+                PacienteId = novoId;
+                // Dispara o carregamento (Fire-and-forget)
+                Task.Run(async () => await CarregarDetalhesAsync());
+            }
+        }
+
+        // 2. Ler a Tab desejada
+        if (query.ContainsKey("tab"))
+        {
+            var tab = query["tab"].ToString();
+            if (tab == "relatorios")
+            {
+                // Índice 3 corresponde à aba Relatórios (conforme o teu código: 0=Dados, 1=Humor, 2=Sessões, 3=Relatórios)
+                TabSelecionada = 3;
+            }
+        }
+        else
+        {
+            // Se não especificar tab, vai para a inicial (Dados)
+            TabSelecionada = 0;
+        }
+    }
     public DetalhePacienteViewModel(ApiService apiService, AuthService authService)
     {
         _apiService = apiService ?? throw new ArgumentNullException(nameof(apiService));
