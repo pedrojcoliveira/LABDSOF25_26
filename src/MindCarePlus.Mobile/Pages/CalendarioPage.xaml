@@ -171,35 +171,35 @@
 
                                     <!-- Badge Estado -->
                                     <Border Grid.Column="2"
-                            BackgroundColor="{Binding Estado, Converter={StaticResource EstadoToColorConverter}}"
-                            StrokeThickness="0"
-                            StrokeShape="RoundRectangle 12"
-                            Padding="8,4"
-                            VerticalOptions="Start">
+                                            BackgroundColor="{Binding Estado, Converter={StaticResource EstadoToColorConverter}}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 12"
+                                            Padding="8,4"
+                                            VerticalOptions="Start">
                                         <Label Text="{Binding Estado}"
-                               TextColor="White"
-                               FontSize="11"
-                               FontAttributes="Bold"/>
+                                               TextColor="White"
+                                               FontSize="11"
+                                               FontAttributes="Bold"/>
                                     </Border>
 
                                     <!-- Duração -->
                                     <Label Grid.Row="1" Grid.Column="1"
-                           Text="{Binding DuracaoFormatada}"
-                           TextColor="#6B7280"
-                           FontSize="12"
-                           Margin="0,4,0,0"/>
+                                           Text="{Binding DuracaoFormatada}"
+                                           TextColor="#6B7280"
+                                           FontSize="12"
+                                           Margin="0,4,0,0"/>
 
                                     <!-- Link da Sessão -->
                                     <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" 
-                                          Spacing="8" 
-                                          Margin="0,4,0,0"
-                                          IsVisible="{Binding LinkSessao, Converter={StaticResource StringNotEmptyConverter}}">
+                                                          Spacing="8" 
+                                                          Margin="0,4,0,0"
+                                                          IsVisible="{Binding LinkSessao, Converter={StaticResource StringNotEmptyConverter}}">
                                         <Label Text="🔗" FontSize="14" VerticalOptions="Center"/>
                                         <Label Text="{Binding LinkSessao}"
-                               TextColor="#3B82F6"
-                               FontSize="12"
-                               TextDecorations="Underline"
-                               VerticalOptions="Center">
+                                               TextColor="#3B82F6"
+                                               FontSize="12"
+                                               TextDecorations="Underline"
+                                               VerticalOptions="Center">
                                             <Label.GestureRecognizers>
                                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=AbrirLinkSessaoCommand}"
                                                      CommandParameter="{Binding LinkSessao}"/>
@@ -208,7 +208,11 @@
                                     </HorizontalStackLayout>
 
                                     <!-- Botões -->
-                                    <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Spacing="8" Margin="0,8,0,0">
+                                    <!-- Substituir os botões atuais -->
+                                    <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" 
+                                                           Spacing="8" Margin="0,8,0,0">
+
+                                        <!-- Detalhes (sempre disponível) -->
                                         <Button Text="Detalhes"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=VerDetalhesSessaoCommand}"
                                                 CommandParameter="{Binding .}"
@@ -219,6 +223,31 @@
                                                 HeightRequest="32"
                                                 Padding="12,0"/>
 
+                                        <!-- NOVO: Confirmar (apenas Pendente) -->
+                                        <Button Text="✓ Confirmar"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=ConfirmarMarcacaoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#10B981"
+                                                TextColor="White"
+                                                FontSize="12"
+                                                CornerRadius="6"
+                                                HeightRequest="32"
+                                                Padding="12,0"
+                                                IsVisible="{Binding Estado, Converter={StaticResource StringEqualConverter}, ConverterParameter='Pendente'}"/>
+
+                                        <!-- NOVO: Recusar (apenas Pendente) -->
+                                        <Button Text="✗ Recusar"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=RecusarMarcacaoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#EF4444"
+                                                TextColor="White"
+                                                FontSize="12"
+                                                CornerRadius="6"
+                                                HeightRequest="32"
+                                                Padding="12,0"
+                                                IsVisible="{Binding Estado, Converter={StaticResource StringEqualConverter}, ConverterParameter='Pendente'}"/>
+
+                                        <!-- Editar (mantém-se para estados editáveis) -->
                                         <Button Text="Editar"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=EditarSessaoCommand}"
                                                 CommandParameter="{Binding .}"
@@ -230,6 +259,7 @@
                                                 Padding="12,0"
                                                 IsVisible="{Binding Estado, Converter={StaticResource EstadoEditavelConverter}}"/>
 
+                                        <!-- Cancelar (mantém-se) -->
                                         <Button Text="Cancelar"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=CancelarSessaoCommand}"
                                                 CommandParameter="{Binding .}"
@@ -239,7 +269,7 @@
                                                 CornerRadius="6"
                                                 HeightRequest="32"
                                                 Padding="12,0"
-                                                IsVisible="{Binding Estado, Converter={StaticResource EstadoCancelavelConverter}}"/>            
+                                                IsVisible="{Binding Estado, Converter={StaticResource EstadoCancelavelConverter}}"/>
                                     </HorizontalStackLayout>
 
                                 </Grid>

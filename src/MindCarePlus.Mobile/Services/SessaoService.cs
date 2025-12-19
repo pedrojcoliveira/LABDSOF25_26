@@ -49,6 +49,43 @@ namespace MindCarePlus.Mobile.Services
 
             return await response.Content.ReadFromJsonAsync<SessaoDto>();
         }
+
+        public async Task ConfirmarMarcacaoAsync(Guid sessaoId)
+        {
+            var token = await _authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            try
+            {
+                var response = await _httpClient.PostAsync($"api/Sessao/{sessaoId}/confirmar", null);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Erro ao confirmar marcação: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task RecusarMarcacaoAsync(Guid sessaoId, string? motivo = null)
+        {
+            var token = await _authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            try
+            {
+                var dto = new { Motivo = string.IsNullOrWhiteSpace(motivo) ? null : motivo };
+                var response = await _httpClient.PostAsJsonAsync($"api/Sessao/{sessaoId}/recusar", dto);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Erro ao recusar marcação: {ex.Message}");
+                throw;
+            }
+        }
         public async Task<bool> CancelarSessaoAsync(Guid sessaoId)
         {
             var token = await _authService.GetTokenAsync();

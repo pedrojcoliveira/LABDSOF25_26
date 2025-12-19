@@ -1,11 +1,12 @@
-﻿using Xunit;
-using Moq;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 using MindCarePlus.API.Controllers;
-using MindCarePlus.Domain.Interfaces;
 using MindCarePlus.Domain.Entities;
+using MindCarePlus.Domain.Interfaces;
+using MindCarePlus.Shared.DTOs;
+using Moq;
+using System.Security.Claims;
+using Xunit;
 
 namespace MindCarePlus.API.Tests.Controllers;
 
@@ -51,7 +52,7 @@ public class SessaoControllerTests
                 PsicologoId = psicologoId,
                 PacienteId = Guid.NewGuid(),
                 DataMarcada = DateTime.UtcNow,
-                Estado = "Confirmada",
+                Estado = "Agendada",
                 Duracao = TimeSpan.FromHours(1),
                 LinkSessao = "https://meet.google.com/test",
                 NotasPsicologo = "Teste",
@@ -329,4 +330,197 @@ public class SessaoControllerTests
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Não é possível cancelar sessão já realizada", badRequestResult.Value);
     }
+
+
+    [Fact]
+    public async Task ConfirmarMarcacao_Sucesso_RetornaOk()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId, // Pertence ao psicólogo logado
+            Estado = "Pendente",       // Estado correto
+            DataCriacao = DateTime.UtcNow
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        _mockUnitOfWork.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        var result = await _controller.ConfirmarMarcacao(sessaoId);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.NotNull(okResult.Value);
+        Assert.Equal("Agendada", sessao.Estado); // Verifica se o estado mudou
+        _mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ConfirmarMarcacao_SessaoNaoEncontrada_RetornaNotFound()
+    {
+        // Arrange
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(Guid.NewGuid().ToString(), "Psicologo");
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync((Sessao?)null);
+
+        // Act
+        var result = await _controller.ConfirmarMarcacao(sessaoId);
+
+        // Assert
+        Assert.IsType<NotFoundObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task ConfirmarMarcacao_OutroPsicologo_RetornaForbid()
+    {
+        // Arrange
+        var psicologoLogadoId = Guid.NewGuid();
+        var outroPsicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+
+        SetupUserClaims(psicologoLogadoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = outroPsicologoId, // Pertence a OUTRO psicólogo
+            Estado = "Pendente"
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        // Act
+        var result = await _controller.ConfirmarMarcacao(sessaoId);
+
+        // Assert
+        Assert.IsType<ForbidResult>(result);
+    }
+
+    [Fact]
+    public async Task ConfirmarMarcacao_EstadoInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            Estado = "Cancelada" // Estado INCORRETO (não está Pendente)
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        // Act
+        var result = await _controller.ConfirmarMarcacao(sessaoId);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Apenas marcações pendentes podem ser confirmadas", badRequestResult.Value);
+    }
+
+
+    [Fact]
+    public async Task RecusarMarcacao_ComMotivo_RetornaOk()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            Estado = "Pendente",
+            NotasPsicologo = ""
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        var dto = new RecusarMarcacaoDto { Motivo = "Conflito de agenda" };
+
+        // Act
+        var result = await _controller.RecusarMarcacao(sessaoId, dto);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal("Cancelada", sessao.Estado);
+        Assert.Contains("RECUSADA", sessao.NotasPsicologo);
+        Assert.Contains("Conflito de agenda", sessao.NotasPsicologo);
+    }
+
+    [Fact]
+    public async Task RecusarMarcacao_SemMotivo_RetornaOk()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            Estado = "Pendente"
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        var dto = new RecusarMarcacaoDto { Motivo = null }; // Sem motivo
+
+        // Act
+        var result = await _controller.RecusarMarcacao(sessaoId, dto);
+
+        // Assert
+        Assert.IsType<OkObjectResult>(result);
+        Assert.Equal("Cancelada", sessao.Estado);
+        Assert.Contains("Sem motivo fornecido", sessao.NotasPsicologo);
+    }
+
+    [Fact]
+    public async Task RecusarMarcacao_EstadoInvalido_RetornaBadRequest()
+    {
+        // Arrange
+        var psicologoId = Guid.NewGuid();
+        var sessaoId = Guid.NewGuid();
+        SetupUserClaims(psicologoId.ToString(), "Psicologo");
+
+        var sessao = new Sessao
+        {
+            Id = sessaoId,
+            PsicologoId = psicologoId,
+            Estado = "Agendada" // Já agendada, não pode recusar
+        };
+
+        _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))
+            .ReturnsAsync(sessao);
+
+        var dto = new RecusarMarcacaoDto { Motivo = "Teste" };
+
+        // Act
+        var result = await _controller.RecusarMarcacao(sessaoId, dto);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Apenas marcações pendentes podem ser recusadas", badRequestResult.Value);
+    }
+
 }

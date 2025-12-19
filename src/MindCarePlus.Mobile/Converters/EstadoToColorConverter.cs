@@ -10,7 +10,7 @@ public class EstadoToColorConverter : IValueConverter
         {
             return estado switch
             {
-                "Confirmada" => Colors.Green,
+                "Pendente" => Colors.Yellow,      // 🟨 Novo
                 "Agendada" => Colors.Blue,
                 "Cancelada" => Colors.Red,
                 "Realizada" => Colors.Gray,
