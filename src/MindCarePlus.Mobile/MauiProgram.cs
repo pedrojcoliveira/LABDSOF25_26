@@ -112,6 +112,12 @@ public static class MauiProgram
             client.Timeout = TimeSpan.FromSeconds(30);
         });
 
+        builder.Services.AddHttpClient<AvaliacaoService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+            client.Timeout = TimeSpan.FromSeconds(120);
+        });
+
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
         
         // Registar ViewModels

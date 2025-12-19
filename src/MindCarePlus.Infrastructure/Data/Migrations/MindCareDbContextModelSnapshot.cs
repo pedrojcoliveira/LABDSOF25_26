@@ -35,13 +35,23 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
                     b.Property<DateTime>("DataAvaliacao")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("PacienteId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Pontuacao")
                         .HasColumnType("integer");
+
+                    b.Property<Guid>("PsicologoId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SessaoId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PacienteId");
+
+                    b.HasIndex("PsicologoId");
 
                     b.HasIndex("SessaoId")
                         .IsUnique();
@@ -429,11 +439,27 @@ namespace MindCarePlus.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("MindCarePlus.Domain.Entities.Avaliacao", b =>
                 {
+                    b.HasOne("MindCarePlus.Domain.Entities.Paciente", "Paciente")
+                        .WithMany()
+                        .HasForeignKey("PacienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MindCarePlus.Domain.Entities.Psicologo", "Psicologo")
+                        .WithMany()
+                        .HasForeignKey("PsicologoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MindCarePlus.Domain.Entities.Sessao", "Sessao")
                         .WithOne("Avaliacao")
                         .HasForeignKey("MindCarePlus.Domain.Entities.Avaliacao", "SessaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Paciente");
+
+                    b.Navigation("Psicologo");
 
                     b.Navigation("Sessao");
                 });
