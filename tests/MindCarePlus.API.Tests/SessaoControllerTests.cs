@@ -52,7 +52,7 @@ public class SessaoControllerTests
                 PsicologoId = psicologoId,
                 PacienteId = Guid.NewGuid(),
                 DataMarcada = DateTime.UtcNow,
-                Estado = "Confirmada",
+                Estado = "Agendada",
                 Duracao = TimeSpan.FromHours(1),
                 LinkSessao = "https://meet.google.com/test",
                 NotasPsicologo = "Teste",
@@ -360,7 +360,7 @@ public class SessaoControllerTests
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.NotNull(okResult.Value);
-        Assert.Equal("Confirmada", sessao.Estado); // Verifica se o estado mudou
+        Assert.Equal("Agendada", sessao.Estado); // Verifica se o estado mudou
         _mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -507,7 +507,7 @@ public class SessaoControllerTests
         {
             Id = sessaoId,
             PsicologoId = psicologoId,
-            Estado = "Confirmada" // Já confirmada, não pode recusar
+            Estado = "Agendada" // Já agendada, não pode recusar
         };
 
         _mockUnitOfWork.Setup(u => u.Sessoes.GetByIdAsync(sessaoId))

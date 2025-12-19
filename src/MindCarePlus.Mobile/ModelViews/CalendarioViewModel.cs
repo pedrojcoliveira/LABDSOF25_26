@@ -81,7 +81,7 @@ public partial class CalendarioViewModel : ObservableObject
 
             // Calcular estatísticas
             TotalSessoes = Sessoes.Count;
-            SessoesConfirmadas = Sessoes.Count(s => s.Estado == "Confirmada");
+            SessoesConfirmadas = Sessoes.Count(s => s.Estado == "Agendada");
             SessoesAgendadas = Sessoes.Count(s => s.Estado == "Agendada");
             SessoesCanceladas = Sessoes.Count(s => s.Estado == "Cancelada");
 
@@ -123,7 +123,7 @@ public partial class CalendarioViewModel : ObservableObject
     {
         if (sessao == null) return;
 
-        var opcoes = new[] { "Confirmada", "Agendada", "Realizada", "Cancelada", "Faltou" };
+        var opcoes = new[] { "Agendada", "Realizada", "Cancelada", "Faltou" };
         var escolha = await Shell.Current.DisplayActionSheet(
             "Alterar Estado",
             "Cancelar",
@@ -278,7 +278,7 @@ public partial class CalendarioViewModel : ObservableObject
             await _sessaoService.ConfirmarMarcacaoAsync(sessao.Id);
 
             // 2. Atualizar o estado do objeto localmente
-            sessao.Estado = "Confirmada";
+            sessao.Estado = "Agendada";
 
             // 3. === O TRUQUE PARA ATUALIZAR A UI ===
             var index = Sessoes.IndexOf(sessao);
@@ -288,11 +288,11 @@ public partial class CalendarioViewModel : ObservableObject
             }
 
             // 4. Atualizar os contadores do topo (Estatísticas) manualmente
-            SessoesConfirmadas++;
+            SessoesAgendadas++;
             // Se tivesses um contador de pendentes, decrementavas aqui
 
             await Shell.Current.DisplayAlert("Sucesso ✅",
-                $"Marcação com {sessao.PacienteNome} confirmada!", "OK");
+                $"Marcação com {sessao.PacienteNome} agendada!", "OK");
 
 
         }

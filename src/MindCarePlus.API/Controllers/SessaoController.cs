@@ -254,7 +254,7 @@ public class SessaoController : ControllerBase
             return BadRequest("Apenas marcações pendentes podem ser confirmadas");
 
         // Atualizar estado
-        sessao.Estado = "Confirmada";
+        sessao.Estado = "Agendada";
         await _unitOfWork.SaveChangesAsync();
 
         // TODO: Enviar notificação ao paciente
@@ -262,8 +262,8 @@ public class SessaoController : ControllerBase
 
         return Ok(new
         {
-            mensagem = "Marcação confirmada com sucesso",
-            novoEstado = "Confirmada"
+            mensagem = "Marcação agendada com sucesso",
+            novoEstado = "Agendada"
         });
     }
 
