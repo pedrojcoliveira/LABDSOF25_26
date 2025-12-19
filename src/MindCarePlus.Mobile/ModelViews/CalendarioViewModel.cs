@@ -9,8 +9,9 @@ namespace MindCarePlus.Mobile.ModelViews;
 public partial class CalendarioViewModel : ObservableObject
 {
     private readonly ApiService _apiService;
+    private readonly SessaoService _sessaoService;
 
-    public CalendarioViewModel(ApiService apiService)
+    public CalendarioViewModel(ApiService apiService, SessaoService sessaoService)
     {
         _apiService = apiService;
         Sessoes = new ObservableCollection<SessaoCalendarioDto>();
@@ -18,6 +19,7 @@ public partial class CalendarioViewModel : ObservableObject
         // Inicializar filtros
         DataInicio = DateTime.Today.AddMonths(-1);
         DataFim = DateTime.Today.AddMonths(1);
+        _sessaoService = sessaoService;
     }
 
     [ObservableProperty]
@@ -257,4 +259,82 @@ public partial class CalendarioViewModel : ObservableObject
             IsLoading = false;
         }
     }
+
+    [RelayCommand]
+    public async Task ConfirmarMarcacaoAsync(SessaoCalendarioDto sessao)
+    {
+        if (sessao == null || sessao.Estado != "Pendente")
+        {
+            await Shell.Current.DisplayAlert("Aviso",
+                "Apenas marcações pendentes podem ser confirmadas", "OK");
+            return;
+        }
+
+        try
+        {
+            IsLoading = true;
+
+            await _sessaoService.ConfirmarMarcacaoAsync(sessao.Id);
+
+            sessao.Estado = "Confirmada";
+
+            await Shell.Current.DisplayAlert("Sucesso ✅",
+                $"Marcação com {sessao.PacienteNome} confirmada!", "OK");
+
+            await CarregarSessoesAsync();
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task RecusarMarcacaoAsync(SessaoCalendarioDto sessao)
+    {
+        if (sessao == null || sessao.Estado != "Pendente")
+        {
+            await Shell.Current.DisplayAlert("Aviso",
+                "Apenas marcações pendentes podem ser recusadas", "OK");
+            return;
+        }
+
+        // Pedir motivo (opcional)
+        var motivo = await Shell.Current.DisplayPromptAsync(
+            "Recusar Marcação",
+            $"Motivo da recusa (opcional):",
+            placeholder: "Ex: Conflito de agenda",
+            accept: "Recusar",
+            cancel: "Cancelar");
+
+        if (motivo == null) // Cancelado
+            return;
+
+        try
+        {
+            IsLoading = true;
+
+            await _sessaoService.RecusarMarcacaoAsync(sessao.Id, motivo);
+
+            sessao.Estado = "Cancelada";
+
+            await Shell.Current.DisplayAlert("Recusado ❌",
+                $"Marcação com {sessao.PacienteNome} recusada!", "OK");
+
+            await CarregarSessoesAsync();
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
 }

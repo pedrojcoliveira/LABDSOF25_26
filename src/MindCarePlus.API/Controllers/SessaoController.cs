@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MindCarePlus.Domain.Interfaces;
+using MindCarePlus.Shared.DTOs;
 using System.Security.Claims;
 
 namespace MindCarePlus.API.Controllers;
@@ -225,6 +226,92 @@ public class SessaoController : ControllerBase
         // await _notificationService.NotificarCancelamentoSessao(sessao, dto.MotivoCancel);
 
         return Ok(new { mensagem = "Sessão cancelada com sucesso" });
+    }
+
+    /// <summary>
+    /// Confirmar uma marcação pendente (UM.PS.11)
+    /// </summary>
+    [HttpPost("{id}/confirmar")]
+    [Authorize(Roles = "Psicologo")]
+    public async Task<ActionResult> ConfirmarMarcacao(Guid id)
+    {
+        Console.WriteLine($"[API DEBUG] >>> Recebido pedido de confirmação para ID: {id}");
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid psicologoId))
+            return Unauthorized("Token inválido");
+
+        var sessao = await _unitOfWork.Sessoes.GetByIdAsync(id);
+
+        if (sessao == null)
+            return NotFound("Sessão não encontrada");
+
+        // Verificar se pertence ao psicólogo
+        if (sessao.PsicologoId != psicologoId)
+            return Forbid("Acesso negado a esta sessão");
+
+        // Verificar se está pendente
+        if (sessao.Estado != "Pendente")
+            return BadRequest("Apenas marcações pendentes podem ser confirmadas");
+
+        // Atualizar estado
+        sessao.Estado = "Confirmada";
+        await _unitOfWork.SaveChangesAsync();
+
+        // TODO: Enviar notificação ao paciente
+        // await _notificationService.NotificarConfirmacaoSessao(sessao);
+
+        return Ok(new
+        {
+            mensagem = "Marcação confirmada com sucesso",
+            novoEstado = "Confirmada"
+        });
+    }
+
+    /// <summary>
+    /// Recusar uma marcação pendente (UM.PS.12)
+    /// </summary>
+    [HttpPost("{id}/recusar")]
+    [Authorize(Roles = "Psicologo")]
+    public async Task<ActionResult> RecusarMarcacao(Guid id, [FromBody] RecusarMarcacaoDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid psicologoId))
+            return Unauthorized("Token inválido");
+
+        var sessao = await _unitOfWork.Sessoes.GetByIdAsync(id);
+
+        if (sessao == null)
+            return NotFound("Sessão não encontrada");
+
+        // Verificar se pertence ao psicólogo
+        if (sessao.PsicologoId != psicologoId)
+            return Forbid("Acesso negado a esta sessão");
+
+        // Verificar se está pendente
+        if (sessao.Estado != "Pendente")
+            return BadRequest("Apenas marcações pendentes podem ser recusadas");
+
+        // Atualizar estado e guardar motivo
+        sessao.Estado = "Cancelada";
+        if (!string.IsNullOrEmpty(dto.Motivo))
+        {
+            sessao.NotasPsicologo = $"[RECUSADA] {dto.Motivo}";
+        }
+        else
+        {
+            sessao.NotasPsicologo = "[RECUSADA] Sem motivo fornecido";
+        }
+
+        await _unitOfWork.SaveChangesAsync();
+
+        // TODO: Enviar notificação ao paciente
+        // await _notificationService.NotificarRecusaoSessao(sessao, dto.Motivo);
+
+        return Ok(new
+        {
+            mensagem = "Marcação recusada",
+            novoEstado = "Cancelada"
+        });
     }
 }
 

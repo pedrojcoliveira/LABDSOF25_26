@@ -107,7 +107,7 @@ public static class MauiProgram
 
         builder.Services.AddHttpClient<SessaoService>(client =>
         {
-            client.BaseAddress = new Uri("https://gmsnhdqq-7291.uks1.devtunnels.ms/");
+            client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromSeconds(30);
         });
 
