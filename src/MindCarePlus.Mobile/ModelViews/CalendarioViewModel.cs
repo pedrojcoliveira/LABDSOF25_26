@@ -9,8 +9,9 @@ namespace MindCarePlus.Mobile.ModelViews;
 public partial class CalendarioViewModel : ObservableObject
 {
     private readonly ApiService _apiService;
+    private readonly SessaoService _sessaoService;
 
-    public CalendarioViewModel(ApiService apiService)
+    public CalendarioViewModel(ApiService apiService, SessaoService sessaoService)
     {
         _apiService = apiService;
         Sessoes = new ObservableCollection<SessaoCalendarioDto>();
@@ -18,6 +19,7 @@ public partial class CalendarioViewModel : ObservableObject
         // Inicializar filtros
         DataInicio = DateTime.Today.AddMonths(-1);
         DataFim = DateTime.Today.AddMonths(1);
+        _sessaoService = sessaoService;
     }
 
     [ObservableProperty]
@@ -79,7 +81,7 @@ public partial class CalendarioViewModel : ObservableObject
 
             // Calcular estatísticas
             TotalSessoes = Sessoes.Count;
-            SessoesConfirmadas = Sessoes.Count(s => s.Estado == "Confirmada");
+            SessoesConfirmadas = Sessoes.Count(s => s.Estado == "Agendada");
             SessoesAgendadas = Sessoes.Count(s => s.Estado == "Agendada");
             SessoesCanceladas = Sessoes.Count(s => s.Estado == "Cancelada");
 
@@ -121,7 +123,7 @@ public partial class CalendarioViewModel : ObservableObject
     {
         if (sessao == null) return;
 
-        var opcoes = new[] { "Confirmada", "Agendada", "Realizada", "Cancelada", "Faltou" };
+        var opcoes = new[] { "Agendada", "Realizada", "Cancelada", "Faltou" };
         var escolha = await Shell.Current.DisplayActionSheet(
             "Alterar Estado",
             "Cancelar",
@@ -257,4 +259,103 @@ public partial class CalendarioViewModel : ObservableObject
             IsLoading = false;
         }
     }
+
+    [RelayCommand]
+    public async Task ConfirmarMarcacaoAsync(SessaoCalendarioDto sessao)
+    {
+        if (sessao == null || sessao.Estado != "Pendente")
+        {
+            await Shell.Current.DisplayAlert("Aviso",
+                "Apenas marcações pendentes podem ser confirmadas", "OK");
+            return;
+        }
+
+        try
+        {
+            IsLoading = true;
+
+            // 1. Chamar a API
+            await _sessaoService.ConfirmarMarcacaoAsync(sessao.Id);
+
+            // 2. Atualizar o estado do objeto localmente
+            sessao.Estado = "Agendada";
+
+            // 3. === O TRUQUE PARA ATUALIZAR A UI ===
+            var index = Sessoes.IndexOf(sessao);
+            if (index != -1)
+            {
+                Sessoes[index] = sessao;
+            }
+
+            // 4. Atualizar os contadores do topo (Estatísticas) manualmente
+            SessoesAgendadas++;
+            // Se tivesses um contador de pendentes, decrementavas aqui
+
+            await Shell.Current.DisplayAlert("Sucesso ✅",
+                $"Marcação com {sessao.PacienteNome} agendada!", "OK");
+
+
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    public async Task RecusarMarcacaoAsync(SessaoCalendarioDto sessao)
+    {
+        if (sessao == null || sessao.Estado != "Pendente")
+        {
+            await Shell.Current.DisplayAlert("Aviso",
+                "Apenas marcações pendentes podem ser recusadas", "OK");
+            return;
+        }
+
+        var motivo = await Shell.Current.DisplayPromptAsync(
+            "Recusar Marcação",
+            $"Motivo da recusa (opcional):",
+            placeholder: "Ex: Conflito de agenda",
+            accept: "Recusar",
+            cancel: "Cancelar");
+
+        if (motivo == null) return;
+
+        try
+        {
+            IsLoading = true;
+
+            // 1. Chamar API
+            await _sessaoService.RecusarMarcacaoAsync(sessao.Id, motivo);
+
+            // 2. Atualizar estado local
+            sessao.Estado = "Cancelada";
+
+            // 3. === ATUALIZAR UI ===
+            var index = Sessoes.IndexOf(sessao);
+            if (index != -1)
+            {
+                Sessoes[index] = sessao;
+            }
+
+            // 4. Atualizar contadores
+            SessoesCanceladas++;
+
+            await Shell.Current.DisplayAlert("Recusado ❌",
+                $"Marcação com {sessao.PacienteNome} recusada!", "OK");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Erro", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
 }
