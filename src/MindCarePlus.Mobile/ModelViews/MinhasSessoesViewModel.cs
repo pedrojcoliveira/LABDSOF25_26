@@ -362,6 +362,16 @@ namespace MindCarePlus.Mobile.ViewModels
         }
 
         [RelayCommand]
+        public void SelecionarPontuacao(string pontuacao)
+        {
+            if (int.TryParse(pontuacao, out int valor))
+            {
+                PontuacaoSelecionada = valor;
+                System.Diagnostics.Debug.WriteLine($"⭐ Pontuação selecionada: {valor}");
+            }
+        }
+
+        [RelayCommand]
         public void FecharModalAvaliacao()
         {
             ModalAvaliacaoVisivel = false;
