@@ -10,6 +10,7 @@ namespace MindCarePlus.Mobile.ViewModels
     public partial class MinhasSessoesViewModel : ObservableObject
     {
         private readonly SessaoService _sessaoService;
+        private readonly AvaliacaoService _avaliacaoService;
 
         [ObservableProperty]
         private ObservableCollection<SessaoDto> sessoes = new();
@@ -41,6 +42,19 @@ namespace MindCarePlus.Mobile.ViewModels
         [ObservableProperty]
         private int totalConcluidas;
 
+        [ObservableProperty]
+        private SessaoDto? sessaoParaAvaliar;
+
+        [ObservableProperty]
+        private int pontuacaoSelecionada = 5;
+
+        [ObservableProperty]
+        private string comentarioAvaliacao = string.Empty;
+
+        [ObservableProperty]
+        private bool modalAvaliacaoVisivel;
+
+
         public ObservableCollection<string> Filtros { get; } = new()
         {
             "Todas",
@@ -51,9 +65,10 @@ namespace MindCarePlus.Mobile.ViewModels
             "Concluída"
         };
 
-        public MinhasSessoesViewModel(SessaoService sessaoService)
+        public MinhasSessoesViewModel(SessaoService sessaoService, AvaliacaoService avaliacaoService)
         {
             _sessaoService = sessaoService;
+            _avaliacaoService = avaliacaoService;
         }
 
         [RelayCommand]
@@ -254,6 +269,113 @@ namespace MindCarePlus.Mobile.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        [RelayCommand]
+        public async Task AbrirModalAvaliacaoAsync(SessaoDto sessao)
+        {
+            if (sessao == null) return;
+
+            try
+            {
+                // Verificar se pode avaliar
+                if (sessao.Estado != "Concluida")
+                {
+                    await Shell.Current.DisplayAlert(
+                        "Não permitido",
+                        "Apenas sessões concluídas podem ser avaliadas",
+                        "OK");
+                    return;
+                }
+
+                // Verificar se já foi avaliada
+                var avaliacaoExistente = await _avaliacaoService.GetAvaliacaoPorSessaoAsync(sessao.Id);
+                if (avaliacaoExistente != null)
+                {
+                    await Shell.Current.DisplayAlert(
+                        "Já avaliada",
+                        $"Esta sessão já foi avaliada com {avaliacaoExistente.Pontuacao} ⭐\n\n{avaliacaoExistente.Comentario}",
+                        "OK");
+                    return;
+                }
+
+                // Preparar modal
+                SessaoParaAvaliar = sessao;
+                PontuacaoSelecionada = 5;
+                ComentarioAvaliacao = string.Empty;
+                ModalAvaliacaoVisivel = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erro ao abrir modal: {ex.Message}");
+                await Shell.Current.DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
+            }
+        }
+
+        [RelayCommand]
+        public async Task SubmeterAvaliacaoAsync()
+        {
+            if (SessaoParaAvaliar == null) return;
+
+            try
+            {
+                IsLoading = true;
+
+                var request = new CriarAvaliacaoDto
+                {
+                    SessaoId = SessaoParaAvaliar.Id,
+                    Pontuacao = PontuacaoSelecionada,
+                    Comentario = string.IsNullOrWhiteSpace(ComentarioAvaliacao) ? null : ComentarioAvaliacao
+                };
+
+                var resultado = await _avaliacaoService.CriarAvaliacaoAsync(request);
+
+                if (resultado != null)
+                {
+                    ModalAvaliacaoVisivel = false;
+
+                    await Shell.Current.DisplayAlert(
+                        "Sucesso",
+                        $"Avaliação de {PontuacaoSelecionada} ⭐ enviada com sucesso!",
+                        "OK");
+
+                    // Recarregar lista
+                    await CarregarSessoesAsync();
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert(
+                        "Erro",
+                        "Não foi possível enviar a avaliação. Tente novamente.",
+                        "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erro ao submeter avaliação: {ex.Message}");
+                await Shell.Current.DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        [RelayCommand]
+        public void SelecionarPontuacao(string pontuacao)
+        {
+            if (int.TryParse(pontuacao, out int valor))
+            {
+                PontuacaoSelecionada = valor;
+                System.Diagnostics.Debug.WriteLine($"⭐ Pontuação selecionada: {valor}");
+            }
+        }
+
+        [RelayCommand]
+        public void FecharModalAvaliacao()
+        {
+            ModalAvaliacaoVisivel = false;
+            SessaoParaAvaliar = null;
         }
     }
 }
