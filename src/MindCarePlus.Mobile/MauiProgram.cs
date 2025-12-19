@@ -9,6 +9,7 @@ using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
 using SkiaSharp.Views.Maui.Controls.Hosting;
+using System.Buffers.Text;
 using System.Reflection;
 
 namespace MindCarePlus.Mobile;
@@ -107,7 +108,7 @@ public static class MauiProgram
 
         builder.Services.AddHttpClient<SessaoService>(client =>
         {
-            client.BaseAddress = new Uri("https://gmsnhdqq-7291.uks1.devtunnels.ms/");
+            client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromSeconds(30);
         });
 

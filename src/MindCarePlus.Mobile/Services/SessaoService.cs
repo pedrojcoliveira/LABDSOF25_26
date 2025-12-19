@@ -49,5 +49,16 @@ namespace MindCarePlus.Mobile.Services
 
             return await response.Content.ReadFromJsonAsync<SessaoDto>();
         }
+        public async Task<bool> CancelarSessaoAsync(Guid sessaoId)
+        {
+            var token = await _authService.GetTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.PutAsync($"api/sessoes/{sessaoId}/cancelar", null);
+
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }

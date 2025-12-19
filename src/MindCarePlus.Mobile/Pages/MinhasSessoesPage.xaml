@@ -219,24 +219,39 @@
                                         </Label>
 
                                         <!-- Botões -->
-                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,5,0,0">
+                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" Margin="0,5,0,0">
+                                            <!-- Ver Detalhes -->
                                             <Button Grid.Column="0"
-                                                    Text="Ver Detalhes"
+                                                    Text="Detalhes"
                                                     BackgroundColor="#E5E7EB"
                                                     TextColor="#374151"
-                                                    FontSize="13"
-                                                    Padding="10,8"
+                                                    FontSize="12"
+                                                    Padding="8,6"
                                                     CornerRadius="8"
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MinhasSessoesViewModel}}, Path=VerDetalhesSessaoCommand}"
                                                     CommandParameter="{Binding .}"/>
 
+                                            <!-- Cancelar (só visível se Pendente ou Agendada) -->
                                             <Button Grid.Column="1"
+                                                    Text="Cancelar"
+                                                    BackgroundColor="#EF4444"
+                                                    TextColor="White"
+                                                    FontSize="12"
+                                                    Padding="8,6"
+                                                    CornerRadius="8"
+                                                    IsVisible="{Binding Estado, Converter={StaticResource EstadoPodeCancelarConverter}}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MinhasSessoesViewModel}}, Path=CancelarSessaoCommand}"
+                                                    CommandParameter="{Binding .}"/>
+
+                                            <!-- Entrar (só visível se Agendada e tem link) -->
+                                            <Button Grid.Column="2"
                                                     Text="Entrar"
                                                     BackgroundColor="#10B981"
                                                     TextColor="White"
-                                                    FontSize="13"
-                                                    Padding="10,8"
+                                                    FontSize="12"
+                                                    Padding="8,6"
                                                     CornerRadius="8"
+                                                    IsVisible="{Binding LinkSessao, Converter={StaticResource StringNotEmptyConverter}}"
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MinhasSessoesViewModel}}, Path=EntrarNaSessaoCommand}"
                                                     CommandParameter="{Binding .}"/>
                                         </Grid>
