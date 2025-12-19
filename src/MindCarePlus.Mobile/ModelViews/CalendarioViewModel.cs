@@ -274,14 +274,27 @@ public partial class CalendarioViewModel : ObservableObject
         {
             IsLoading = true;
 
+            // 1. Chamar a API
             await _sessaoService.ConfirmarMarcacaoAsync(sessao.Id);
 
+            // 2. Atualizar o estado do objeto localmente
             sessao.Estado = "Confirmada";
+
+            // 3. === O TRUQUE PARA ATUALIZAR A UI ===
+            var index = Sessoes.IndexOf(sessao);
+            if (index != -1)
+            {
+                Sessoes[index] = sessao;
+            }
+
+            // 4. Atualizar os contadores do topo (Estatísticas) manualmente
+            SessoesConfirmadas++;
+            // Se tivesses um contador de pendentes, decrementavas aqui
 
             await Shell.Current.DisplayAlert("Sucesso ✅",
                 $"Marcação com {sessao.PacienteNome} confirmada!", "OK");
 
-            await CarregarSessoesAsync();
+
         }
         catch (Exception ex)
         {
@@ -303,7 +316,6 @@ public partial class CalendarioViewModel : ObservableObject
             return;
         }
 
-        // Pedir motivo (opcional)
         var motivo = await Shell.Current.DisplayPromptAsync(
             "Recusar Marcação",
             $"Motivo da recusa (opcional):",
@@ -311,21 +323,30 @@ public partial class CalendarioViewModel : ObservableObject
             accept: "Recusar",
             cancel: "Cancelar");
 
-        if (motivo == null) // Cancelado
-            return;
+        if (motivo == null) return;
 
         try
         {
             IsLoading = true;
 
+            // 1. Chamar API
             await _sessaoService.RecusarMarcacaoAsync(sessao.Id, motivo);
 
+            // 2. Atualizar estado local
             sessao.Estado = "Cancelada";
+
+            // 3. === ATUALIZAR UI ===
+            var index = Sessoes.IndexOf(sessao);
+            if (index != -1)
+            {
+                Sessoes[index] = sessao;
+            }
+
+            // 4. Atualizar contadores
+            SessoesCanceladas++;
 
             await Shell.Current.DisplayAlert("Recusado ❌",
                 $"Marcação com {sessao.PacienteNome} recusada!", "OK");
-
-            await CarregarSessoesAsync();
         }
         catch (Exception ex)
         {
