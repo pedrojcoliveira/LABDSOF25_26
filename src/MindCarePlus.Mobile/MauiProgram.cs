@@ -9,6 +9,7 @@ using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
 using SkiaSharp.Views.Maui.Controls.Hosting;
+using System.Buffers.Text;
 using System.Reflection;
 
 namespace MindCarePlus.Mobile;

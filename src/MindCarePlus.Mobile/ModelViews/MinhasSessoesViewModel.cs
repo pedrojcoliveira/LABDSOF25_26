@@ -181,5 +181,79 @@ namespace MindCarePlus.Mobile.ViewModels
                 await Shell.Current.DisplayAlert("Erro", $"Erro ao abrir link: {ex.Message}", "OK");
             }
         }
+
+        [RelayCommand]
+        public async Task CancelarSessaoAsync(SessaoDto sessao)
+        {
+            if (sessao == null) return;
+
+            try
+            {
+                // Verificar se pode cancelar
+                if (sessao.Estado != "Pendente" && sessao.Estado != "Agendada")
+                {
+                    await Shell.Current.DisplayAlert(
+                        "Não permitido",
+                        $"Não é possível cancelar uma sessão com estado '{sessao.EstadoTexto}'",
+                        "OK");
+                    return;
+                }
+
+                // Confirmar cancelamento
+                bool confirmar = await Shell.Current.DisplayAlert(
+                    "Cancelar Sessão",
+                    $"Tem certeza que deseja cancelar a sessão com {sessao.NomePsicologo} no dia {sessao.DataHoraFormatada}?",
+                    "Sim, cancelar",
+                    "Não");
+
+                if (!confirmar) return;
+
+                IsLoading = true;
+
+                var sucesso = await _sessaoService.CancelarSessaoAsync(sessao.Id);
+
+                if (sucesso)
+                {
+                    sessao.Estado = "Cancelada";
+                    sessao.DataAtualizacao = DateTime.UtcNow;
+
+                    // Atualizar contadores
+                    AtualizarContadores();
+
+                    // Reaplicar filtro
+                    AplicarFiltro();
+
+                    await Shell.Current.DisplayAlert(
+                        "Sucesso",
+                        "Sessão cancelada com sucesso",
+                        "OK");
+
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(500); // Pequeno delay
+                        await CarregarSessoesAsync();
+                    });
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert(
+                        "Erro",
+                        "Não foi possível cancelar a sessão. Tente novamente.",
+                        "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ Erro ao cancelar sessão: {ex.Message}");
+                await Shell.Current.DisplayAlert(
+                    "Erro",
+                    $"Ocorreu um erro ao cancelar: {ex.Message}",
+                    "OK");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
     }
 }

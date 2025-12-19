@@ -232,5 +232,60 @@ namespace MindCarePlus.API.Controllers
                 DataAtualizacao = sessao.DataAtualizacao
             };
         }
+
+        [HttpPut("{id}/cancelar")]
+        public async Task<ActionResult> CancelarSessao(Guid id)
+        {
+            _logger.LogInformation("🔵 Pedido para cancelar sessão: {SessaoId}", id);
+
+            try
+            {
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    _logger.LogWarning("⚠️ Utilizador não autenticado");
+                    return Unauthorized(new { message = "Utilizador não autenticado" });
+                }
+
+                _logger.LogInformation("🔍 A procurar sessão: {SessaoId}", id);
+                var sessao = await _context.Sessoes
+                    .FirstOrDefaultAsync(s => s.Id == id);
+
+                if (sessao == null)
+                {
+                    _logger.LogWarning("⚠️ Sessão não encontrada: {SessaoId}", id);
+                    return NotFound(new { message = "Sessão não encontrada" });
+                }
+
+                // Verificar se o utilizador é o paciente da sessão
+                if (sessao.PacienteId != userId)
+                {
+                    _logger.LogWarning("⚠️ Utilizador {UserId} não é o paciente da sessão {SessaoId}", userId, id);
+                    return Forbid();
+                }
+
+                // Verificar se a sessão pode ser cancelada
+                if (sessao.Estado != "Pendente" && sessao.Estado != "Agendada")
+                {
+                    _logger.LogWarning("⚠️ Sessão {SessaoId} não pode ser cancelada (Estado: {Estado})", id, sessao.Estado);
+                    return BadRequest(new { message = $"Não é possível cancelar uma sessão com estado '{sessao.Estado}'" });
+                }
+
+                // Cancelar a sessão
+                sessao.Estado = "Cancelada";
+                sessao.DataAtualizacao = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("✅ Sessão cancelada: {SessaoId}", id);
+
+                return Ok(new { message = "Sessão cancelada com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ ERRO ao cancelar sessão {SessaoId}", id);
+                return StatusCode(500, new { message = $"Erro ao cancelar sessão: {ex.Message}" });
+            }
+        }
     }
 }
