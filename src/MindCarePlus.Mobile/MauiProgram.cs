@@ -79,7 +79,7 @@ public static class MauiProgram
                 client.Timeout = TimeSpan.FromSeconds(30);
             })
             .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
         // Registar o AuthService
         builder.Services.AddHttpClient<AuthService>(client =>
@@ -88,7 +88,7 @@ public static class MauiProgram
                 client.Timeout = TimeSpan.FromSeconds(30);
             })
             .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
         // Registar o PsicologoService
         builder.Services.AddHttpClient<PsicologoService>(client =>
@@ -97,7 +97,7 @@ public static class MauiProgram
                 client.Timeout = TimeSpan.FromSeconds(30);
             })
             .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
         // ChatService
         builder.Services.AddHttpClient<ChatService>(client =>
@@ -106,7 +106,7 @@ public static class MauiProgram
                 client.Timeout = TimeSpan.FromSeconds(30);
             })
             .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
         // SessaoService
         builder.Services.AddHttpClient<SessaoService>(client =>
@@ -114,7 +114,7 @@ public static class MauiProgram
                 client.BaseAddress = new Uri(baseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
             })
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
         // AvaliacaoService
         builder.Services.AddHttpClient<AvaliacaoService>(client =>
@@ -122,7 +122,7 @@ public static class MauiProgram
                 client.BaseAddress = new Uri(baseUrl);
                 client.Timeout = TimeSpan.FromSeconds(120);
             })
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
 
