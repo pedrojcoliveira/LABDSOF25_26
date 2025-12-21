@@ -8,8 +8,6 @@ using MindCarePlus.Mobile.Services;
 using MindCarePlus.Mobile.Services.Interfaces;
 using MindCarePlus.Mobile.ViewModels;
 using Newtonsoft.Json.Linq;
-using SkiaSharp.Views.Maui.Controls.Hosting;
-using System.Buffers.Text;
 using System.Reflection;
 
 namespace MindCarePlus.Mobile;
@@ -76,50 +74,58 @@ public static class MauiProgram
 
         // Registar o ApiService
         builder.Services.AddHttpClient<ApiService>(client =>
-        {
-            client.BaseAddress = new Uri(baseUrl); // Usa a baseUrl da linha 36
-            client.Timeout = TimeSpan.FromSeconds(30);
-        })
-        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>(); // Usa o handler registado
+            {
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
 
-        // Registar o AuthService (IGUAL AO APISERVICE)
+        // Registar o AuthService
         builder.Services.AddHttpClient<AuthService>(client =>
-        {
-            client.BaseAddress = new Uri(baseUrl); // Usa a baseUrl da linha 36
-            client.Timeout = TimeSpan.FromSeconds(30);
-        })
-        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>(); // Usa o handler registado
+            {
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
 
         // Registar o PsicologoService
         builder.Services.AddHttpClient<PsicologoService>(client =>
-        {
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
-        })
-        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>();
+            {
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
 
-        // ===== CHAT SERVICE (SIGNALR) =====
+        // ChatService
         builder.Services.AddHttpClient<ChatService>(client =>
-        {
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
-        })
-        .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>();
+            {
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .ConfigurePrimaryHttpMessageHandler<HttpClientHandler>()
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
 
+        // SessaoService
         builder.Services.AddHttpClient<SessaoService>(client =>
-        {
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
-        });
+            {
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
 
+        // AvaliacaoService
         builder.Services.AddHttpClient<AvaliacaoService>(client =>
-        {
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(120);
-        });
+            {
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(120);
+            })
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan); // ← ADICIONA ISTO
 
         builder.Services.AddSingleton<IDialogService, MauiDialogService>();
-        
+
         // Registar ViewModels
         builder.Services.AddTransient<SelectUserTypeViewModel>();
         builder.Services.AddTransient<RegisterPacienteViewModel>();
